@@ -263,7 +263,7 @@
     .diary-card {
       background: #fff;
       border-radius: 3px;
-      padding: 12px 12px 56px;
+      padding: 12px 12px 44px;
       margin-bottom: 44px;
       position: relative;
       box-shadow: 0 5px 20px rgba(0,0,0,0.16), 0 1px 4px rgba(0,0,0,0.08);
@@ -297,21 +297,41 @@
       transform: translateX(-50%) rotate(-2deg);
     }
 
-    /* キャプション帯 */
+    /* キャプション帯 → 右上に移動 */
     .diary-card-caption {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 8px 12px 10px; background: #fff;
-      border-top: 1px solid rgba(0,0,0,0.05);
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      max-width: 55%;
     }
-    .diary-card-date { font-family: 'Yomogi', cursive; font-size: 11px; color: #7a9ac8; display: block; margin-bottom: 2px; }
-    .diary-card-author { font-family: 'Yomogi', cursive; font-size: 11px; color: #7aaa88; display: block; }
-    .diary-card-mood { position: absolute; bottom: 8px; right: 36px; font-size: 16px; }
+    .diary-card-date {
+      font-family: 'Yomogi', cursive;
+      font-size: 11px; color: #7a9ac8;
+      white-space: nowrap;
+    }
+    .diary-card-author {
+      font-family: 'Yomogi', cursive;
+      font-size: 11px; color: #7aaa88;
+      white-space: nowrap;
+    }
+    /* 気分・天気スタンプを横並びで右上に */
+    .diary-card-stamps {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      margin-top: 2px;
+    }
+    .diary-card-mood   { font-size: 15px; line-height: 1; }
     .diary-card-weather {
-      position: absolute; bottom: 6px; right: 10px; font-size: 18px;
-      /* ハンコっぽい質感 */
-      filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
-      opacity: 0.85;
-      transform: rotate(-8deg);
+      font-size: 16px; line-height: 1;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.12));
+      opacity: 0.88;
+      transform: rotate(-6deg);
+      display: inline-block;
     }
     .diary-card-text {
       font-family: 'Yomogi', cursive;
@@ -341,7 +361,9 @@
     }
     .diary-photo-item img { width: 100px; height: 100px; object-fit: cover; display: block; }
     .diary-delete-btn {
-      display: block; margin: 4px 0 0 auto;
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
       padding: 4px 14px; background: #ef5350; color: #fff;
       border: none; border-radius: 20px; font-size: 11px;
       font-family: 'Zen Maru Gothic', sans-serif; cursor: pointer;
@@ -876,17 +898,21 @@
 
     const caption = document.createElement('div');
     caption.className = 'diary-card-caption';
+    caption.setAttribute('data-html2canvas-ignore', 'false'); // キャプションは画像に含める
     caption.innerHTML = `
       <span class="diary-card-date">📅 ${diary.date}</span>
       ${diary.name ? `<span class="diary-card-author">✏️ ${diary.name}</span>` : ''}
-      <span class="diary-card-mood">${diary.mood || ''}</span>
-      ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
+      <span class="diary-card-stamps">
+        ${diary.mood    ? `<span class="diary-card-mood">${diary.mood}</span>`       : ''}
+        ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
+      </span>
     `;
     card.appendChild(caption);
 
     const delBtn = document.createElement('button');
     delBtn.className = 'diary-delete-btn';
     delBtn.textContent = '🗑 消す';
+    delBtn.setAttribute('data-html2canvas-ignore', 'true');
     delBtn.onclick = () => deleteDiary(diary.fbKey);
     card.appendChild(delBtn);
 
@@ -894,6 +920,7 @@
     const shareBtn = document.createElement('button');
     shareBtn.className = 'diary-share-btn';
     shareBtn.innerHTML = '📸 シェア／保存';
+    shareBtn.setAttribute('data-html2canvas-ignore', 'true');
     shareBtn.onclick = () => shareCard(card, diary.date, shareBtn);
     card.appendChild(shareBtn);
 

@@ -4,124 +4,132 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌻 夏休みの思い出アルバム</title>
-  <!-- Google Fonts：手書き風日本語フォント -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    /* ===== リセット & ベース ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ===== 背景：入道雲＋青空 ===== */
     body {
-      font-family: 'Zen Maru Gothic', 'Helvetica Neue', sans-serif;
-      /* クラフト紙風ざらざらベージュ */
-      background-color: #f4ebd9;
-      background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.07'/%3E%3C/svg%3E");
+      font-family: 'Zen Maru Gothic', sans-serif;
       min-height: 100vh;
+      background:
+        url('https://images.unsplash.com/photo-1601297183305-6df142704ea2?w=1600') center center / cover no-repeat fixed;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 32px 12px 80px;
-      position: relative;
       overflow-x: hidden;
     }
 
-    /* ===== 背景SVGイラスト（固定） ===== */
-    #bg-scene {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.18;
+    /* ===== グラスモーフィズム共通 ===== */
+    .glass {
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.13);
     }
-    body > *:not(#bg-scene) { position: relative; z-index: 1; }
 
     /* ===== タイトル ===== */
     .app-title {
       font-family: 'Yomogi', cursive;
-      font-size: 2.2rem;
-      color: #5c3d1e;
-      text-shadow: 2px 3px 0 rgba(255,255,255,0.6), 3px 4px 8px rgba(100,60,0,0.2);
-      margin-bottom: 8px;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,80,160,0.5), 0 1px 0 rgba(0,0,0,0.15);
+      margin-bottom: 6px;
       letter-spacing: 0.08em;
       text-align: center;
     }
     .app-subtitle {
       font-family: 'Yomogi', cursive;
       font-size: 0.95rem;
-      color: #a07850;
-      margin-bottom: 32px;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 28px;
       text-align: center;
-      letter-spacing: 0.12em;
+      text-shadow: 0 1px 6px rgba(0,60,120,0.4);
     }
 
-    /* ===== 入力フォーム（画用紙ノート風） ===== */
+    /* ===== モード切り替えタブ ===== */
+    .view-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      padding: 10px 26px;
+      border: none;
+      border-radius: 30px;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.45);
+      color: #3a5a8c;
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.6);
+    }
+    .tab-btn.active {
+      background: rgba(255,255,255,0.9);
+      color: #1a3a6c;
+      box-shadow: 0 4px 12px rgba(31,80,200,0.18);
+    }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.65); }
+
+    /* ===== 入力フォーム ===== */
     .form-book {
       width: 100%;
       max-width: 560px;
-      background: #fffef5;
-      border-radius: 6px;
-      box-shadow:
-        0 2px 0 #d4b896,
-        0 6px 28px rgba(100,60,0,0.18),
-        inset 0 0 40px rgba(200,160,100,0.06);
-      padding: 32px 28px 28px 36px;
+      padding: 28px 24px 24px;
       position: relative;
-      border-top: 4px solid #e8c99a;
     }
-
-    /* ノートの横罫線 */
     .form-book::before {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: inherit;
+      border-radius: 20px;
       background-image: repeating-linear-gradient(
-        transparent, transparent 31px,
-        #e8dcc8 31px, #e8dcc8 32px
+        transparent, transparent 31px, rgba(100,140,200,0.15) 31px, rgba(100,140,200,0.15) 32px
       );
       pointer-events: none;
-      opacity: 0.6;
     }
     .form-book > * { position: relative; }
-
     .form-book h2 {
       font-family: 'Yomogi', cursive;
-      color: #8b5e3c;
-      font-size: 1.15rem;
-      margin-bottom: 20px;
-      border-bottom: 2px dashed #dfc090;
+      color: #2c4a7c;
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      border-bottom: 2px dashed rgba(100,150,220,0.4);
       padding-bottom: 8px;
     }
-
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 15px; }
     .form-group label {
       display: block;
       font-weight: 700;
       font-size: 0.82rem;
-      color: #7a5a38;
-      margin-bottom: 6px;
-      letter-spacing: 0.05em;
+      color: #2c4a7c;
+      margin-bottom: 5px;
     }
-
     input[type="date"], input[type="text"], textarea {
       width: 100%;
       padding: 9px 13px;
-      border: 1.5px solid #d4b896;
-      border-radius: 8px;
-      background: rgba(255,253,245,0.85);
+      border: 1.5px solid rgba(100,150,220,0.4);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.7);
       font-size: 15px;
       font-family: 'Zen Maru Gothic', sans-serif;
-      color: #3d2b1a;
+      color: #1a2a4a;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input[type="date"]:focus, input[type="text"]:focus, textarea:focus {
+    input:focus, textarea:focus {
       outline: none;
-      border-color: #c97e3a;
-      box-shadow: 0 0 0 3px rgba(201,126,58,0.15);
+      border-color: #5588dd;
+      box-shadow: 0 0 0 3px rgba(85,136,221,0.18);
+      background: rgba(255,255,255,0.9);
     }
     textarea { resize: vertical; }
 
@@ -129,482 +137,482 @@
     .mood-selector { display: flex; justify-content: space-around; margin-top: 4px; }
     .mood-box { display: none; }
     .mood-label {
-      font-size: 30px;
+      font-size: 28px;
       cursor: pointer;
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-radius: 50%;
       transition: background 0.2s, transform 0.15s;
       user-select: none;
     }
     .mood-label:hover { transform: scale(1.25); }
     .mood-box:checked + .mood-label {
-      background: rgba(255,200,80,0.5);
-      box-shadow: 0 2px 8px rgba(200,120,0,0.3);
+      background: rgba(255,200,80,0.55);
+      box-shadow: 0 2px 8px rgba(200,150,0,0.3);
     }
 
-    /* ===== 写真アップロードエリア（スクラップ枠線風） ===== */
-    .photo-upload-area {
-      border: 2.5px dashed #c8a87a;
+    /* ===== 天気スタンプ ===== */
+    .weather-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .weather-box { display: none; }
+    .weather-label {
+      font-size: 26px;
+      cursor: pointer;
+      padding: 6px 10px;
       border-radius: 10px;
-      background: rgba(255,248,235,0.7);
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      user-select: none;
+      position: relative;
+    }
+    .weather-label:hover { transform: scale(1.2); background: rgba(255,255,255,0.5); }
+    .weather-box:checked + .weather-label {
+      border-color: rgba(85,136,221,0.6);
+      background: rgba(200,220,255,0.45);
+      /* ハンコっぽい質感 */
+      box-shadow: inset 0 0 0 2px rgba(85,136,221,0.3), 0 2px 8px rgba(85,136,221,0.2);
+      transform: scale(0.95) rotate(-3deg);
+    }
+
+    /* ===== 写真アップロード ===== */
+    .photo-upload-area {
+      border: 2.5px dashed rgba(100,150,220,0.5);
+      border-radius: 14px;
+      background: rgba(220,235,255,0.35);
       padding: 20px 14px;
       text-align: center;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      transition: all 0.2s;
       position: relative;
     }
     .photo-upload-area:hover, .photo-upload-area.drag-over {
-      background: rgba(255,240,210,0.9);
-      border-color: #c97e3a;
+      background: rgba(200,220,255,0.55);
+      border-color: #5588dd;
       transform: scale(1.01);
     }
     .photo-upload-area input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
     }
-    .photo-upload-icon { font-size: 2rem; display: block; margin-bottom: 6px; pointer-events: none; }
+    .photo-upload-icon { font-size: 2.2rem; display: block; margin-bottom: 6px; pointer-events: none; }
     .photo-upload-hint {
       font-family: 'Yomogi', cursive;
       font-size: 13px;
-      color: #a07850;
+      color: #3a5a9c;
       pointer-events: none;
-      line-height: 1.6;
+      line-height: 1.7;
     }
-
-    /* アップロードプレビュー（チェキ風サムネ） */
-    .photo-preview-wrap {
-      margin-top: 12px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .photo-preview-wrap { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
     .photo-thumb-wrap {
       position: relative;
-      display: inline-block;
-      /* チェキ風フレーム */
       background: #fff;
-      padding: 5px 5px 18px 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.1);
+      padding: 5px 5px 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
       border-radius: 2px;
       transform: rotate(-2deg);
       transition: transform 0.2s;
     }
     .photo-thumb-wrap:nth-child(even) { transform: rotate(1.5deg); }
     .photo-thumb-wrap:hover { transform: rotate(0deg) scale(1.06); z-index: 10; }
-    .photo-thumb-wrap img {
-      width: 72px;
-      height: 72px;
-      object-fit: cover;
-      display: block;
-      border-radius: 1px;
-    }
+    .photo-thumb-wrap img { width: 70px; height: 70px; object-fit: cover; display: block; }
     .photo-remove-btn {
-      position: absolute;
-      top: -7px;
-      right: -7px;
-      background: #ef5350;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 11px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      position: absolute; top: -7px; right: -7px;
+      background: #ef5350; color: #fff; border: none; border-radius: 50%;
+      width: 20px; height: 20px; font-size: 11px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; padding: 0;
     }
 
     /* ===== 保存ボタン ===== */
     .save-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #d4845a, #c97e3a);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 17px;
-      font-family: 'Yomogi', cursive;
-      font-weight: 700;
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 17px; font-family: 'Yomogi', cursive; font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 0 #a0581e, 0 6px 16px rgba(180,90,20,0.35);
-      transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s;
-      margin-top: 8px;
-      letter-spacing: 0.05em;
+      box-shadow: 0 4px 0 #1a3a88, 0 6px 20px rgba(30,60,180,0.3);
+      transition: all 0.15s; margin-top: 8px; letter-spacing: 0.05em;
     }
-    .save-btn:hover { opacity: 0.93; transform: translateY(-2px); }
-    .save-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #a0581e; }
+    .save-btn:hover { transform: translateY(-2px); opacity: 0.93; }
+    .save-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1a3a88; }
     .save-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     /* ===== アルバムセクション ===== */
-    .album-section {
-      width: 100%;
-      max-width: 620px;
-      margin-top: 44px;
-    }
-    .album-section h2 {
+    .album-section { width: 100%; max-width: 660px; margin-top: 40px; }
+    .album-section > h2 {
       font-family: 'Yomogi', cursive;
-      color: #5c3d1e;
+      color: #fff;
       font-size: 1.4rem;
       text-align: center;
       margin-bottom: 20px;
-      text-shadow: 1px 2px 0 rgba(255,255,255,0.5);
+      text-shadow: 0 2px 10px rgba(0,60,160,0.4);
     }
 
-    /* ページめくりコンテナ */
-    .book-container { perspective: 1800px; width: 100%; }
-    .book { position: relative; width: 100%; min-height: 300px; }
-    .book-page {
-      width: 100%;
-      position: relative;
-      transform-origin: left center;
-    }
-    .page-front { backface-visibility: hidden; }
-
-    /* スクラップページ本体（画用紙風） */
+    /* ===== スクラップページ ===== */
+    .book { width: 100%; min-height: 200px; }
     .scrap-page {
-      background: #fdfaf3;
-      border-radius: 3px;
-      box-shadow:
-        0 4px 24px rgba(100,60,0,0.16),
-        0 1px 0 #e8d8c0;
-      padding: 36px 24px 28px;
-      position: relative;
-      overflow: visible;
-      /* 背景：薄いドット方眼 */
-      background-image: radial-gradient(circle, #d4c4a8 1px, transparent 1px);
+      padding: 36px 20px 28px;
+      background-image: radial-gradient(circle, rgba(100,140,200,0.18) 1px, transparent 1px);
       background-size: 22px 22px;
+      position: relative;
+    }
+    .scrap-page::after {
+      content: ''; position: absolute; bottom: 0; right: 0;
+      width: 0; height: 0; border-style: solid;
+      border-width: 0 0 28px 28px;
+      border-color: transparent transparent rgba(100,140,200,0.25) transparent;
     }
 
-    /* ===== 日記カード（チェキ・ポラロイド風） ===== */
+    /* ===== 日記カード（チェキ風） ===== */
     .diary-card {
       background: #fff;
       border-radius: 3px;
-      padding: 12px 12px 52px 12px; /* 下を広くしてキャプション領域に */
+      padding: 12px 12px 56px;
       margin-bottom: 44px;
       position: relative;
-      box-shadow:
-        0 4px 16px rgba(0,0,0,0.15),
-        0 1px 4px rgba(0,0,0,0.1),
-        inset 0 0 0 1px rgba(0,0,0,0.04);
-      /* ランダムな傾き：nth-childで変化 */
+      box-shadow: 0 5px 20px rgba(0,0,0,0.16), 0 1px 4px rgba(0,0,0,0.08);
       transform: rotate(-1.5deg);
       transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
     }
-    .diary-card:nth-child(2n)   { transform: rotate(1.8deg); }
-    .diary-card:nth-child(3n)   { transform: rotate(-0.8deg); }
-    .diary-card:nth-child(4n)   { transform: rotate(2.2deg); }
-    .diary-card:nth-child(5n)   { transform: rotate(-2deg); }
+    .diary-card:nth-child(2n) { transform: rotate(1.8deg); }
+    .diary-card:nth-child(3n) { transform: rotate(-0.7deg); }
+    .diary-card:nth-child(4n) { transform: rotate(2.2deg); }
     .diary-card:hover {
-      transform: rotate(0deg) translateY(-6px) scale(1.02);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.1);
-      z-index: 10;
+      transform: rotate(0deg) translateY(-8px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+      z-index: 20;
     }
-
-    /* マスキングテープ風デコレーション */
+    /* マスキングテープ */
     .diary-card::before {
       content: '';
-      position: absolute;
-      top: -13px;
-      left: 50%;
+      position: absolute; top: -13px; left: 50%;
       transform: translateX(-50%) rotate(-3deg);
-      width: 70px;
-      height: 22px;
-      background: rgba(255,210,100,0.6);
+      width: 72px; height: 22px;
+      background: rgba(255,210,100,0.65);
       border-radius: 2px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.1);
     }
     .diary-card:nth-child(even)::before {
-      left: 32%;
+      left: 30%; background: rgba(160,210,255,0.6); width: 60px;
       transform: translateX(-50%) rotate(4deg);
-      background: rgba(160,210,255,0.55);
-      width: 60px;
     }
     .diary-card:nth-child(3n)::before {
-      left: 68%;
+      left: 70%; background: rgba(200,240,160,0.65);
       transform: translateX(-50%) rotate(-2deg);
-      background: rgba(200,240,180,0.6);
     }
 
-    /* カード下部のキャプション帯 */
+    /* キャプション帯 */
     .diary-card-caption {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 8px 12px 10px;
-      background: #fff;
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 8px 12px 10px; background: #fff;
+      border-top: 1px solid rgba(0,0,0,0.05);
     }
-    .diary-card-date {
-      font-family: 'Yomogi', cursive;
-      font-size: 12px;
-      color: #a07850;
-      display: block;
-      margin-bottom: 2px;
+    .diary-card-date { font-family: 'Yomogi', cursive; font-size: 11px; color: #7a9ac8; display: block; margin-bottom: 2px; }
+    .diary-card-author { font-family: 'Yomogi', cursive; font-size: 11px; color: #7aaa88; display: block; }
+    .diary-card-mood { position: absolute; bottom: 8px; right: 36px; font-size: 16px; }
+    .diary-card-weather {
+      position: absolute; bottom: 6px; right: 10px; font-size: 18px;
+      /* ハンコっぽい質感 */
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.15));
+      opacity: 0.85;
+      transform: rotate(-8deg);
     }
-    .diary-card-author {
-      font-family: 'Yomogi', cursive;
-      font-size: 12px;
-      color: #7aaa88;
-      display: block;
-    }
-    .diary-card-mood {
-      position: absolute;
-      bottom: 10px;
-      right: 12px;
-      font-size: 18px;
-    }
-
-    /* カード本文テキスト */
     .diary-card-text {
       font-family: 'Yomogi', cursive;
-      font-size: 14px;
-      line-height: 1.75;
-      color: #3d2b1a;
-      white-space: pre-wrap;
-      margin-bottom: 10px;
+      font-size: 13px; line-height: 1.75; color: #2a3a5a;
+      white-space: pre-wrap; margin-bottom: 8px;
     }
-
-    /* ===== 写真グリッド（チェキ風） ===== */
     .diary-photos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 8px;
-      margin-bottom: 8px;
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin: 6px 0 8px;
     }
     .diary-photo-item {
       background: #fff;
-      padding: 5px 5px 20px 5px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.1);
+      padding: 4px 4px 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
       border-radius: 2px;
       cursor: pointer;
       transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
     }
-    /* 写真ごとにランダムな傾き */
     .diary-photos .diary-photo-item:nth-child(4n+1) { transform: rotate(-2.5deg); }
     .diary-photos .diary-photo-item:nth-child(4n+2) { transform: rotate(1.8deg); }
     .diary-photos .diary-photo-item:nth-child(4n+3) { transform: rotate(-1.2deg); }
-    .diary-photos .diary-photo-item:nth-child(4n+4) { transform: rotate(2.8deg); }
+    .diary-photos .diary-photo-item:nth-child(4n+4) { transform: rotate(2.5deg); }
     .diary-photos .diary-photo-item:hover {
-      transform: rotate(0deg) translateY(-6px) scale(1.06);
+      transform: rotate(0deg) translateY(-6px) scale(1.07);
       box-shadow: 0 10px 28px rgba(0,0,0,0.25);
       z-index: 10;
     }
-    .diary-photo-item img {
-      width: 110px;
-      height: 110px;
-      object-fit: cover;
-      display: block;
-      border-radius: 1px;
-    }
-
-    /* 削除ボタン */
+    .diary-photo-item img { width: 100px; height: 100px; object-fit: cover; display: block; }
     .diary-delete-btn {
-      display: block;
-      margin: 6px 0 0 auto;
-      padding: 5px 14px;
-      background: #ef5350;
+      display: block; margin: 4px 0 0 auto;
+      padding: 4px 14px; background: #ef5350; color: #fff;
+      border: none; border-radius: 20px; font-size: 11px;
+      font-family: 'Zen Maru Gothic', sans-serif; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .diary-delete-btn:hover { background: #c62828; }
+
+    /* ===== シェア・保存ボタン ===== */
+    .diary-share-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #4a9fd4, #2a7ab8);
       color: #fff;
       border: none;
       border-radius: 20px;
       font-size: 11px;
       font-family: 'Zen Maru Gothic', sans-serif;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
-      box-shadow: 0 2px 6px rgba(200,0,0,0.2);
-    }
-    .diary-delete-btn:hover { background: #c62828; transform: scale(1.05); }
-
-    /* ===== ナビゲーション ===== */
-    .page-nav {
+      transition: background 0.2s, transform 0.15s, opacity 0.2s;
+      box-shadow: 0 2px 6px rgba(30,80,180,0.25);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 20px;
+      gap: 4px;
+      opacity: 0;
     }
+    /* カードホバー時に表示 */
+    .diary-card:hover .diary-share-btn { opacity: 1; }
+    /* スマホは常に表示 */
+    @media (hover: none) { .diary-share-btn { opacity: 1; } }
+    .diary-share-btn:hover { background: linear-gradient(135deg, #2a7ab8, #1a5a98); transform: scale(1.05); }
+    /* 変換中スピナー */
+    .diary-share-btn.loading { opacity: 0.7; cursor: wait; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin-icon { display: inline-block; animation: spin 0.8s linear infinite; }
+
+    /* ===== ページナビ ===== */
+    .page-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
     .nav-btn {
-      padding: 10px 24px;
-      background: #fff;
-      border: 2px solid #c8a87a;
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.75);
+      border: 2px solid rgba(100,150,220,0.5);
       border-radius: 30px;
-      font-size: 14px;
-      font-family: 'Zen Maru Gothic', sans-serif;
-      font-weight: 700;
-      color: #8b5e3c;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 3px 0 #d4b896;
+      font-size: 14px; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700;
+      color: #2a4a8c; cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(6px);
     }
-    .nav-btn:hover { background: #fdf3e3; transform: translateY(-2px); box-shadow: 0 5px 0 #d4b896; }
-    .nav-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #d4b896; }
-    .nav-btn:disabled { opacity: 0.35; cursor: default; transform: none; box-shadow: 0 3px 0 #d4b896; }
-    .page-indicator {
+    .nav-btn:hover { background: rgba(255,255,255,0.92); transform: translateY(-2px); }
+    .nav-btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+    .page-indicator { font-family: 'Yomogi', cursive; font-size: 14px; color: #fff; text-shadow: 0 1px 6px rgba(0,60,120,0.5); }
+
+    /* ===== カレンダー ===== */
+    .calendar-section { width: 100%; max-width: 660px; margin-top: 40px; }
+    .calendar-header {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 14px;
+    }
+    .cal-month-title {
       font-family: 'Yomogi', cursive;
-      font-size: 14px;
-      color: #8b5e3c;
-      text-shadow: 1px 1px 0 rgba(255,255,255,0.6);
+      font-size: 1.3rem; color: #fff;
+      text-shadow: 0 2px 10px rgba(0,60,160,0.4);
+    }
+    .cal-nav-btn {
+      background: rgba(255,255,255,0.7);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; color: #2a4a8c; font-weight: 700;
+    }
+    .cal-nav-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
+    .calendar-grid { width: 100%; padding: 16px; }
+    .cal-weekdays {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 4px; margin-bottom: 4px;
+    }
+    .cal-weekday {
+      text-align: center;
+      font-family: 'Yomogi', cursive;
+      font-size: 12px; color: #4a6a9c;
+      padding: 4px 0;
+    }
+    .cal-weekday:first-child { color: #cc4444; }
+    .cal-weekday:last-child { color: #4444cc; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.35);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 3px 2px 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.3);
+      min-height: 44px;
+    }
+    .cal-day:hover { background: rgba(255,255,255,0.65); transform: scale(1.04); z-index: 2; }
+    .cal-day.empty { background: transparent; border-color: transparent; cursor: default; pointer-events: none; }
+    .cal-day.today { border: 2px solid rgba(255,200,50,0.8); background: rgba(255,245,200,0.45); }
+    .cal-day.has-diary { background: rgba(200,220,255,0.5); }
+    .cal-day-num {
+      font-family: 'Yomogi', cursive;
+      font-size: 11px; color: #2a4a8c; z-index: 1;
+      line-height: 1;
+    }
+    .cal-day.sun .cal-day-num { color: #cc4444; }
+    .cal-day.sat .cal-day-num { color: #4444cc; }
+    /* サムネイル写真 */
+    .cal-thumb {
+      width: 100%; flex: 1;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-top: 2px;
+      display: block;
+    }
+    .cal-weather-stamp {
+      position: absolute; bottom: 1px; right: 1px;
+      font-size: 11px; line-height: 1;
+      transform: rotate(-8deg);
+      opacity: 0.85;
+    }
+
+    /* カレンダークリック時のポップアップ */
+    .cal-popup-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,20,60,0.6);
+      z-index: 500;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .cal-popup-overlay.open { display: flex; }
+    .cal-popup {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .cal-popup-close {
+      position: absolute; top: 12px; right: 16px;
+      font-size: 24px; cursor: pointer; color: #6688cc;
+      transition: transform 0.15s;
+    }
+    .cal-popup-close:hover { transform: scale(1.2) rotate(90deg); }
+    .cal-popup-date {
+      font-family: 'Yomogi', cursive;
+      font-size: 1rem; color: #2a4a8c;
+      margin-bottom: 12px;
+      padding-right: 30px;
     }
 
     /* ===== ライトボックス ===== */
     .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(30,15,5,0.9);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.88); z-index: 1000;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(6px);
     }
     .lightbox.open { display: flex; }
-    /* チェキ風大きいフレーム */
     .lightbox-frame {
-      background: #fff;
-      padding: 10px 10px 44px 10px;
+      background: #fff; padding: 10px 10px 44px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      border-radius: 3px;
-      max-width: 90vw;
+      border-radius: 3px; max-width: 90vw;
     }
     .lightbox-frame img {
-      max-width: 80vw;
-      max-height: 70vh;
-      object-fit: contain;
-      display: block;
-      border-radius: 1px;
+      max-width: 80vw; max-height: 70vh;
+      object-fit: contain; display: block;
     }
     .lightbox-close {
-      position: fixed;
-      top: 18px;
-      right: 22px;
-      font-size: 36px;
-      color: #fff;
-      cursor: pointer;
-      line-height: 1;
+      position: fixed; top: 18px; right: 22px;
+      font-size: 36px; color: #fff; cursor: pointer;
       text-shadow: 0 0 10px rgba(0,0,0,0.5);
       transition: transform 0.15s;
     }
     .lightbox-close:hover { transform: scale(1.2) rotate(90deg); }
 
-    /* ===== 空カード ===== */
+    /* ===== 空メッセージ ===== */
     .empty-msg {
-      text-align: center;
-      font-family: 'Yomogi', cursive;
-      color: #a07850;
-      font-size: 16px;
-      padding: 48px 0;
-      background: rgba(255,253,245,0.7);
-      border-radius: 8px;
-      border: 2px dashed #d4b896;
+      text-align: center; font-family: 'Yomogi', cursive;
+      color: #4a6a9c; font-size: 15px; padding: 44px 0;
+      border: 2px dashed rgba(100,150,220,0.4); border-radius: 14px;
+      background: rgba(200,220,255,0.2);
     }
 
-    /* ===== スクラップページのページコーナー折り返し風 ===== */
-    .scrap-page::after {
-      content: '';
-      position: absolute;
-      bottom: 0; right: 0;
-      width: 0; height: 0;
-      border-style: solid;
-      border-width: 0 0 28px 28px;
-      border-color: transparent transparent #e8d8c0 transparent;
+    /* ===== レスポンシブ ===== */
+    @media (max-width: 480px) {
+      .diary-photo-item img { width: 75px; height: 75px; }
+      .cal-day { min-height: 36px; }
+      .cal-day-num { font-size: 10px; }
+      .tab-btn { padding: 8px 16px; font-size: 13px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ===== 背景：青空＋ひまわり畑 SVGイラスト（薄く表示） ===== -->
-<svg id="bg-scene" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
-  <defs>
-    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#3aa8d8"/>
-      <stop offset="100%" stop-color="#a8dff5"/>
-    </linearGradient>
-    <linearGradient id="grassGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#6abf3a"/>
-      <stop offset="100%" stop-color="#4a9a1e"/>
-    </linearGradient>
-    <symbol id="sunflower" viewBox="-60 -120 120 140">
-      <rect x="-6" y="0" width="12" height="90" rx="5" fill="#4a8c1c"/>
-      <ellipse cx="-22" cy="40" rx="18" ry="10" fill="#5aab22" transform="rotate(-30 -22 40)"/>
-      <ellipse cx="22" cy="60" rx="18" ry="10" fill="#5aab22" transform="rotate(30 22 60)"/>
-      <g fill="#f5c200">
-        <ellipse cx="0" cy="-68" rx="10" ry="20"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(45)"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(90)"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(135)"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(180)"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(225)"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(270)"/>
-        <ellipse cx="0" cy="-68" rx="10" ry="20" transform="rotate(315)"/>
-      </g>
-      <circle cx="0" cy="-48" r="22" fill="#8B4513"/>
-      <circle cx="0" cy="-48" r="15" fill="#5c2e00"/>
-    </symbol>
-  </defs>
-  <rect width="1200" height="700" fill="url(#skyGrad)"/>
-  <g opacity="0.9"><ellipse cx="160" cy="100" rx="80" ry="38" fill="#fff"/><ellipse cx="110" cy="112" rx="52" ry="30" fill="#fff"/><ellipse cx="215" cy="108" rx="55" ry="28" fill="#fff"/></g>
-  <g opacity="0.85"><ellipse cx="520" cy="70" rx="95" ry="40" fill="#fff"/><ellipse cx="460" cy="84" rx="58" ry="30" fill="#fff"/><ellipse cx="580" cy="80" rx="62" ry="28" fill="#fff"/></g>
-  <g opacity="0.8"><ellipse cx="950" cy="90" rx="85" ry="36" fill="#fff"/><ellipse cx="900" cy="103" rx="55" ry="28" fill="#fff"/><ellipse cx="1008" cy="100" rx="58" ry="26" fill="#fff"/></g>
-  <ellipse cx="600" cy="580" rx="720" ry="160" fill="url(#grassGrad)"/>
-  <rect x="0" y="560" width="1200" height="200" fill="#4a9a1e"/>
-  <use href="#sunflower" x="80" y="560" width="70" height="82"/>
-  <use href="#sunflower" x="200" y="550" width="65" height="76"/>
-  <use href="#sunflower" x="330" y="558" width="68" height="80"/>
-  <use href="#sunflower" x="460" y="545" width="62" height="73"/>
-  <use href="#sunflower" x="580" y="555" width="66" height="77"/>
-  <use href="#sunflower" x="700" y="548" width="64" height="75"/>
-  <use href="#sunflower" x="820" y="553" width="67" height="79"/>
-  <use href="#sunflower" x="950" y="546" width="63" height="74"/>
-  <use href="#sunflower" x="20" y="615" width="90" height="106"/>
-  <use href="#sunflower" x="150" y="608" width="95" height="112"/>
-  <use href="#sunflower" x="285" y="618" width="88" height="104"/>
-  <use href="#sunflower" x="415" y="610" width="92" height="108"/>
-  <use href="#sunflower" x="545" y="620" width="86" height="101"/>
-  <use href="#sunflower" x="670" y="612" width="93" height="110"/>
-  <use href="#sunflower" x="800" y="616" width="89" height="105"/>
-  <use href="#sunflower" x="930" y="607" width="94" height="111"/>
-  <use href="#sunflower" x="1060" y="614" width="88" height="104"/>
-</svg>
-
 <h1 class="app-title">🌻 夏休みの思い出アルバム</h1>
 <p class="app-subtitle">みんなで作るデジタルスクラップブック ✂️📷</p>
 
+<!-- モード切り替え -->
+<div class="view-tabs">
+  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">✏️ 書く</button>
+  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">📖 アルバム</button>
+  <button class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
+</div>
+
 <!-- ===== 入力フォーム ===== -->
-<div class="form-book">
+<div class="form-book glass" id="view-write">
   <h2>✏️ 今日の思い出を書こう</h2>
 
   <div class="form-group">
     <label for="diary-name">👤 名前</label>
     <input type="text" id="diary-name" placeholder="だれが書くの？" maxlength="20">
   </div>
-
   <div class="form-group">
     <label for="diary-date">📅 日付</label>
     <input type="date" id="diary-date">
   </div>
-
   <div class="form-group">
     <label>今日の気分</label>
     <div class="mood-selector">
-      <input type="radio" name="mood" id="mood1" value="😎 最高！" class="mood-box" checked>
+      <input type="radio" name="mood" id="mood1" value="😎" class="mood-box" checked>
       <label for="mood1" class="mood-label" title="最高！">😎</label>
-      <input type="radio" name="mood" id="mood2" value="😃 楽しく過ごした" class="mood-box">
-      <label for="mood2" class="mood-label" title="楽しく過ごした">😃</label>
-      <input type="radio" name="mood" id="mood3" value="😴 のんびり" class="mood-box">
+      <input type="radio" name="mood" id="mood2" value="😃" class="mood-box">
+      <label for="mood2" class="mood-label" title="楽しい">😃</label>
+      <input type="radio" name="mood" id="mood3" value="😴" class="mood-box">
       <label for="mood3" class="mood-label" title="のんびり">😴</label>
-      <input type="radio" name="mood" id="mood4" value="😢 びみょー" class="mood-box">
+      <input type="radio" name="mood" id="mood4" value="😢" class="mood-box">
       <label for="mood4" class="mood-label" title="びみょー">😢</label>
     </div>
   </div>
-
+  <div class="form-group">
+    <label>🌤 今日の天気</label>
+    <div class="weather-selector">
+      <input type="radio" name="weather" id="w1" value="☀️" class="weather-box" checked>
+      <label for="w1" class="weather-label" title="晴れ">☀️</label>
+      <input type="radio" name="weather" id="w2" value="⛅" class="weather-box">
+      <label for="w2" class="weather-label" title="くもり">⛅</label>
+      <input type="radio" name="weather" id="w3" value="☔" class="weather-box">
+      <label for="w3" class="weather-label" title="雨">☔</label>
+      <input type="radio" name="weather" id="w4" value="🌊" class="weather-box">
+      <label for="w4" class="weather-label" title="海">🌊</label>
+      <input type="radio" name="weather" id="w5" value="🍧" class="weather-box">
+      <label for="w5" class="weather-label" title="かき氷">🍧</label>
+      <input type="radio" name="weather" id="w6" value="🎆" class="weather-box">
+      <label for="w6" class="weather-label" title="花火">🎆</label>
+      <input type="radio" name="weather" id="w7" value="🏄" class="weather-box">
+      <label for="w7" class="weather-label" title="サーフィン">🏄</label>
+      <input type="radio" name="weather" id="w8" value="🌙" class="weather-box">
+      <label for="w8" class="weather-label" title="夜">🌙</label>
+    </div>
+  </div>
   <div class="form-group">
     <label for="diary-text">今日の一言（140文字以内）</label>
     <textarea id="diary-text" rows="3" placeholder="今日あったことを書こう！" maxlength="140"></textarea>
   </div>
-
   <div class="form-group">
     <label>📷 写真を貼る（複数OK）</label>
     <div class="photo-upload-area" id="upload-area">
@@ -614,16 +622,13 @@
     </div>
     <div class="photo-preview-wrap" id="photo-preview"></div>
   </div>
-
   <button class="save-btn" onclick="saveDiary()">思い出を貼る 📌</button>
 </div>
 
 <!-- ===== アルバム ===== -->
-<div class="album-section">
+<div class="album-section" id="view-album" style="display:none">
   <h2>📖 みんなの思い出</h2>
-  <div class="book-container">
-    <div class="book" id="book"></div>
-  </div>
+  <div class="book" id="book"></div>
   <div class="page-nav">
     <button class="nav-btn" id="prev-btn" onclick="changePage(-1)" disabled>◀ 前のページ</button>
     <span class="page-indicator" id="page-indicator"></span>
@@ -631,7 +636,34 @@
   </div>
 </div>
 
-<!-- ===== ライトボックス ===== -->
+<!-- ===== カレンダー ===== -->
+<div class="calendar-section" id="view-calendar" style="display:none">
+  <div class="calendar-header">
+    <button class="cal-nav-btn" onclick="calMove(-1)">◀</button>
+    <span class="cal-month-title" id="cal-title"></span>
+    <button class="cal-nav-btn" onclick="calMove(1)">▶</button>
+  </div>
+  <div class="glass calendar-grid">
+    <div class="cal-weekdays">
+      <div class="cal-weekday">日</div><div class="cal-weekday">月</div>
+      <div class="cal-weekday">火</div><div class="cal-weekday">水</div>
+      <div class="cal-weekday">木</div><div class="cal-weekday">金</div>
+      <div class="cal-weekday">土</div>
+    </div>
+    <div class="cal-days" id="cal-days"></div>
+  </div>
+</div>
+
+<!-- カレンダーポップアップ -->
+<div class="cal-popup-overlay" id="cal-popup-overlay" onclick="closeCalPopup()">
+  <div class="cal-popup" onclick="event.stopPropagation()">
+    <span class="cal-popup-close" onclick="closeCalPopup()">✕</span>
+    <div class="cal-popup-date" id="cal-popup-date"></div>
+    <div id="cal-popup-content"></div>
+  </div>
+</div>
+
+<!-- ライトボックス -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <span class="lightbox-close" onclick="closeLightbox()">✕</span>
   <div class="lightbox-frame" onclick="event.stopPropagation()">
@@ -639,13 +671,11 @@
   </div>
 </div>
 
-<!-- Firebase SDK（CDN） -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getDatabase, ref, push, remove, onValue, query, orderByChild }
     from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
-  // ===== Firebase 設定 =====
   const firebaseConfig = {
     apiKey: "AIzaSyAGEv-sh80o1Dz0Z-rG3OKKJQMSS7xlU0A",
     authDomain: "natsu-diary.firebaseapp.com",
@@ -665,6 +695,9 @@
   let currentPage  = 0;
   let allDiaries   = [];
   let pendingPhotos = [];
+  let calYear, calMonth;
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
 
   // ===== 初期化 =====
   document.getElementById('diary-date').valueAsDate = new Date();
@@ -680,7 +713,17 @@
         .sort((a, b) => b.createdAt - a.createdAt);
     currentPage = 0;
     renderPage();
+    renderCalendar();
   });
+
+  // ===== タブ切り替え =====
+  window.switchTab = function(tab) {
+    ['write','album','calendar'].forEach(t => {
+      document.getElementById('view-'+t).style.display = (t === tab) ? '' : 'none';
+      document.getElementById('tab-'+t).classList.toggle('active', t === tab);
+    });
+    if (tab === 'calendar') renderCalendar();
+  };
 
   // ===== 写真アップロード =====
   function setupPhotoUpload() {
@@ -690,8 +733,7 @@
     area.addEventListener('dragover',  (e) => { e.preventDefault(); area.classList.add('drag-over'); });
     area.addEventListener('dragleave', ()  => area.classList.remove('drag-over'));
     area.addEventListener('drop', (e) => {
-      e.preventDefault();
-      area.classList.remove('drag-over');
+      e.preventDefault(); area.classList.remove('drag-over');
       handleFiles(e.dataTransfer.files);
     });
   }
@@ -732,38 +774,34 @@
     pendingPhotos.forEach((src, i) => {
       const wrapItem = document.createElement('div');
       wrapItem.className = 'photo-thumb-wrap';
-
       const img = document.createElement('img');
       img.src = src;
-
       const removeBtn = document.createElement('button');
       removeBtn.className = 'photo-remove-btn';
       removeBtn.textContent = '✕';
       removeBtn.onclick = () => { pendingPhotos.splice(i, 1); renderPreview(); };
-
       wrapItem.appendChild(img);
       wrapItem.appendChild(removeBtn);
       wrap.appendChild(wrapItem);
     });
   }
 
-  // ===== 日記を保存（Firebase push）=====
+  // ===== 保存 =====
   window.saveDiary = async function () {
-    const name = document.getElementById('diary-name').value.trim();
-    const date = document.getElementById('diary-date').value;
-    const text = document.getElementById('diary-text').value.trim();
-    const mood = document.querySelector('input[name="mood"]:checked').value;
+    const name    = document.getElementById('diary-name').value.trim();
+    const date    = document.getElementById('diary-date').value;
+    const text    = document.getElementById('diary-text').value.trim();
+    const mood    = document.querySelector('input[name="mood"]:checked').value;
+    const weather = document.querySelector('input[name="weather"]:checked').value;
 
     if (!name) { alert('名前を入力してね！'); return; }
     if (!text) { alert('日記の内容を入力してね！'); return; }
 
     const saveBtn = document.querySelector('.save-btn');
-    saveBtn.disabled = true;
-    saveBtn.textContent = '貼り付け中…';
+    saveBtn.disabled = true; saveBtn.textContent = '貼り付け中…';
 
     const entry = {
-      createdAt: Date.now(),
-      name, date, mood, text,
+      createdAt: Date.now(), name, date, mood, weather, text,
       photos: JSON.stringify(pendingPhotos)
     };
 
@@ -776,15 +814,15 @@
       document.getElementById('photo-input').value = '';
       pendingPhotos = [];
       document.getElementById('mood1').checked = true;
+      document.getElementById('w1').checked = true;
     } catch (e) {
-      alert('保存に失敗しました。通信状況を確認してね。\n' + e.message);
+      alert('保存に失敗しました。\n' + e.message);
     } finally {
-      saveBtn.disabled = false;
-      saveBtn.textContent = '思い出を貼る 📌';
+      saveBtn.disabled = false; saveBtn.textContent = '思い出を貼る 📌';
     }
   };
 
-  // ===== ページ描画 =====
+  // ===== アルバム描画 =====
   function renderPage() {
     const book = document.getElementById('book');
     book.innerHTML = '';
@@ -799,40 +837,28 @@
 
     const totalPages = Math.ceil(allDiaries.length / ITEMS_PER_PAGE);
     if (currentPage >= totalPages) currentPage = totalPages - 1;
-
     const pageDiaries = allDiaries.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
 
-    const pageEl = document.createElement('div');
-    pageEl.className = 'book-page';
-    const front = document.createElement('div');
-    front.className = 'page-front';
     const scrap = document.createElement('div');
-    scrap.className = 'scrap-page';
-
-    pageDiaries.forEach(diary => scrap.appendChild(buildCard(diary)));
-
-    front.appendChild(scrap);
-    pageEl.appendChild(front);
-    book.appendChild(pageEl);
+    scrap.className = 'scrap-page glass';
+    pageDiaries.forEach(d => scrap.appendChild(buildCard(d)));
+    book.appendChild(scrap);
 
     document.getElementById('prev-btn').disabled = (currentPage === 0);
     document.getElementById('next-btn').disabled = (currentPage >= totalPages - 1);
     document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${totalPages} ページ`;
   }
 
-  // ===== カードを組み立てる（チェキ風） =====
   function buildCard(diary) {
     const photos = JSON.parse(diary.photos || '[]');
     const card = document.createElement('div');
     card.className = 'diary-card';
 
-    // 本文テキスト
     const textEl = document.createElement('div');
     textEl.className = 'diary-card-text';
     textEl.textContent = diary.text;
     card.appendChild(textEl);
 
-    // 写真グリッド（チェキ風）
     if (photos.length > 0) {
       const grid = document.createElement('div');
       grid.className = 'diary-photos';
@@ -840,8 +866,7 @@
         const item = document.createElement('div');
         item.className = 'diary-photo-item';
         const img = document.createElement('img');
-        img.src = src;
-        img.alt = '思い出の写真';
+        img.src = src; img.alt = '思い出';
         img.onclick = () => openLightbox(src);
         item.appendChild(img);
         grid.appendChild(item);
@@ -849,80 +874,230 @@
       card.appendChild(grid);
     }
 
-    // キャプション帯（下部）
     const caption = document.createElement('div');
     caption.className = 'diary-card-caption';
     caption.innerHTML = `
       <span class="diary-card-date">📅 ${diary.date}</span>
       ${diary.name ? `<span class="diary-card-author">✏️ ${diary.name}</span>` : ''}
-      <span class="diary-card-mood">${diary.mood.split(' ')[0]}</span>
+      <span class="diary-card-mood">${diary.mood || ''}</span>
+      ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
     `;
     card.appendChild(caption);
 
-    // 削除ボタン
     const delBtn = document.createElement('button');
     delBtn.className = 'diary-delete-btn';
     delBtn.textContent = '🗑 消す';
     delBtn.onclick = () => deleteDiary(diary.fbKey);
     card.appendChild(delBtn);
 
+    // シェア・保存ボタン
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'diary-share-btn';
+    shareBtn.innerHTML = '📸 シェア／保存';
+    shareBtn.onclick = () => shareCard(card, diary.date, shareBtn);
+    card.appendChild(shareBtn);
+
     return card;
   }
 
   // ===== ページめくり =====
-  window.changePage = function (dir) {
+  window.changePage = function(dir) {
     const totalPages = Math.ceil(allDiaries.length / ITEMS_PER_PAGE);
     const newPage = currentPage + dir;
     if (newPage < 0 || newPage >= totalPages) return;
 
     const book = document.getElementById('book');
-    const pageEl = book.querySelector('.book-page');
-    if (!pageEl) return;
-
-    if (dir > 0) {
-      pageEl.style.cssText = 'transition:transform 0.5s,opacity 0.5s;transform-origin:left center;transform:perspective(1200px) rotateY(-12deg) translateX(-4%);opacity:0.3;';
-    } else {
-      pageEl.style.cssText = 'transition:transform 0.5s,opacity 0.5s;transform-origin:right center;transform:perspective(1200px) rotateY(12deg) translateX(4%);opacity:0.3;';
+    const scrap = book.querySelector('.scrap-page');
+    if (scrap) {
+      scrap.style.transition = 'transform 0.45s ease, opacity 0.45s ease';
+      scrap.style.transform = dir > 0 ? 'perspective(1200px) rotateY(-10deg) translateX(-3%)' : 'perspective(1200px) rotateY(10deg) translateX(3%)';
+      scrap.style.opacity = '0.2';
     }
-
     setTimeout(() => {
       currentPage = newPage;
       renderPage();
-      const newEl = book.querySelector('.book-page');
-      if (!newEl) return;
-      newEl.style.transition = 'none';
-      newEl.style.transform = dir > 0
-        ? 'perspective(1200px) rotateY(12deg) translateX(4%)'
-        : 'perspective(1200px) rotateY(-12deg) translateX(-4%)';
-      newEl.style.opacity = '0.3';
+      const newScrap = book.querySelector('.scrap-page');
+      if (!newScrap) return;
+      newScrap.style.transition = 'none';
+      newScrap.style.transform = dir > 0 ? 'perspective(1200px) rotateY(10deg) translateX(3%)' : 'perspective(1200px) rotateY(-10deg) translateX(-3%)';
+      newScrap.style.opacity = '0.2';
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        newEl.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
-        newEl.style.transform  = 'perspective(1200px) rotateY(0deg) translateX(0)';
-        newEl.style.opacity    = '1';
+        newScrap.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+        newScrap.style.transform = 'none';
+        newScrap.style.opacity = '1';
       }));
-    }, 480);
+    }, 430);
   };
 
-  // ===== 削除 =====
-  window.deleteDiary = async function (fbKey) {
-    if (!confirm('この思い出を消してもいいですか？')) return;
+  // ===== シェア・保存 =====
+  window.shareCard = async function(card, date, btn) {
+    if (btn.classList.contains('loading')) return;
+    btn.classList.add('loading');
+    btn.innerHTML = '<span class="spin-icon">⏳</span> 変換中…';
+
     try {
-      await remove(ref(db, `diaries/${fbKey}`));
+      // カードの傾きを一時的にリセットして真っ直ぐに撮影
+      const prevTransform = card.style.transform;
+      card.style.transform = 'rotate(0deg)';
+      card.style.transition = 'none';
+
+      // シェアボタン自体は画像に含めない
+      btn.style.display = 'none';
+
+      const canvas = await html2canvas(card, {
+        scale: 2,           // 高解像度
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      // 元に戻す
+      card.style.transform = prevTransform;
+      card.style.transition = '';
+      btn.style.display = '';
+
+      // Blobに変換
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const fileName = `natsu-diary-${date || 'memory'}.png`;
+
+      // Web Share API（スマホ等）が使える場合
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
+        const file = new File([blob], fileName, { type: 'image/png' });
+        await navigator.share({
+          title: '夏休みの思い出',
+          text: '夏休みの思い出アルバムより 🌻',
+          files: [file],
+        });
+      } else {
+        // フォールバック：ダウンロード
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+      }
     } catch (e) {
-      alert('削除に失敗しました。\n' + e.message);
+      // ユーザーがシェアをキャンセルした場合はエラーにしない
+      if (e.name !== 'AbortError') {
+        alert('画像の生成に失敗しました。\n' + e.message);
+      }
+    } finally {
+      btn.classList.remove('loading');
+      btn.innerHTML = '📸 シェア／保存';
+      btn.style.display = '';
     }
   };
 
+  // ===== 削除 =====
+  window.deleteDiary = async function(fbKey) {
+    if (!confirm('この思い出を消してもいいですか？')) return;
+    try { await remove(ref(db, `diaries/${fbKey}`)); }
+    catch(e) { alert('削除に失敗しました。\n' + e.message); }
+  };
+
+  // ===== カレンダー描画 =====
+  function renderCalendar() {
+    const titleEl = document.getElementById('cal-title');
+    const daysEl  = document.getElementById('cal-days');
+    if (!titleEl || !daysEl) return;
+
+    titleEl.textContent = `${calYear}年 ${calMonth + 1}月`;
+    daysEl.innerHTML = '';
+
+    // その月の日記をdate→配列でマップ
+    const dateMap = {};
+    allDiaries.forEach(d => {
+      if (!d.date) return;
+      if (!dateMap[d.date]) dateMap[d.date] = [];
+      dateMap[d.date].push(d);
+    });
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+    // 空白マス
+    for (let i = 0; i < firstDay; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'cal-day empty';
+      daysEl.appendChild(blank);
+    }
+
+    for (let d = 1; d <= lastDate; d++) {
+      const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayOfWeek = new Date(calYear, calMonth, d).getDay();
+      const entries = dateMap[dateStr] || [];
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-day';
+      if (dayOfWeek === 0) cell.classList.add('sun');
+      if (dayOfWeek === 6) cell.classList.add('sat');
+      if (dateStr === todayStr) cell.classList.add('today');
+      if (entries.length > 0) {
+        cell.classList.add('has-diary');
+        cell.onclick = () => openCalPopup(dateStr, entries);
+      }
+
+      const numEl = document.createElement('span');
+      numEl.className = 'cal-day-num';
+      numEl.textContent = d;
+      cell.appendChild(numEl);
+
+      // 写真サムネイル（最初の1枚）
+      if (entries.length > 0) {
+        const photos = JSON.parse(entries[0].photos || '[]');
+        if (photos.length > 0) {
+          const thumb = document.createElement('img');
+          thumb.className = 'cal-thumb';
+          thumb.src = photos[0];
+          thumb.alt = '';
+          cell.appendChild(thumb);
+        }
+        // 天気スタンプ
+        if (entries[0].weather) {
+          const stamp = document.createElement('span');
+          stamp.className = 'cal-weather-stamp';
+          stamp.textContent = entries[0].weather;
+          cell.appendChild(stamp);
+        }
+      }
+
+      daysEl.appendChild(cell);
+    }
+  }
+
+  window.calMove = function(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+  };
+
+  // ===== カレンダーポップアップ =====
+  window.openCalPopup = function(dateStr, entries) {
+    document.getElementById('cal-popup-date').textContent = `📅 ${dateStr} の思い出`;
+    const content = document.getElementById('cal-popup-content');
+    content.innerHTML = '';
+    entries.forEach(diary => content.appendChild(buildCard(diary)));
+    document.getElementById('cal-popup-overlay').classList.add('open');
+  };
+  window.closeCalPopup = function() {
+    document.getElementById('cal-popup-overlay').classList.remove('open');
+  };
+
   // ===== ライトボックス =====
-  window.openLightbox = function (src) {
+  window.openLightbox = function(src) {
     document.getElementById('lightbox-img').src = src;
     document.getElementById('lightbox').classList.add('open');
   };
-  window.closeLightbox = function () {
+  window.closeLightbox = function() {
     document.getElementById('lightbox').classList.remove('open');
     document.getElementById('lightbox-img').src = '';
   };
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); }
+  });
 </script>
 </body>
 </html>

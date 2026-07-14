@@ -1140,10 +1140,8 @@
   // ===== ページめくり =====
   window.changePage = function(dir) {
     // ページ移動時は再生中のBGMを止める
-    if (ytPlayer) {
+    if (ytReady && ytPlayer) {
       ytPlayer.stopVideo();
-      ytPlayer.destroy();
-      ytPlayer = null;
     }
     if (currentPlayingBtn) {
       currentPlayingBtn.textContent = '▶️';
@@ -1316,24 +1314,67 @@
   };
 
   // ===== YouTube IFrame Player API =====
-  // グローバルコールバック（モジュール外から呼ばれるので window に登録）
+  // ★ プレイヤーは1つだけ作り、曲替えは loadVideoById() で行う
+  let ytReady = false;
+
+  // IFrame API スクリプトを先頭スクリプトの前に挿入（推奨方式）
+  (function() {
+    if (document.getElementById('yt-iframe-api')) return;
+    const tag = document.createElement('script');
+    tag.id  = 'yt-iframe-api';
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(tag, first);
+  })();
+
+  // API 準備完了コールバック（グローバルに登録必須）
   window.onYouTubeIframeAPIReady = function() {
-    // API準備完了。プレイヤーは再生時に生成
+    // 隠しコンテナに固定 div を用意してプレイヤーを1度だけ生成
+    const container = document.getElementById('yt-hidden-player');
+    container.innerHTML = '<div id="yt-player-inner"></div>';
+
+    ytPlayer = new YT.Player('yt-player-inner', {
+      width:  '200',
+      height: '112',
+      videoId: '',           // 最初は空
+      playerVars: {
+        autoplay:       0,   // ユーザー操作で再生するので 0
+        controls:       0,
+        playsinline:    1,   // iOS Safari でインライン再生
+        loop:           1,
+        rel:            0,
+        modestbranding: 1,
+        fs:             0,
+      },
+      events: {
+        onReady: () => {
+          ytReady = true;
+          ytPlayer.setVolume(70);
+        },
+        onStateChange: (e) => {
+          // 曲が終わったらループ（playlist指定なしでも動くように）
+          if (e.data === YT.PlayerState.ENDED && currentPlayingBtn) {
+            ytPlayer.seekTo(0);
+            ytPlayer.playVideo();
+          }
+        },
+        onError: () => {
+          if (currentPlayingBtn) {
+            currentPlayingBtn.textContent = '▶️';
+            currentPlayingBtn.classList.remove('playing');
+            currentPlayingBtn = null;
+          }
+        }
+      }
+    });
   };
-  // YouTube IFrame API スクリプトを動的に読み込む
-  if (!document.getElementById('yt-iframe-api')) {
-    const s = document.createElement('script');
-    s.id  = 'yt-iframe-api';
-    s.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(s);
-  }
 
   // ===== BGM 再生 / 一時停止 =====
   window.toggleBGM = function(videoId, btn) {
-    // 同じ曲を押した場合：再生中なら一時停止、停止中なら再生再開
-    if (ytPlayer && currentPlayingBtn === btn) {
+    // --- 同じボタンを押した：トグル ---
+    if (currentPlayingBtn === btn && ytReady) {
       const state = ytPlayer.getPlayerState();
-      if (state === 1) { // 再生中
+      if (state === YT.PlayerState.PLAYING) {
         ytPlayer.pauseVideo();
         btn.textContent = '▶️';
         btn.classList.remove('playing');
@@ -1345,66 +1386,41 @@
       return;
     }
 
-    // 別の曲を押した場合：前のプレイヤーを止めてボタンをリセット
-    if (ytPlayer) {
-      ytPlayer.stopVideo();
-      ytPlayer.destroy();
-      ytPlayer = null;
-    }
+    // --- 別の曲 or 初回：前のボタンをリセット ---
     if (currentPlayingBtn && currentPlayingBtn !== btn) {
       currentPlayingBtn.textContent = '▶️';
       currentPlayingBtn.classList.remove('playing');
     }
+    currentPlayingBtn = btn;
+    btn.textContent = '⏳';
+    btn.classList.remove('playing');
 
-    // YT APIがまだロードされていない場合
-    if (typeof YT === 'undefined' || !YT.Player) {
-      btn.textContent = '⏳';
-      const waitInterval = setInterval(() => {
-        if (typeof YT !== 'undefined' && YT.Player) {
-          clearInterval(waitInterval);
-          createPlayer(videoId, btn);
+    // API未準備ならポーリング待機
+    if (!ytReady) {
+      const wait = setInterval(() => {
+        if (ytReady) {
+          clearInterval(wait);
+          playVideo(videoId, btn);
         }
       }, 200);
       return;
     }
-    createPlayer(videoId, btn);
+    playVideo(videoId, btn);
   };
 
-  function createPlayer(videoId, btn) {
-    currentPlayingBtn = btn;
-    btn.textContent = '⏳';
-
-    const container = document.getElementById('yt-hidden-player');
-    container.innerHTML = '<div id="yt-player-inner"></div>';
-
-    ytPlayer = new YT.Player('yt-player-inner', {
-      width: '1',
-      height: '1',
-      videoId: videoId,
-      playerVars: {
-        autoplay: 1,
-        loop: 1,
-        playlist: videoId,
-        controls: 0,
-        fs: 0,
-        modestbranding: 1,
-        rel: 0,
-      },
-      events: {
-        onReady: (e) => {
-          e.target.setVolume(70);
-          e.target.playVideo();
-          btn.textContent = '⏸️';
-          btn.classList.add('playing');
-        },
-        onError: () => {
-          btn.textContent = '▶️';
-          btn.classList.remove('playing');
-          currentPlayingBtn = null;
-          ytPlayer = null;
-        }
-      }
-    });
+  // loadVideoById でプレイヤー1つを使い回す（自動再生制限を回避）
+  function playVideo(videoId, btn) {
+    // ★ユーザーのクリックイベントのコールスタック内で呼ぶことが重要
+    ytPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
+    // loadVideoById は autoplay:0 でも再生開始するので追加で playVideo は不要
+    // ただし念のため少し待って状態確認
+    setTimeout(() => {
+      const state = ytPlayer.getPlayerState();
+      // PLAYING(1) でなければ明示的に playVideo()
+      if (state !== 1) ytPlayer.playVideo();
+      btn.textContent = '⏸️';
+      btn.classList.add('playing');
+    }, 800);
   }
 
   // ===== 削除 =====

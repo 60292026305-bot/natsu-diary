@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌻 夏休みの思い出アルバム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ===== 背景：入道雲＋青空 ===== */
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      min-height: 100vh;
+      background:
+        url('https://images.unsplash.com/photo-1601297183305-6df142704ea2?w=1600') center center / cover no-repeat fixed;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 12px 80px;
+      overflow-x: hidden;
+    }
+
+    /* ===== グラスモーフィズム共通 ===== */
+    .glass {
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.13);
+    }
+
+    /* ===== タイトル ===== */
+    .app-title {
+      font-family: 'Yomogi', cursive;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,80,160,0.5), 0 1px 0 rgba(0,0,0,0.15);
+      margin-bottom: 6px;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+    .app-subtitle {
+      font-family: 'Yomogi', cursive;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 28px;
+      text-align: center;
+      text-shadow: 0 1px 6px rgba(0,60,120,0.4);
+    }
+
+    /* ===== モード切り替えタブ ===== */
+    .view-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      padding: 10px 26px;
+      border: none;
+      border-radius: 30px;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.45);
+      color: #3a5a8c;
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.6);
+    }
+    .tab-btn.active {
+      background: rgba(255,255,255,0.9);
+      color: #1a3a6c;
+      box-shadow: 0 4px 12px rgba(31,80,200,0.18);
+    }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.65); }
+
+    /* ===== 入力フォーム ===== */
+    .form-book {
+      width: 100%;
+      max-width: 560px;
+      padding: 28px 24px 24px;
+      position: relative;
+    }
+    .form-book::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background-image: repeating-linear-gradient(
+        transparent, transparent 31px, rgba(100,140,200,0.15) 31px, rgba(100,140,200,0.15) 32px
+      );
+      pointer-events: none;
+    }
+    .form-book > * { position: relative; }
+    .form-book h2 {
+      font-family: 'Yomogi', cursive;
+      color: #2c4a7c;
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      border-bottom: 2px dashed rgba(100,150,220,0.4);
+      padding-bottom: 8px;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: #2c4a7c;
+      margin-bottom: 5px;
+    }
+    input[type="date"], input[type="text"], textarea {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1.5px solid rgba(100,150,220,0.4);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.7);
+      font-size: 15px;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      color: #1a2a4a;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #5588dd;
+      box-shadow: 0 0 0 3px rgba(85,136,221,0.18);
+      background: rgba(255,255,255,0.9);
+    }
+    textarea { resize: vertical; }
+
+    /* ===== 気分セレクター ===== */
+    .mood-selector { display: flex; justify-content: space-around; margin-top: 4px; }
+    .mood-box { display: none; }
+    .mood-label {
+      font-size: 28px;
+      cursor: pointer;
+      padding: 7px 9px;
+      border-radius: 50%;
+      transition: background 0.2s, transform 0.15s;
+      user-select: none;
+    }
+    .mood-label:hover { transform: scale(1.25); }
+    .mood-box:checked + .mood-label {
+      background: rgba(255,200,80,0.55);
+      box-shadow: 0 2px 8px rgba(200,150,0,0.3);
+    }
+
+    /* ===== 天気スタンプ ===== */
+    .weather-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .weather-box { display: none; }
+    .weather-label {
+      font-size: 26px;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      user-select: none;
+      position: relative;
+    }
+    .weather-label:hover { transform: scale(1.2); background: rgba(255,255,255,0.5); }
+    .weather-box:checked + .weather-label {
+      border-color: rgba(85,136,221,0.6);
+      background: rgba(200,220,255,0.45);
+      /* ハンコっぽい質感 */
+      box-shadow: inset 0 0 0 2px rgba(85,136,221,0.3), 0 2px 8px rgba(85,136,221,0.2);
+      transform: scale(0.95) rotate(-3deg);
+    }
+
+    /* ===== 写真アップロード ===== */
+    .photo-upload-area {
+      border: 2.5px dashed rgba(100,150,220,0.5);
+      border-radius: 14px;
+      background: rgba(220,235,255,0.35);
+      padding: 20px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .photo-upload-area:hover, .photo-upload-area.drag-over {
+      background: rgba(200,220,255,0.55);
+      border-color: #5588dd;
+      transform: scale(1.01);
+    }
+    .photo-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .photo-upload-icon { font-size: 2.2rem; display: block; margin-bottom: 6px; pointer-events: none; }
+    .photo-upload-hint {
+      font-family: 'Yomogi', cursive;
+      font-size: 13px;
+      color: #3a5a9c;
+      pointer-events: none;
+      line-height: 1.7;
+    }
+    .photo-preview-wrap { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .photo-thumb-wrap {
+      position: relative;
+      background: #fff;
+      padding: 5px 5px 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+      border-radius: 2px;
+      transform: rotate(-2deg);
+      transition: transform 0.2s;
+    }
+    .photo-thumb-wrap:nth-child(even) { transform: rotate(1.5deg); }
+    .photo-thumb-wrap:hover { transform: rotate(0deg) scale(1.06); z-index: 10; }
+    .photo-thumb-wrap img { width: 70px; height: 70px; object-fit: cover; display: block; }
+    .photo-remove-btn {
+      position: absolute; top: -7px; right: -7px;
+      background: #ef5350; color: #fff; border: none; border-radius: 50%;
+      width: 20px; height: 20px; font-size: 11px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+
+    /* ===== 保存ボタン ===== */
+    .save-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 17px; font-family: 'Yomogi', cursive; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #1a3a88, 0 6px 20px rgba(30,60,180,0.3);
+      transition: all 0.15s; margin-top: 8px; letter-spacing: 0.05em;
+    }
+    .save-btn:hover { transform: translateY(-2px); opacity: 0.93; }
+    .save-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1a3a88; }
+    .save-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ===== アルバムセクション ===== */
+    .album-section { width: 100%; max-width: 660px; margin-top: 40px; }
+    .album-section > h2 {
+      font-family: 'Yomogi', cursive;
+      color: #fff;
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0,60,160,0.4);
+    }
+
+    /* ===== スクラップページ ===== */
+    .book { width: 100%; min-height: 200px; }
+    .scrap-page {
+      padding: 36px 20px 28px;
+      background-image: radial-gradient(circle, rgba(100,140,200,0.18) 1px, transparent 1px);
+      background-size: 22px 22px;
+      position: relative;
+    }
+    .scrap-page::after {
+      content: ''; position: absolute; bottom: 0; right: 0;
+      width: 0; height: 0; border-style: solid;
+      border-width: 0 0 28px 28px;
+      border-color: transparent transparent rgba(100,140,200,0.25) transparent;
+    }
+
+    /* ===== 日記カード（チェキ風） ===== */
+    /* ===== 日記カード（チェキ風） ===== */
+    .diary-card {
+      background: #fff;
+      border-radius: 3px;
+      padding: 0;
+      margin-top: 20px; /* テープがはみ出る分の余白 */
+      margin-bottom: 44px;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.16), 0 1px 4px rgba(0,0,0,0.08);
+      transform: rotate(-1.5deg);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+      /* overflow: hidden を削除してテープが見えるように */
+    }
+    .diary-card:nth-child(2n) { transform: rotate(1.8deg); }
+    .diary-card:nth-child(3n) { transform: rotate(-0.7deg); }
+    .diary-card:nth-child(4n) { transform: rotate(2.2deg); }
+    .diary-card:hover {
+      transform: rotate(0deg) translateY(-8px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+      z-index: 20;
+    }
+    /* マスキングテープ：基準は上部中央 */
+    .diary-card::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1.5deg) translateY(0px);
+      width: 68px;
+      height: 20px;
+      background: rgba(255,210,100,0.65);  /* 黄色 */
+      border-radius: 2px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.1);
+    }
+    /* 偶数カード：水色・ほんのわずかに右へ */
+    .diary-card:nth-child(even)::before {
+      transform: translateX(-50%) rotate(1.2deg) translateX(3px) translateY(1px);
+      background: rgba(160,210,255,0.6);
+      width: 66px;
+    }
+    /* 3の倍数カード：緑・ほんのわずかに左へ */
+    .diary-card:nth-child(3n)::before {
+      transform: translateX(-50%) rotate(-0.8deg) translateX(-2px) translateY(-1px);
+      background: rgba(200,240,160,0.65);
+      width: 70px;
+    }
+    /* 4の倍数カード：黄色・ほぼ真っ直ぐ */
+    .diary-card:nth-child(4n)::before {
+      transform: translateX(-50%) rotate(0.5deg) translateX(1px) translateY(0px);
+      background: rgba(255,210,100,0.6);
+      width: 65px;
+    }
+    /* 5の倍数カード：水色・ごく小さい傾き */
+    .diary-card:nth-child(5n)::before {
+      transform: translateX(-50%) rotate(-1.8deg) translateX(-1px) translateY(1px);
+      background: rgba(160,210,255,0.55);
+      width: 72px;
+    }
+
+    /* キャプション帯 → カード最上部ヘッダーに変更 */
+    .diary-card-caption {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 10px;
+      padding: 10px 14px 8px;
+      background: #fff;
+      /* 区切り線：ノートの破線風 */
+      border-bottom: 1.5px dashed rgba(100,150,220,0.35);
+    }
+    .diary-card-date {
+      font-family: 'Yomogi', cursive;
+      font-size: 11px;
+      color: #7a9ac8;
+      white-space: nowrap;
+    }
+    .diary-card-author {
+      font-family: 'Yomogi', cursive;
+      font-size: 11px;
+      color: #7aaa88;
+      white-space: nowrap;
+    }
+    /* 気分・天気スタンプ：ヘッダー右端に寄せる */
+    .diary-card-stamps {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      margin-left: auto; /* 右端へ押し出す */
+    }
+    .diary-card-mood   { font-size: 14px; line-height: 1; }
+    .diary-card-weather {
+      font-size: 14px; line-height: 1;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.12));
+      opacity: 0.88;
+      transform: rotate(-6deg);
+      display: inline-block;
+    }
+
+    /* 本文・写真エリア */
+    .diary-card-body {
+      padding: 10px 14px 12px;
+    }
+    .diary-card-text {
+      font-family: 'Yomogi', cursive;
+      font-size: 13px; line-height: 1.75; color: #2a3a5a;
+      white-space: pre-wrap; margin-bottom: 8px;
+    }
+    .diary-photos {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin: 6px 0 4px;
+    }
+    .diary-photo-item {
+      background: #fff;
+      padding: 4px 4px 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+    }
+    .diary-photos .diary-photo-item:nth-child(4n+1) { transform: rotate(-2.5deg); }
+    .diary-photos .diary-photo-item:nth-child(4n+2) { transform: rotate(1.8deg); }
+    .diary-photos .diary-photo-item:nth-child(4n+3) { transform: rotate(-1.2deg); }
+    .diary-photos .diary-photo-item:nth-child(4n+4) { transform: rotate(2.5deg); }
+    .diary-photos .diary-photo-item:hover {
+      transform: rotate(0deg) translateY(-6px) scale(1.07);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      z-index: 10;
+    }
+    .diary-photo-item img { width: 100px; height: 100px; object-fit: cover; display: block; }
+
+    /* ボタンエリア */
+    .diary-card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 6px 14px 10px;
+      gap: 8px;
+    }
+    /* 右側：編集＋消すを縦並びにまとめるラッパー */
+    .diary-card-actions-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+    .diary-delete-btn {
+      padding: 4px 14px; background: #ef5350; color: #fff;
+      border: none; border-radius: 20px; font-size: 11px;
+      font-family: 'Zen Maru Gothic', sans-serif; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .diary-delete-btn:hover { background: #c62828; }
+
+    /* ===== 編集ボタン ===== */
+    .diary-edit-btn {
+      padding: 4px 14px;
+      background: linear-gradient(135deg, #f9a825, #f57f17);
+      color: #fff;
+      border: none; border-radius: 20px; font-size: 11px;
+      font-family: 'Zen Maru Gothic', sans-serif; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 2px 6px rgba(200,120,0,0.25);
+    }
+    .diary-edit-btn:hover { background: linear-gradient(135deg, #f57f17, #e65100); transform: scale(1.05); }
+
+    /* ===== 編集中バナー ===== */
+    .edit-mode-banner {
+      display: none;
+      width: 100%; max-width: 560px;
+      margin-bottom: 10px;
+      padding: 10px 16px;
+      background: rgba(249,168,37,0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      font-family: 'Yomogi', cursive;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 700;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 3px 12px rgba(200,100,0,0.3);
+    }
+    .edit-mode-banner.visible { display: flex; }
+    .edit-cancel-btn {
+      margin-left: auto;
+      padding: 4px 14px;
+      background: rgba(255,255,255,0.3);
+      border: 1.5px solid rgba(255,255,255,0.7);
+      border-radius: 20px;
+      color: #fff; font-family: 'Yomogi', cursive;
+      font-size: 12px; cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .edit-cancel-btn:hover { background: rgba(255,255,255,0.5); }
+
+    /* ===== シェア・保存ボタン ===== */
+    .diary-share-btn {
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #4a9fd4, #2a7ab8);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 11px;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, opacity 0.2s;
+      box-shadow: 0 2px 6px rgba(30,80,180,0.25);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+    }
+    .diary-card:hover .diary-share-btn { opacity: 1; }
+    @media (hover: none) { .diary-share-btn { opacity: 1; } }
+    .diary-share-btn:hover { background: linear-gradient(135deg, #2a7ab8, #1a5a98); transform: scale(1.05); }
+    .diary-share-btn.loading { opacity: 0.7; cursor: wait; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin-icon { display: inline-block; animation: spin 0.8s linear infinite; }
+
+    /* ===== ページナビ ===== */
+    .page-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
+    .nav-btn {
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.75);
+      border: 2px solid rgba(100,150,220,0.5);
+      border-radius: 30px;
+      font-size: 14px; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700;
+      color: #2a4a8c; cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(6px);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.92); transform: translateY(-2px); }
+    .nav-btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+    .page-indicator { font-family: 'Yomogi', cursive; font-size: 14px; color: #fff; text-shadow: 0 1px 6px rgba(0,60,120,0.5); }
+
+    /* ===== カレンダー ===== */
+    .calendar-section { width: 100%; max-width: 660px; margin-top: 40px; }
+    .calendar-header {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 14px;
+    }
+    .cal-month-title {
+      font-family: 'Yomogi', cursive;
+      font-size: 1.3rem; color: #fff;
+      text-shadow: 0 2px 10px rgba(0,60,160,0.4);
+    }
+    .cal-nav-btn {
+      background: rgba(255,255,255,0.7);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; color: #2a4a8c; font-weight: 700;
+    }
+    .cal-nav-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
+    .calendar-grid { width: 100%; padding: 16px; }
+    .cal-weekdays {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 4px; margin-bottom: 4px;
+    }
+    .cal-weekday {
+      text-align: center;
+      font-family: 'Yomogi', cursive;
+      font-size: 12px; color: #4a6a9c;
+      padding: 4px 0;
+    }
+    .cal-weekday:first-child { color: #cc4444; }
+    .cal-weekday:last-child { color: #4444cc; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.35);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      padding: 3px 2px 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.3);
+      min-height: 44px;
+    }
+    .cal-day:hover { background: rgba(255,255,255,0.65); transform: scale(1.04); z-index: 2; }
+    .cal-day.empty { background: transparent; border-color: transparent; cursor: default; pointer-events: none; }
+    .cal-day.today { border: 2px solid rgba(255,200,50,0.8); background: rgba(255,245,200,0.45); }
+    .cal-day.has-diary { background: rgba(200,220,255,0.5); }
+    .cal-day-num {
+      font-family: 'Yomogi', cursive;
+      font-size: 11px; color: #2a4a8c; z-index: 1;
+      line-height: 1;
+    }
+    .cal-day.sun .cal-day-num { color: #cc4444; }
+    .cal-day.sat .cal-day-num { color: #4444cc; }
+    /* サムネイル写真 */
+    .cal-thumb {
+      width: 100%; flex: 1;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-top: 2px;
+      display: block;
+    }
+    .cal-weather-stamp {
+      position: absolute; bottom: 1px; right: 1px;
+      font-size: 11px; line-height: 1;
+      transform: rotate(-8deg);
+      opacity: 0.85;
+    }
+
+    /* カレンダークリック時のポップアップ */
+    .cal-popup-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,20,60,0.6);
+      z-index: 500;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .cal-popup-overlay.open { display: flex; }
+    .cal-popup {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .cal-popup-close {
+      position: absolute; top: 12px; right: 16px;
+      font-size: 24px; cursor: pointer; color: #6688cc;
+      transition: transform 0.15s;
+    }
+    .cal-popup-close:hover { transform: scale(1.2) rotate(90deg); }
+    .cal-popup-date {
+      font-family: 'Yomogi', cursive;
+      font-size: 1rem; color: #2a4a8c;
+      margin-bottom: 12px;
+      padding-right: 30px;
+    }
+
+    /* ===== ライトボックス ===== */
+    .lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.88); z-index: 1000;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-frame {
+      background: #fff; padding: 10px 10px 44px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      border-radius: 3px; max-width: 90vw;
+    }
+    .lightbox-frame img {
+      max-width: 80vw; max-height: 70vh;
+      object-fit: contain; display: block;
+    }
+    .lightbox-close {
+      position: fixed; top: 18px; right: 22px;
+      font-size: 36px; color: #fff; cursor: pointer;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+      transition: transform 0.15s;
+    }
+    .lightbox-close:hover { transform: scale(1.2) rotate(90deg); }
+
+    /* ===== 空メッセージ ===== */
+    .empty-msg {
+      text-align: center; font-family: 'Yomogi', cursive;
+      color: #4a6a9c; font-size: 15px; padding: 44px 0;
+      border: 2px dashed rgba(100,150,220,0.4); border-radius: 14px;
+      background: rgba(200,220,255,0.2);
+    }
+
+    /* ===== 設定ボタン ===== */
+    .settings-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 200;
+      background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      border-radius: 50%;
+      width: 42px; height: 42px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .settings-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1) rotate(30deg); }
+
+    /* ===== 設定モーダル ===== */
+    .settings-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,20,60,0.55);
+      z-index: 300;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .settings-overlay.open { display: flex; }
+    .settings-modal {
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 20px;
+      padding: 28px 24px 24px;
+      width: min(480px, 92vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      position: relative;
+      animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .settings-modal h3 {
+      font-family: 'Yomogi', cursive;
+      color: #2c4a7c;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      border-bottom: 2px dashed rgba(100,150,220,0.35);
+      padding-bottom: 8px;
+    }
+    .settings-close {
+      position: absolute; top: 14px; right: 18px;
+      font-size: 22px; cursor: pointer; color: #6688cc;
+      transition: transform 0.15s;
+    }
+    .settings-close:hover { transform: scale(1.2) rotate(90deg); }
+    .settings-group { margin-bottom: 18px; }
+    .settings-group label {
+      display: block;
+      font-family: 'Yomogi', cursive;
+      font-size: 0.85rem; font-weight: 700;
+      color: #2c4a7c; margin-bottom: 6px;
+    }
+    .settings-group input[type="text"] {
+      width: 100%; padding: 9px 13px;
+      border: 1.5px solid rgba(100,150,220,0.4);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.8);
+      font-size: 15px;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      color: #1a2a4a;
+    }
+    .settings-group input[type="text"]:focus {
+      outline: none; border-color: #5588dd;
+      box-shadow: 0 0 0 3px rgba(85,136,221,0.18);
+    }
+    /* ファイルアップロード風エリア */
+    .settings-upload-area {
+      border: 2px dashed rgba(100,150,220,0.45);
+      border-radius: 12px;
+      background: rgba(220,235,255,0.35);
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .settings-upload-area:hover { background: rgba(200,220,255,0.55); border-color: #5588dd; }
+    .settings-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .settings-upload-hint {
+      font-family: 'Yomogi', cursive; font-size: 13px; color: #3a5a9c;
+      pointer-events: none;
+    }
+    /* 現在の背景プレビュー */
+    .settings-bg-preview {
+      width: 100%; height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: none;
+      border: 1.5px solid rgba(100,150,220,0.3);
+    }
+    .settings-bg-preview.visible { display: block; }
+    /* ボタン群 */
+    .settings-btn-row {
+      display: flex; gap: 8px; margin-top: 6px;
+    }
+    .settings-apply-btn {
+      flex: 1; padding: 10px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #1a3a88;
+      transition: all 0.15s;
+    }
+    .settings-apply-btn:hover { transform: translateY(-1px); opacity: 0.93; }
+    .settings-reset-btn {
+      padding: 10px 16px;
+      background: rgba(240,235,255,0.8);
+      color: #6644aa;
+      border: 1.5px solid rgba(120,80,200,0.35);
+      border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .settings-reset-btn:hover { background: rgba(220,210,255,0.9); }
+
+    /* ===== レスポンシブ ===== */
+    @media (max-width: 480px) {
+      .diary-photo-item img { width: 75px; height: 75px; }
+      .cal-day { min-height: 36px; }
+      .cal-day-num { font-size: 10px; }
+      .tab-btn { padding: 8px 16px; font-size: 13px; }
+    }
+
+    /* ===== BGM検索UI ===== */
+    .bgm-search-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .bgm-search-row input {
+      flex: 1;
+    }
+    .bgm-search-btn {
+      padding: 9px 16px;
+      background: linear-gradient(135deg, #a78bfa, #7c5cbf);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Yomogi', cursive;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 3px 10px rgba(120,80,200,0.3);
+    }
+    .bgm-search-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .bgm-search-btn:disabled { opacity: 0.5; cursor: wait; }
+
+    /* 検索結果リスト */
+    .bgm-results {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .bgm-result-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(160,120,220,0.3);
+      background: rgba(240,235,255,0.6);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .bgm-result-item:hover {
+      background: rgba(220,210,255,0.85);
+      border-color: rgba(120,80,200,0.5);
+      transform: translateX(2px);
+    }
+    .bgm-result-item.selected {
+      background: rgba(200,185,255,0.7);
+      border-color: #7c5cbf;
+    }
+    .bgm-result-thumb {
+      width: 52px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+    .bgm-result-title {
+      font-family: 'Yomogi', cursive;
+      font-size: 12px;
+      color: #3a2a6a;
+      line-height: 1.4;
+      flex: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* 選択中バッジ */
+    .bgm-selected-badge {
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: rgba(200,185,255,0.6);
+      border: 1.5px solid rgba(120,80,200,0.4);
+      border-radius: 20px;
+      font-family: 'Yomogi', cursive;
+      font-size: 12px;
+      color: #4a2a8c;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .bgm-badge-clear {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 14px;
+      color: #888;
+      transition: color 0.15s;
+    }
+    .bgm-badge-clear:hover { color: #ef5350; }
+
+    /* カード内BGMボタン */
+    .bgm-play-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 4px;
+      border-radius: 50%;
+      transition: transform 0.15s, background 0.15s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .bgm-play-btn:hover {
+      background: rgba(160,120,220,0.2);
+      transform: scale(1.2);
+    }
+    .bgm-play-btn.playing {
+      animation: bgmPulse 1s ease-in-out infinite;
+    }
+    @keyframes bgmPulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.25); }
+    }
+
+    /* 隠しプレイヤー */
+    #yt-hidden-player {
+      position: fixed;
+      bottom: -200px;
+      left: -200px;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 設定ボタン（固定） -->
+<button class="settings-btn" onclick="openSettings()" title="設定">⚙️</button>
+
+<!-- 設定モーダル -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings()">
+  <div class="settings-modal" onclick="event.stopPropagation()">
+    <span class="settings-close" onclick="closeSettings()">✕</span>
+    <h3>⚙️ アプリの設定</h3>
+
+    <!-- タイトル変更 -->
+    <div class="settings-group">
+      <label for="settings-title-input">📝 アプリのタイトル</label>
+      <input type="text" id="settings-title-input" placeholder="🌻 夏休みの思い出アルバム" maxlength="40">
+    </div>
+
+    <!-- 背景画像変更 -->
+    <div class="settings-group">
+      <label>🖼️ 背景画像</label>
+      <img id="settings-bg-preview" class="settings-bg-preview" src="" alt="現在の背景">
+      <div class="settings-upload-area">
+        <input type="file" id="settings-bg-file" accept="image/*">
+        <div class="settings-upload-hint">📁 クリックまたはドラッグで画像を選択</div>
+      </div>
+    </div>
+
+    <div class="settings-btn-row">
+      <button class="settings-apply-btn" onclick="applySettings()">✅ 適用して保存</button>
+      <button class="settings-reset-btn" onclick="resetBackground()">🔄 背景を初期値に戻す</button>
+    </div>
+  </div>
+</div>
+
+<h1 class="app-title" id="app-title-text">🌻 夏休みの思い出アルバム</h1>
+<p class="app-subtitle">みんなで作るデジタルスクラップブック ✂️📷</p>
+
+<!-- モード切り替え -->
+<div class="view-tabs">
+  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">✏️ 書く</button>
+  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">📖 アルバム</button>
+  <button class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
+</div>
+
+<!-- ===== 編集中バナー ===== -->
+<div class="edit-mode-banner" id="edit-mode-banner">
+  <span>✏️ 編集モード：内容を修正して「更新する」を押してね</span>
+  <button class="edit-cancel-btn" onclick="cancelEdit()">✕ キャンセル</button>
+</div>
+
+<!-- ===== 入力フォーム ===== -->
+<div class="form-book glass" id="view-write">
+  <h2>✏️ 今日の思い出を書こう</h2>
+
+  <div class="form-group">
+    <label for="diary-name">👤 名前</label>
+    <input type="text" id="diary-name" placeholder="だれが書くの？" maxlength="20">
+  </div>
+  <div class="form-group">
+    <label for="diary-date">📅 日付</label>
+    <input type="date" id="diary-date">
+  </div>
+  <div class="form-group">
+    <label>今日の気分</label>
+    <div class="mood-selector">
+      <input type="radio" name="mood" id="mood1" value="😎" class="mood-box" checked>
+      <label for="mood1" class="mood-label" title="最高！">😎</label>
+      <input type="radio" name="mood" id="mood2" value="😃" class="mood-box">
+      <label for="mood2" class="mood-label" title="楽しい">😃</label>
+      <input type="radio" name="mood" id="mood3" value="😴" class="mood-box">
+      <label for="mood3" class="mood-label" title="のんびり">😴</label>
+      <input type="radio" name="mood" id="mood4" value="😢" class="mood-box">
+      <label for="mood4" class="mood-label" title="びみょー">😢</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>🌤 今日の天気</label>
+    <div class="weather-selector">
+      <input type="radio" name="weather" id="w1" value="☀️" class="weather-box" checked>
+      <label for="w1" class="weather-label" title="晴れ">☀️</label>
+      <input type="radio" name="weather" id="w2" value="⛅" class="weather-box">
+      <label for="w2" class="weather-label" title="くもり">⛅</label>
+      <input type="radio" name="weather" id="w3" value="☔" class="weather-box">
+      <label for="w3" class="weather-label" title="雨">☔</label>
+      <input type="radio" name="weather" id="w4" value="🌊" class="weather-box">
+      <label for="w4" class="weather-label" title="海">🌊</label>
+      <input type="radio" name="weather" id="w5" value="🍧" class="weather-box">
+      <label for="w5" class="weather-label" title="かき氷">🍧</label>
+      <input type="radio" name="weather" id="w6" value="🎆" class="weather-box">
+      <label for="w6" class="weather-label" title="花火">🎆</label>
+      <input type="radio" name="weather" id="w7" value="🏄" class="weather-box">
+      <label for="w7" class="weather-label" title="サーフィン">🏄</label>
+      <input type="radio" name="weather" id="w8" value="🌙" class="weather-box">
+      <label for="w8" class="weather-label" title="夜">🌙</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="diary-text">今日の一言（140文字以内）</label>
+    <textarea id="diary-text" rows="3" placeholder="今日あったことを書こう！" maxlength="140"></textarea>
+  </div>
+  <div class="form-group">
+    <label>📷 写真を貼る（複数OK）</label>
+    <div class="photo-upload-area" id="upload-area">
+      <input type="file" id="photo-input" accept="image/*" multiple>
+      <span class="photo-upload-icon">🖼️</span>
+      <div class="photo-upload-hint">ここに写真をドラッグ＆ドロップ<br>またはクリックして選択</div>
+    </div>
+    <div class="photo-preview-wrap" id="photo-preview"></div>
+  </div>
+  <div class="form-group">
+    <label>🎵 思い出のBGMを検索</label>
+    <div class="bgm-search-row">
+      <input type="text" id="bgm-search-input" placeholder="曲名やアーティスト名で検索…">
+      <button class="bgm-search-btn" id="bgm-search-btn" onclick="searchBGM()">� 検索</button>
+    </div>
+    <div class="bgm-results" id="bgm-results"></div>
+    <div id="bgm-selected-badge" style="display:none" class="bgm-selected-badge">
+      <span>🎵</span>
+      <span id="bgm-selected-title"></span>
+      <span class="bgm-badge-clear" onclick="clearBGM()" title="解除">✕</span>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveDiary()">思い出を貼る 📌</button>
+</div>
+
+<!-- ===== アルバム ===== -->
+<div class="album-section" id="view-album" style="display:none">
+  <h2>📖 みんなの思い出</h2>
+  <div class="book" id="book"></div>
+  <div class="page-nav">
+    <button class="nav-btn" id="prev-btn" onclick="changePage(-1)" disabled>◀ 前のページ</button>
+    <span class="page-indicator" id="page-indicator"></span>
+    <button class="nav-btn" id="next-btn" onclick="changePage(1)">次のページ ▶</button>
+  </div>
+</div>
+
+<!-- ===== カレンダー ===== -->
+<div class="calendar-section" id="view-calendar" style="display:none">
+  <div class="calendar-header">
+    <button class="cal-nav-btn" onclick="calMove(-1)">◀</button>
+    <span class="cal-month-title" id="cal-title"></span>
+    <button class="cal-nav-btn" onclick="calMove(1)">▶</button>
+  </div>
+  <div class="glass calendar-grid">
+    <div class="cal-weekdays">
+      <div class="cal-weekday">日</div><div class="cal-weekday">月</div>
+      <div class="cal-weekday">火</div><div class="cal-weekday">水</div>
+      <div class="cal-weekday">木</div><div class="cal-weekday">金</div>
+      <div class="cal-weekday">土</div>
+    </div>
+    <div class="cal-days" id="cal-days"></div>
+  </div>
+</div>
+
+<!-- カレンダーポップアップ -->
+<div class="cal-popup-overlay" id="cal-popup-overlay" onclick="closeCalPopup()">
+  <div class="cal-popup" onclick="event.stopPropagation()">
+    <span class="cal-popup-close" onclick="closeCalPopup()">✕</span>
+    <div class="cal-popup-date" id="cal-popup-date"></div>
+    <div id="cal-popup-content"></div>
+  </div>
+</div>
+
+<!-- 隠しYouTubeプレイヤー -->
+<div id="yt-hidden-player"></div>
+
+<!-- ライトボックス -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <div class="lightbox-frame" onclick="event.stopPropagation()">
+    <img id="lightbox-img" src="" alt="写真">
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getDatabase, ref, push, remove, set, onValue, query, orderByChild }
+    from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+  // ===== YouTube API キー =====
+  // ここに取得したAPIキーを入力してください
+  const YOUTUBE_API_KEY = 'AIzaSyA9MlZCxp1X-9eS8sz6rzAgCjf83OEElOU';
+
+  // ===== BGM 状態 =====
+  let pendingBgm = { id: '', title: '' }; // フォーム入力中の選択
+  let ytPlayer = null;          // YouTube IFrame Player インスタンス
+  let currentPlayingBtn = null; // 現在再生中のボタン要素
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAGEv-sh80o1Dz0Z-rG3OKKJQMSS7xlU0A",
+    authDomain: "natsu-diary.firebaseapp.com",
+    databaseURL: "https://natsu-diary-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "natsu-diary",
+    storageBucket: "natsu-diary.firebasestorage.app",
+    messagingSenderId: "15092330432",
+    appId: "1:15092330432:web:24472927c4fbc108422225"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  const diariesRef = ref(db, 'diaries');
+
+  // ===== 状態 =====
+  const ITEMS_PER_PAGE = 3;
+  let currentPage  = 0;
+  let allDiaries   = [];
+  let pendingPhotos = [];
+  let editingKey   = null; // 編集中の日記のfbKey（nullなら新規作成モード）
+  let calYear, calMonth;
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+
+  // ===== 初期化 =====
+  document.getElementById('diary-date').valueAsDate = new Date();
+  setupPhotoUpload();
+
+  // Firebase リアルタイム監視
+  const diariesQuery = query(diariesRef, orderByChild('createdAt'));
+  onValue(diariesQuery, (snapshot) => {
+    const data = snapshot.val();
+    allDiaries = !data ? [] :
+      Object.entries(data)
+        .map(([fbKey, val]) => ({ fbKey, ...val }))
+        .sort((a, b) => {
+          if (b.date > a.date) return 1;
+          if (b.date < a.date) return -1;
+          return b.createdAt - a.createdAt;
+        });
+    currentPage = 0;
+    renderPage();
+    renderCalendar();
+    // 接続成功インジケーター更新
+    setConnectionStatus(true);
+  }, (error) => {
+    // ルール期限切れ・権限エラーなどを画面に表示
+    console.error('Firebase接続エラー:', error);
+    setConnectionStatus(false, error.code);
+  });
+
+  // ===== 接続ステータス表示 =====
+  function setConnectionStatus(ok, code) {
+    let el = document.getElementById('fb-status');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'fb-status';
+      el.style.cssText = [
+        'position:fixed','bottom:14px','left:14px','z-index:999',
+        'font-family:\'Yomogi\',cursive','font-size:12px',
+        'padding:6px 14px','border-radius:20px',
+        'backdrop-filter:blur(8px)','pointer-events:none',
+        'transition:opacity 0.5s'
+      ].join(';');
+      document.body.appendChild(el);
+    }
+    if (ok) {
+      el.style.background = 'rgba(100,220,120,0.85)';
+      el.style.color = '#1a4a22';
+      el.textContent = '🟢 Firebase 同期中';
+      // 3秒後にフェードアウト
+      setTimeout(() => { el.style.opacity = '0'; }, 3000);
+      el.style.opacity = '1';
+    } else {
+      el.style.background = 'rgba(255,80,80,0.9)';
+      el.style.color = '#fff';
+      el.style.pointerEvents = 'auto';
+      el.style.opacity = '1';
+      const codeMsg = code === 'PERMISSION_DENIED'
+        ? 'ルールの期限切れです。Firebaseコンソールでルールを更新してください。'
+        : `接続エラー: ${code}`;
+      el.innerHTML = `⚠️ Firebase未接続 — ${codeMsg}`;
+    }
+  }
+
+  // ===== タブ切り替え =====
+  window.switchTab = function(tab) {
+    ['write','album','calendar'].forEach(t => {
+      document.getElementById('view-'+t).style.display = (t === tab) ? '' : 'none';
+      document.getElementById('tab-'+t).classList.toggle('active', t === tab);
+    });
+    if (tab === 'calendar') renderCalendar();
+  };
+
+  // ===== 写真アップロード =====
+  function setupPhotoUpload() {
+    const area  = document.getElementById('upload-area');
+    const input = document.getElementById('photo-input');
+    input.addEventListener('change', () => handleFiles(input.files));
+    area.addEventListener('dragover',  (e) => { e.preventDefault(); area.classList.add('drag-over'); });
+    area.addEventListener('dragleave', ()  => area.classList.remove('drag-over'));
+    area.addEventListener('drop', (e) => {
+      e.preventDefault(); area.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    });
+  }
+
+  function handleFiles(files) {
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        compressImage(e.target.result, 800, 0.7, (compressed) => {
+          pendingPhotos.push(compressed);
+          renderPreview();
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function compressImage(dataUrl, maxSize, quality, callback) {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else       { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = dataUrl;
+  }
+
+  function renderPreview() {
+    const wrap = document.getElementById('photo-preview');
+    wrap.innerHTML = '';
+    pendingPhotos.forEach((src, i) => {
+      const wrapItem = document.createElement('div');
+      wrapItem.className = 'photo-thumb-wrap';
+      const img = document.createElement('img');
+      img.src = src;
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'photo-remove-btn';
+      removeBtn.textContent = '✕';
+      removeBtn.onclick = () => { pendingPhotos.splice(i, 1); renderPreview(); };
+      wrapItem.appendChild(img);
+      wrapItem.appendChild(removeBtn);
+      wrap.appendChild(wrapItem);
+    });
+  }
+
+  // ===== 保存（新規 or 更新） =====
+  window.saveDiary = async function () {
+    const name    = document.getElementById('diary-name').value.trim();
+    const date    = document.getElementById('diary-date').value;
+    const text    = document.getElementById('diary-text').value.trim();
+    const mood    = document.querySelector('input[name="mood"]:checked').value;
+    const weather = document.querySelector('input[name="weather"]:checked').value;
+
+    if (!name) { alert('名前を入力してね！'); return; }
+    if (!text) { alert('日記の内容を入力してね！'); return; }
+
+    const saveBtn = document.querySelector('.save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = editingKey ? '更新中…' : '貼り付け中…';
+
+    const entryData = {
+      name, date, mood, weather, text,
+      photos:   JSON.stringify(pendingPhotos),
+      bgmId:    pendingBgm.id    || '',
+      bgmTitle: pendingBgm.title || ''
+    };
+
+    try {
+      if (editingKey) {
+        // ===== 更新モード：既存データを上書き =====
+        const existing = allDiaries.find(d => d.fbKey === editingKey);
+        entryData.createdAt = existing ? existing.createdAt : Date.now();
+        await set(ref(db, `diaries/${editingKey}`), entryData);
+        cancelEdit();
+      } else {
+        // ===== 新規作成モード =====
+        entryData.createdAt = Date.now();
+        await push(diariesRef, entryData);
+      }
+      // フォームリセット
+      resetForm();
+    } catch (e) {
+      console.error('保存エラー:', e);
+      const msg = e.code === 'PERMISSION_DENIED'
+        ? 'Firebaseのルールが期限切れです。\nFirebaseコンソール → Realtime Database → ルール\nから書き込み権限を更新してください。'
+        : '保存に失敗しました。\n' + e.message;
+      alert(msg);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '思い出を貼る 📌';
+    }
+  };
+
+  function resetForm() {
+    document.getElementById('diary-name').value = '';
+    document.getElementById('diary-text').value = '';
+    document.getElementById('diary-date').valueAsDate = new Date();
+    document.getElementById('photo-preview').innerHTML = '';
+    document.getElementById('photo-input').value = '';
+    pendingPhotos = [];
+    document.getElementById('mood1').checked = true;
+    document.getElementById('w1').checked = true;
+    clearBGM();
+  }
+
+  // ===== 編集モード開始 =====
+  window.startEdit = function(diary) {
+    editingKey = diary.fbKey;
+
+    // フォームに値を読み込む
+    document.getElementById('diary-name').value  = diary.name  || '';
+    document.getElementById('diary-date').value  = diary.date  || '';
+    document.getElementById('diary-text').value  = diary.text  || '';
+
+    // 気分を選択
+    const moodVal = diary.mood || '';
+    document.querySelectorAll('input[name="mood"]').forEach(r => {
+      r.checked = (r.value === moodVal);
+    });
+
+    // 天気を選択
+    const weatherVal = diary.weather || '';
+    document.querySelectorAll('input[name="weather"]').forEach(r => {
+      r.checked = (r.value === weatherVal);
+    });
+
+    // 写真を読み込む
+    pendingPhotos = JSON.parse(diary.photos || '[]');
+    renderPreview();
+
+    // BGMを読み込む
+    if (diary.bgmId) {
+      pendingBgm = { id: diary.bgmId, title: diary.bgmTitle || '' };
+      document.getElementById('bgm-selected-title').textContent = diary.bgmTitle || diary.bgmId;
+      document.getElementById('bgm-selected-badge').style.display = 'flex';
+    } else {
+      clearBGM();
+    }
+
+    // ボタン表示を「更新する」に変更
+    document.querySelector('.save-btn').textContent = '更新する 💾';
+
+    // 編集バナーを表示
+    document.getElementById('edit-mode-banner').classList.add('visible');
+
+    // 書くタブに切り替えてフォームへスクロール
+    switchTab('write');
+    document.getElementById('view-write').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // ===== 編集キャンセル =====
+  window.cancelEdit = function() {
+    editingKey = null;
+    resetForm();
+    document.querySelector('.save-btn').textContent = '思い出を貼る 📌';
+    document.getElementById('edit-mode-banner').classList.remove('visible');
+  };
+
+  // ===== アルバム描画 =====
+  function renderPage() {
+    const book = document.getElementById('book');
+    book.innerHTML = '';
+
+    if (allDiaries.length === 0) {
+      book.innerHTML = '<p class="empty-msg">まだ思い出がありません。<br>最初の1枚を貼ってみよう！🌻</p>';
+      document.getElementById('page-indicator').textContent = '';
+      document.getElementById('prev-btn').disabled = true;
+      document.getElementById('next-btn').disabled = true;
+      return;
+    }
+
+    const totalPages = Math.ceil(allDiaries.length / ITEMS_PER_PAGE);
+    if (currentPage >= totalPages) currentPage = totalPages - 1;
+    const pageDiaries = allDiaries.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+
+    const scrap = document.createElement('div');
+    scrap.className = 'scrap-page glass';
+    pageDiaries.forEach(d => scrap.appendChild(buildCard(d)));
+    book.appendChild(scrap);
+
+    document.getElementById('prev-btn').disabled = (currentPage === 0);
+    document.getElementById('next-btn').disabled = (currentPage >= totalPages - 1);
+    document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${totalPages} ページ`;
+  }
+
+  function buildCard(diary) {
+    const photos = JSON.parse(diary.photos || '[]');
+    const card = document.createElement('div');
+    card.className = 'diary-card';
+
+    // ===== ① ヘッダー（日付・名前・スタンプ）最上部 =====
+    const moodEmoji = diary.mood ? [...diary.mood.trim()][0] : '';
+
+    const caption = document.createElement('div');
+    caption.className = 'diary-card-caption';
+    caption.innerHTML = `
+      <span class="diary-card-date">📅 ${diary.date}</span>
+      ${diary.name ? `<span class="diary-card-author">✏️ ${diary.name}</span>` : ''}
+      ${(moodEmoji || diary.weather) ? `
+        <span class="diary-card-stamps">
+          ${moodEmoji     ? `<span class="diary-card-mood">${moodEmoji}</span>`        : ''}
+          ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
+        </span>` : ''}
+    `;
+    // BGM再生ボタン（bgmIdがある場合のみ）
+    if (diary.bgmId) {
+      const playBtn = document.createElement('button');
+      playBtn.className = 'bgm-play-btn';
+      playBtn.title = diary.bgmTitle || 'BGMを再生';
+      playBtn.textContent = '▶️';
+      playBtn.setAttribute('data-html2canvas-ignore', 'true');
+      playBtn.onclick = () => toggleBGM(diary.bgmId, playBtn);
+      caption.appendChild(playBtn);
+    }
+    card.appendChild(caption);
+
+    // ===== ② 本文・写真エリア =====
+    const body = document.createElement('div');
+    body.className = 'diary-card-body';
+
+    const textEl = document.createElement('div');
+    textEl.className = 'diary-card-text';
+    textEl.textContent = diary.text;
+    body.appendChild(textEl);
+
+    if (photos.length > 0) {
+      const grid = document.createElement('div');
+      grid.className = 'diary-photos';
+      photos.forEach(src => {
+        const item = document.createElement('div');
+        item.className = 'diary-photo-item';
+        const img = document.createElement('img');
+        img.src = src; img.alt = '思い出';
+        img.onclick = () => openLightbox(src);
+        item.appendChild(img);
+        grid.appendChild(item);
+      });
+      body.appendChild(grid);
+    }
+    card.appendChild(body);
+
+    // ===== ③ ボタンエリア =====
+    const actions = document.createElement('div');
+    actions.className = 'diary-card-actions';
+    actions.setAttribute('data-html2canvas-ignore', 'true');
+
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'diary-share-btn';
+    shareBtn.innerHTML = '📸 シェア／保存';
+    shareBtn.onclick = () => shareCard(card, diary.date, shareBtn);
+    actions.appendChild(shareBtn);
+
+    // 右側：編集＋消すを縦並びラッパーにまとめる
+    const actionsRight = document.createElement('div');
+    actionsRight.className = 'diary-card-actions-right';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'diary-edit-btn';
+    editBtn.textContent = '✏️ 編集';
+    editBtn.onclick = () => startEdit(diary);
+    actionsRight.appendChild(editBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'diary-delete-btn';
+    delBtn.textContent = '🗑 消す';
+    delBtn.onclick = () => deleteDiary(diary.fbKey);
+    actionsRight.appendChild(delBtn);
+
+    actions.appendChild(actionsRight);
+
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  // ===== ページめくり =====
+  window.changePage = function(dir) {
+    // ページ移動時は再生中のBGMを止める
+    if (ytReady && ytPlayer) {
+      ytPlayer.stopVideo();
+    }
+    if (currentPlayingBtn) {
+      currentPlayingBtn.textContent = '▶️';
+      currentPlayingBtn.classList.remove('playing');
+      currentPlayingBtn = null;
+    }
+    const totalPages = Math.ceil(allDiaries.length / ITEMS_PER_PAGE);
+    const newPage = currentPage + dir;
+    if (newPage < 0 || newPage >= totalPages) return;
+
+    const book = document.getElementById('book');
+    const scrap = book.querySelector('.scrap-page');
+    if (scrap) {
+      scrap.style.transition = 'transform 0.45s ease, opacity 0.45s ease';
+      scrap.style.transform = dir > 0 ? 'perspective(1200px) rotateY(-10deg) translateX(-3%)' : 'perspective(1200px) rotateY(10deg) translateX(3%)';
+      scrap.style.opacity = '0.2';
+    }
+    setTimeout(() => {
+      currentPage = newPage;
+      renderPage();
+      const newScrap = book.querySelector('.scrap-page');
+      if (!newScrap) return;
+      newScrap.style.transition = 'none';
+      newScrap.style.transform = dir > 0 ? 'perspective(1200px) rotateY(10deg) translateX(3%)' : 'perspective(1200px) rotateY(-10deg) translateX(-3%)';
+      newScrap.style.opacity = '0.2';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        newScrap.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+        newScrap.style.transform = 'none';
+        newScrap.style.opacity = '1';
+      }));
+    }, 430);
+  };
+
+  // ===== シェア・保存 =====
+  window.shareCard = async function(card, date, btn) {
+    if (btn.classList.contains('loading')) return;
+    btn.classList.add('loading');
+    btn.innerHTML = '<span class="spin-icon">⏳</span> 変換中…';
+
+    try {
+      // カードの傾きを一時的にリセットして真っ直ぐに撮影
+      const prevTransform = card.style.transform;
+      card.style.transform = 'rotate(0deg)';
+      card.style.transition = 'none';
+
+      // シェアボタン自体は画像に含めない
+      btn.style.display = 'none';
+
+      const canvas = await html2canvas(card, {
+        scale: 2,           // 高解像度
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      // 元に戻す
+      card.style.transform = prevTransform;
+      card.style.transition = '';
+      btn.style.display = '';
+
+      // Blobに変換
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const fileName = `natsu-diary-${date || 'memory'}.png`;
+
+      // Web Share API（スマホ等）が使える場合
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
+        const file = new File([blob], fileName, { type: 'image/png' });
+        await navigator.share({
+          title: '夏休みの思い出',
+          text: '夏休みの思い出アルバムより 🌻',
+          files: [file],
+        });
+      } else {
+        // フォールバック：ダウンロード
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+      }
+    } catch (e) {
+      // ユーザーがシェアをキャンセルした場合はエラーにしない
+      if (e.name !== 'AbortError') {
+        alert('画像の生成に失敗しました。\n' + e.message);
+      }
+    } finally {
+      btn.classList.remove('loading');
+      btn.innerHTML = '📸 シェア／保存';
+      btn.style.display = '';
+    }
+  };
+
+  // ===== BGM検索 =====
+  window.searchBGM = async function() {
+    if (!YOUTUBE_API_KEY) {
+      const msg = 'APIキーが設定されていません。コード内の YOUTUBE_API_KEY にキーを設定してください。';
+      console.warn(msg);
+      document.getElementById('bgm-results').innerHTML =
+        `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#c00;padding:6px;">${msg}</p>`;
+      return;
+    }
+    const q = document.getElementById('bgm-search-input').value.trim();
+    if (!q) return;
+
+    const btn = document.getElementById('bgm-search-btn');
+    btn.disabled = true; btn.textContent = '検索中…';
+
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=3&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      const container = document.getElementById('bgm-results');
+      container.innerHTML = '';
+
+      if (!data.items || data.items.length === 0) {
+        container.innerHTML = '<p style="font-family:\'Yomogi\',cursive;font-size:12px;color:#888;padding:6px;">見つかりませんでした🙈</p>';
+        return;
+      }
+
+      data.items.forEach(item => {
+        const videoId = item.id.videoId;
+        const title   = item.snippet.title;
+        const thumb   = item.snippet.thumbnails.default.url;
+
+        const el = document.createElement('div');
+        el.className = 'bgm-result-item';
+        if (pendingBgm.id === videoId) el.classList.add('selected');
+        el.innerHTML = `
+          <img class="bgm-result-thumb" src="${thumb}" alt="">
+          <span class="bgm-result-title">${title}</span>
+        `;
+        el.onclick = () => selectBGM(videoId, title);
+        container.appendChild(el);
+      });
+    } catch (e) {
+      document.getElementById('bgm-results').innerHTML =
+        `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#c00;padding:6px;">検索に失敗しました: ${e.message}</p>`;
+    } finally {
+      btn.disabled = false; btn.textContent = '🔍 検索';
+    }
+  };
+
+  // エンターキーでも検索できるように
+  document.getElementById('bgm-search-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') searchBGM();
+  });
+
+  function selectBGM(id, title) {
+    pendingBgm = { id, title };
+    // 選択済みバッジ更新
+    document.getElementById('bgm-selected-title').textContent = title;
+    document.getElementById('bgm-selected-badge').style.display = 'flex';
+    // 選択状態を結果リストに反映
+    document.querySelectorAll('.bgm-result-item').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('.bgm-result-item').forEach(el => {
+      if (el.querySelector('.bgm-result-title')?.textContent === title) el.classList.add('selected');
+    });
+  }
+
+  window.clearBGM = function() {
+    pendingBgm = { id: '', title: '' };
+    document.getElementById('bgm-selected-badge').style.display = 'none';
+    document.getElementById('bgm-selected-title').textContent = '';
+    document.getElementById('bgm-results').innerHTML = '';
+    document.getElementById('bgm-search-input').value = '';
+    document.querySelectorAll('.bgm-result-item').forEach(el => el.classList.remove('selected'));
+  };
+
+  // ===== YouTube IFrame Player API =====
+  // ★ プレイヤーは1つだけ作り、曲替えは loadVideoById() で行う
+  let ytReady = false;
+
+  // IFrame API スクリプトを先頭スクリプトの前に挿入（推奨方式）
+  (function() {
+    if (document.getElementById('yt-iframe-api')) return;
+    const tag = document.createElement('script');
+    tag.id  = 'yt-iframe-api';
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(tag, first);
+  })();
+
+  // API 準備完了コールバック（グローバルに登録必須）
+  window.onYouTubeIframeAPIReady = function() {
+    // 隠しコンテナに固定 div を用意してプレイヤーを1度だけ生成
+    const container = document.getElementById('yt-hidden-player');
+    container.innerHTML = '<div id="yt-player-inner"></div>';
+
+    ytPlayer = new YT.Player('yt-player-inner', {
+      width:  '200',
+      height: '112',
+      videoId: '',           // 最初は空
+      playerVars: {
+        autoplay:       0,   // ユーザー操作で再生するので 0
+        controls:       0,
+        playsinline:    1,   // iOS Safari でインライン再生
+        loop:           1,
+        rel:            0,
+        modestbranding: 1,
+        fs:             0,
+      },
+      events: {
+        onReady: () => {
+          ytReady = true;
+          ytPlayer.setVolume(70);
+        },
+        onStateChange: (e) => {
+          // 曲が終わったらループ（playlist指定なしでも動くように）
+          if (e.data === YT.PlayerState.ENDED && currentPlayingBtn) {
+            ytPlayer.seekTo(0);
+            ytPlayer.playVideo();
+          }
+        },
+        onError: () => {
+          if (currentPlayingBtn) {
+            currentPlayingBtn.textContent = '▶️';
+            currentPlayingBtn.classList.remove('playing');
+            currentPlayingBtn = null;
+          }
+        }
+      }
+    });
+  };
+
+  // ===== BGM 再生 / 一時停止 =====
+  window.toggleBGM = function(videoId, btn) {
+    // --- 同じボタンを押した：トグル ---
+    if (currentPlayingBtn === btn && ytReady) {
+      const state = ytPlayer.getPlayerState();
+      if (state === YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+        btn.textContent = '▶️';
+        btn.classList.remove('playing');
+      } else {
+        ytPlayer.playVideo();
+        btn.textContent = '⏸️';
+        btn.classList.add('playing');
+      }
+      return;
+    }
+
+    // --- 別の曲 or 初回：前のボタンをリセット ---
+    if (currentPlayingBtn && currentPlayingBtn !== btn) {
+      currentPlayingBtn.textContent = '▶️';
+      currentPlayingBtn.classList.remove('playing');
+    }
+    currentPlayingBtn = btn;
+    btn.textContent = '⏳';
+    btn.classList.remove('playing');
+
+    // API未準備ならポーリング待機
+    if (!ytReady) {
+      const wait = setInterval(() => {
+        if (ytReady) {
+          clearInterval(wait);
+          playVideo(videoId, btn);
+        }
+      }, 200);
+      return;
+    }
+    playVideo(videoId, btn);
+  };
+
+  // loadVideoById でプレイヤー1つを使い回す（自動再生制限を回避）
+  function playVideo(videoId, btn) {
+    // ★ユーザーのクリックイベントのコールスタック内で呼ぶことが重要
+    ytPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
+    // loadVideoById は autoplay:0 でも再生開始するので追加で playVideo は不要
+    // ただし念のため少し待って状態確認
+    setTimeout(() => {
+      const state = ytPlayer.getPlayerState();
+      // PLAYING(1) でなければ明示的に playVideo()
+      if (state !== 1) ytPlayer.playVideo();
+      btn.textContent = '⏸️';
+      btn.classList.add('playing');
+    }, 800);
+  }
+
+  // ===== 削除 =====
+  window.deleteDiary = async function(fbKey) {
+    if (!confirm('この思い出を消してもいいですか？')) return;
+    try { await remove(ref(db, `diaries/${fbKey}`)); }
+    catch(e) {
+      console.error('削除エラー:', e);
+      const msg = e.code === 'PERMISSION_DENIED'
+        ? 'Firebaseのルールが期限切れです。\nFirebaseコンソールでルールを更新してください。'
+        : '削除に失敗しました。\n' + e.message;
+      alert(msg);
+    }
+  };
+
+  // ===== カレンダー描画 =====
+  function renderCalendar() {
+    const titleEl = document.getElementById('cal-title');
+    const daysEl  = document.getElementById('cal-days');
+    if (!titleEl || !daysEl) return;
+
+    titleEl.textContent = `${calYear}年 ${calMonth + 1}月`;
+    daysEl.innerHTML = '';
+
+    // その月の日記をdate→配列でマップ
+    const dateMap = {};
+    allDiaries.forEach(d => {
+      if (!d.date) return;
+      if (!dateMap[d.date]) dateMap[d.date] = [];
+      dateMap[d.date].push(d);
+    });
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+    // 空白マス
+    for (let i = 0; i < firstDay; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'cal-day empty';
+      daysEl.appendChild(blank);
+    }
+
+    for (let d = 1; d <= lastDate; d++) {
+      const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayOfWeek = new Date(calYear, calMonth, d).getDay();
+      const entries = dateMap[dateStr] || [];
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-day';
+      if (dayOfWeek === 0) cell.classList.add('sun');
+      if (dayOfWeek === 6) cell.classList.add('sat');
+      if (dateStr === todayStr) cell.classList.add('today');
+      if (entries.length > 0) {
+        cell.classList.add('has-diary');
+        cell.onclick = () => openCalPopup(dateStr, entries);
+      }
+
+      const numEl = document.createElement('span');
+      numEl.className = 'cal-day-num';
+      numEl.textContent = d;
+      cell.appendChild(numEl);
+
+      // 写真サムネイル（最初の1枚）
+      if (entries.length > 0) {
+        const photos = JSON.parse(entries[0].photos || '[]');
+        if (photos.length > 0) {
+          const thumb = document.createElement('img');
+          thumb.className = 'cal-thumb';
+          thumb.src = photos[0];
+          thumb.alt = '';
+          cell.appendChild(thumb);
+        }
+        // 天気スタンプ
+        if (entries[0].weather) {
+          const stamp = document.createElement('span');
+          stamp.className = 'cal-weather-stamp';
+          stamp.textContent = entries[0].weather;
+          cell.appendChild(stamp);
+        }
+      }
+
+      daysEl.appendChild(cell);
+    }
+  }
+
+  window.calMove = function(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+  };
+
+  // ===== カレンダーポップアップ =====
+  window.openCalPopup = function(dateStr, entries) {
+    document.getElementById('cal-popup-date').textContent = `📅 ${dateStr} の思い出`;
+    const content = document.getElementById('cal-popup-content');
+    content.innerHTML = '';
+    entries.forEach(diary => content.appendChild(buildCard(diary)));
+    document.getElementById('cal-popup-overlay').classList.add('open');
+  };
+  window.closeCalPopup = function() {
+    document.getElementById('cal-popup-overlay').classList.remove('open');
+  };
+
+  // ===== ライトボックス =====
+  window.openLightbox = function(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  };
+  window.closeLightbox = function() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightbox-img').src = '';
+  };
+  // ===== 設定機能（タイトル・背景） =====
+  const DEFAULT_BG = "url('https://images.unsplash.com/photo-1601297183305-6df142704ea2?w=1600') center center / cover no-repeat fixed";
+
+  // 起動時にLocalStorageから設定を復元
+  (function initSettings() {
+    const savedTitle = localStorage.getItem('appTitle');
+    const savedBg    = localStorage.getItem('appBgDataUrl');
+
+    if (savedTitle) {
+      document.getElementById('app-title-text').textContent = savedTitle;
+      document.title = savedTitle;
+    }
+    if (savedBg) {
+      document.body.style.background = `url('${savedBg}') center center / cover no-repeat fixed`;
+    }
+  })();
+
+  window.openSettings = function() {
+    // 現在の値をフォームにセット
+    document.getElementById('settings-title-input').value =
+      document.getElementById('app-title-text').textContent;
+
+    const savedBg = localStorage.getItem('appBgDataUrl');
+    const preview = document.getElementById('settings-bg-preview');
+    if (savedBg) {
+      preview.src = savedBg;
+      preview.classList.add('visible');
+    } else {
+      preview.classList.remove('visible');
+    }
+    document.getElementById('settings-bg-file').value = '';
+    document.getElementById('settings-overlay').classList.add('open');
+  };
+
+  window.closeSettings = function() {
+    document.getElementById('settings-overlay').classList.remove('open');
+  };
+
+  // ファイル選択時にプレビュー表示
+  document.getElementById('settings-bg-file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById('settings-bg-preview');
+      preview.src = e.target.result;
+      preview.classList.add('visible');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.applySettings = function() {
+    // --- タイトル ---
+    const newTitle = document.getElementById('settings-title-input').value.trim();
+    if (newTitle) {
+      document.getElementById('app-title-text').textContent = newTitle;
+      document.title = newTitle;
+      localStorage.setItem('appTitle', newTitle);
+    }
+
+    // --- 背景画像 ---
+    const file = document.getElementById('settings-bg-file').files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        try {
+          localStorage.setItem('appBgDataUrl', dataUrl);
+        } catch {
+          alert('画像が大きすぎて保存できませんでした。もう少し小さい画像をお試しください。');
+          return;
+        }
+        document.body.style.background =
+          `url('${dataUrl}') center center / cover no-repeat fixed`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    closeSettings();
+  };
+
+  window.resetBackground = function() {
+    localStorage.removeItem('appBgDataUrl');
+    document.body.style.background = DEFAULT_BG;
+    const preview = document.getElementById('settings-bg-preview');
+    preview.classList.remove('visible');
+    preview.src = '';
+    document.getElementById('settings-bg-file').value = '';
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); }
+  });
+</script>
+</body>
+</html>

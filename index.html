@@ -932,7 +932,162 @@
     .login-name-row { display: none; }
     .login-name-row.visible { display: block; }
 
-    /* ===== BGM検索UI ===== */
+    /* ===== マイページモーダル ===== */
+    .mypage-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.6); z-index: 400;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .mypage-overlay.open { display: flex; }
+    .mypage-modal {
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(18px);
+      border-radius: 24px;
+      padding: 32px 28px 28px;
+      width: min(440px, 92vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+      position: relative;
+      animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .mypage-close {
+      position: absolute; top: 14px; right: 18px;
+      font-size: 22px; cursor: pointer; color: #6688cc;
+      transition: transform 0.15s;
+    }
+    .mypage-close:hover { transform: scale(1.2) rotate(90deg); }
+    .mypage-modal h3 {
+      font-family: 'Yomogi', cursive;
+      color: #2c4a7c; font-size: 1.15rem;
+      margin-bottom: 20px;
+      border-bottom: 2px dashed rgba(100,150,220,0.35);
+      padding-bottom: 8px;
+    }
+    .mypage-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: cover; display: block; margin: 0 auto 12px;
+      border: 3px solid rgba(100,150,220,0.4);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    }
+    .mypage-avatar-placeholder {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg,#a8d0f8,#7cb0e8);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px; font-size: 2rem;
+    }
+    .mypage-displayname {
+      font-family: 'Yomogi', cursive; font-size: 1.1rem;
+      color: #2c4a7c; text-align: center; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .mypage-email {
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 12px;
+      color: #888; text-align: center; margin-bottom: 20px;
+    }
+    .mypage-stats {
+      display: flex; gap: 12px; margin-bottom: 20px;
+    }
+    .mypage-stat {
+      flex: 1; background: rgba(220,235,255,0.4);
+      border-radius: 12px; padding: 10px;
+      text-align: center;
+    }
+    .mypage-stat-num {
+      font-family: 'Yomogi', cursive; font-size: 1.4rem;
+      color: #2c4a7c; font-weight: 700; display: block;
+    }
+    .mypage-stat-label {
+      font-family: 'Yomogi', cursive; font-size: 11px; color: #6a8ac8;
+    }
+    /* 公開範囲管理リスト */
+    .mypage-friends-section { margin-bottom: 16px; }
+    .mypage-friends-section h4 {
+      font-family: 'Yomogi', cursive; font-size: 0.9rem;
+      color: #2c4a7c; margin-bottom: 8px;
+    }
+    .mypage-friends-list {
+      max-height: 120px; overflow-y: auto;
+      border: 1.5px solid rgba(100,150,220,0.3);
+      border-radius: 10px; padding: 6px 10px;
+      background: rgba(255,255,255,0.6);
+    }
+    .mypage-friend-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 0; font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #3a5a8c; border-bottom: 1px solid rgba(100,150,220,0.1);
+    }
+    .mypage-friend-item:last-child { border-bottom: none; }
+    .mypage-friend-remove {
+      background: none; border: none; cursor: pointer;
+      color: #ef5350; font-size: 14px; padding: 0 4px;
+      transition: transform 0.15s;
+    }
+    .mypage-friend-remove:hover { transform: scale(1.2); }
+    .mypage-friend-add-row {
+      display: flex; gap: 6px; margin-top: 6px;
+    }
+    .mypage-friend-add-row input {
+      flex: 1; padding: 7px 12px;
+      border: 1.5px solid rgba(100,150,220,0.4); border-radius: 10px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 13px;
+      background: rgba(255,255,255,0.8); color: #1a2a4a;
+    }
+    .mypage-friend-add-btn {
+      padding: 7px 14px;
+      background: linear-gradient(135deg,#4a7fd4,#2a5ab8);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .mypage-friend-add-btn:hover { opacity: 0.88; }
+    .mypage-logout-btn {
+      width: 100%; padding: 11px;
+      background: rgba(240,235,255,0.8);
+      color: #6644aa; border: 1.5px solid rgba(120,80,200,0.35);
+      border-radius: 12px; font-family: 'Yomogi', cursive;
+      font-size: 14px; cursor: pointer; transition: all 0.2s; margin-top: 6px;
+    }
+    .mypage-logout-btn:hover { background: rgba(220,210,255,0.9); }
+
+    /* ===== 公開範囲 セレクター（フォーム内） ===== */
+    .visibility-selector {
+      display: flex; gap: 8px; margin-top: 4px;
+    }
+    .visibility-box { display: none; }
+    .visibility-label {
+      flex: 1; text-align: center;
+      padding: 8px 6px;
+      border: 1.5px solid rgba(100,150,220,0.35);
+      border-radius: 10px; cursor: pointer;
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #4a6a9c; background: rgba(220,235,255,0.3);
+      transition: all 0.2s; user-select: none;
+    }
+    .visibility-label:hover { background: rgba(200,220,255,0.55); }
+    .visibility-box:checked + .visibility-label {
+      background: rgba(200,220,255,0.7);
+      border-color: #5588dd; color: #2c4a7c; font-weight: 700;
+      box-shadow: 0 2px 8px rgba(85,136,221,0.2);
+    }
+
+    /* ===== 公開範囲バッジ（カード内） ===== */
+    .visibility-badge {
+      font-family: 'Yomogi', cursive; font-size: 10px;
+      padding: 2px 8px; border-radius: 20px; line-height: 1.4;
+    }
+    .visibility-badge.public  { background: rgba(200,240,200,0.7); color: #2a6a2a; }
+    .visibility-badge.friends { background: rgba(255,220,160,0.7); color: #7a4a00; }
+
+    /* マイページ開くボタン（auth-bar内） */
+    .auth-bar-mypage-btn {
+      padding: 4px 12px;
+      background: rgba(200,220,255,0.6);
+      border: 1.5px solid rgba(100,150,220,0.4);
+      border-radius: 20px; font-family: 'Yomogi', cursive;
+      font-size: 11px; color: #2c4a7c; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .auth-bar-mypage-btn:hover { background: rgba(180,210,255,0.8); }
     .bgm-search-row {
       display: flex;
       gap: 8px;
@@ -1079,6 +1234,7 @@
   <span id="auth-bar-user" style="display:none;align-items:center;gap:8px;">
     <img class="auth-bar-avatar" id="auth-avatar" src="" alt="">
     <span class="auth-bar-name" id="auth-name"></span>
+    <button class="auth-bar-mypage-btn" onclick="openMypage()">👤 マイページ</button>
     <button class="auth-bar-logout-btn" onclick="doLogout()">ログアウト</button>
   </span>
 </div>
@@ -1231,6 +1387,15 @@
     <div class="photo-preview-wrap" id="photo-preview"></div>
   </div>
   <div class="form-group">
+    <label>🔒 公開範囲</label>
+    <div class="visibility-selector">
+      <input type="radio" name="visibility" id="vis-public" value="public" class="visibility-box" checked>
+      <label for="vis-public" class="visibility-label">🌍 全体公開</label>
+      <input type="radio" name="visibility" id="vis-friends" value="friends" class="visibility-box">
+      <label for="vis-friends" class="visibility-label">⭐ 親しい友達のみ</label>
+    </div>
+  </div>
+  <div class="form-group">
     <label>🎵 思い出のBGMを検索</label>
     <div class="bgm-search-row">
       <input type="text" id="bgm-search-input" placeholder="曲名やアーティスト名で検索…">
@@ -1288,6 +1453,53 @@
 <!-- 隠しYouTubeプレイヤー -->
 <div id="yt-hidden-player"></div>
 
+<!-- ===== マイページモーダル ===== -->
+<div class="mypage-overlay" id="mypage-overlay" onclick="closeMypage()">
+  <div class="mypage-modal" onclick="event.stopPropagation()">
+    <span class="mypage-close" onclick="closeMypage()">✕</span>
+    <h3>👤 マイページ</h3>
+
+    <!-- アバター＋ユーザー情報 -->
+    <div id="mypage-avatar-wrap"></div>
+    <div class="mypage-displayname" id="mypage-displayname"></div>
+    <div class="mypage-email" id="mypage-email"></div>
+
+    <!-- 投稿統計 -->
+    <div class="mypage-stats">
+      <div class="mypage-stat">
+        <span class="mypage-stat-num" id="mypage-total">0</span>
+        <span class="mypage-stat-label">投稿数</span>
+      </div>
+      <div class="mypage-stat">
+        <span class="mypage-stat-num" id="mypage-public-count">0</span>
+        <span class="mypage-stat-label">全体公開</span>
+      </div>
+      <div class="mypage-stat">
+        <span class="mypage-stat-num" id="mypage-friends-count">0</span>
+        <span class="mypage-stat-label">限定公開</span>
+      </div>
+    </div>
+
+    <!-- 親しい友達リスト管理 -->
+    <div class="mypage-friends-section">
+      <h4>⭐ 親しい友達（UID登録）</h4>
+      <p style="font-family:'Yomogi',cursive;font-size:11px;color:#888;margin-bottom:6px;">
+        登録したUIDのユーザーだけが「親しい友達のみ」投稿を見られます
+      </p>
+      <div class="mypage-friends-list" id="mypage-friends-list"></div>
+      <div class="mypage-friend-add-row">
+        <input type="text" id="mypage-friend-uid-input" placeholder="追加するユーザーのUID">
+        <button class="mypage-friend-add-btn" onclick="addFriend()">追加</button>
+      </div>
+      <p style="font-family:'Yomogi',cursive;font-size:10px;color:#aaa;margin-top:6px;">
+        💡 自分のUIDは「<span id="mypage-my-uid" style="font-weight:700;color:#5588dd;cursor:pointer;" onclick="copyMyUid()">コピー</span>」で確認・コピーできます
+      </p>
+    </div>
+
+    <button class="mypage-logout-btn" onclick="doLogout();closeMypage()">ログアウト</button>
+  </div>
+</div>
+
 <!-- ライトボックス -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <span class="lightbox-close" onclick="closeLightbox()">✕</span>
@@ -1338,6 +1550,7 @@
   let pendingPhotos = [];
   let editingKey   = null;
   let currentUser  = null; // ログイン中のユーザー（nullなら未ログイン）
+  let friendsList  = [];   // 自分が登録した「親しい友達」UIDの配列
   let calYear, calMonth;
   const now = new Date();
   calYear = now.getFullYear(); calMonth = now.getMonth();
@@ -1350,7 +1563,7 @@
   const diariesQuery = query(diariesRef, orderByChild('createdAt'));
   onValue(diariesQuery, (snapshot) => {
     const data = snapshot.val();
-    allDiaries = !data ? [] :
+    const raw = !data ? [] :
       Object.entries(data)
         .map(([fbKey, val]) => ({ fbKey, ...val }))
         .sort((a, b) => {
@@ -1358,6 +1571,16 @@
           if (b.date < a.date) return -1;
           return b.createdAt - a.createdAt;
         });
+
+    // ===== 公開範囲フィルタ =====
+    allDiaries = raw.filter(d => {
+      if (!d.visibility || d.visibility === 'public') return true;
+      const myUid = currentUser ? currentUser.uid : null;
+      if (myUid && d.uid === myUid) return true; // 投稿者本人
+      const ownerFriends = d.ownerFriends ? JSON.parse(d.ownerFriends) : [];
+      return myUid && ownerFriends.includes(myUid);
+    });
+
     currentPage = 0;
     renderPage();
     renderCalendar();
@@ -1409,17 +1632,22 @@
     const guestEl = document.getElementById('auth-bar-guest');
     const userEl  = document.getElementById('auth-bar-user');
     if (user) {
-      // ログイン中
       guestEl.style.display = 'none';
       userEl.style.display  = 'flex';
       document.getElementById('auth-name').textContent   = user.displayName || user.email;
       document.getElementById('auth-avatar').src         = user.photoURL    || '';
       document.getElementById('auth-avatar').style.display = user.photoURL ? '' : 'none';
+      // friendsList を LocalStorage から復元
+      const saved = localStorage.getItem('friends_' + user.uid);
+      friendsList = saved ? JSON.parse(saved) : [];
     } else {
-      // 未ログイン
       guestEl.style.display = 'flex';
       userEl.style.display  = 'none';
+      friendsList = [];
     }
+    // 認証状態変化時にアルバムを再描画（公開範囲フィルタ適用）
+    renderPage();
+    renderCalendar();
   });
 
   // ===== ログインモーダル 開閉 =====
@@ -1595,9 +1823,13 @@
 
     const entryData = {
       name, date, mood, weather, text,
-      photos:   JSON.stringify(pendingPhotos),
-      bgmId:    pendingBgm.id    || '',
-      bgmTitle: pendingBgm.title || ''
+      photos:       JSON.stringify(pendingPhotos),
+      bgmId:        pendingBgm.id    || '',
+      bgmTitle:     pendingBgm.title || '',
+      uid:          currentUser.uid,
+      visibility:   document.querySelector('input[name="visibility"]:checked').value,
+      // 「親しい友達のみ」投稿には投稿者のfriendsList（誰に見せるか）を埋め込む
+      ownerFriends: JSON.stringify(friendsList)
     };
 
     try {
@@ -1635,6 +1867,7 @@
     pendingPhotos = [];
     document.getElementById('mood1').checked = true;
     document.getElementById('w1').checked = true;
+    document.getElementById('vis-public').checked = true; // 公開範囲リセット
     clearBGM();
   }
 
@@ -1658,6 +1891,12 @@
     const weatherVal = diary.weather || '';
     document.querySelectorAll('input[name="weather"]').forEach(r => {
       r.checked = (r.value === weatherVal);
+    });
+
+    // 公開範囲を選択
+    const visVal = diary.visibility || 'public';
+    document.querySelectorAll('input[name="visibility"]').forEach(r => {
+      r.checked = (r.value === visVal);
     });
 
     // 写真を読み込む
@@ -1690,6 +1929,81 @@
     resetForm();
     document.querySelector('.save-btn').textContent = '思い出を貼る 📌';
     document.getElementById('edit-mode-banner').classList.remove('visible');
+  };
+
+  // ===== マイページ =====
+  window.openMypage = function() {
+    if (!currentUser) return;
+    // ユーザー情報表示
+    const avatarWrap = document.getElementById('mypage-avatar-wrap');
+    if (currentUser.photoURL) {
+      avatarWrap.innerHTML = `<img class="mypage-avatar" src="${currentUser.photoURL}" alt="">`;
+    } else {
+      avatarWrap.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
+    }
+    document.getElementById('mypage-displayname').textContent = currentUser.displayName || currentUser.email;
+    document.getElementById('mypage-email').textContent = currentUser.email || '';
+
+    // UID表示
+    document.getElementById('mypage-my-uid').textContent = currentUser.uid;
+
+    // 投稿統計
+    const myDiaries = allDiaries.filter(d => d.uid === currentUser.uid);
+    document.getElementById('mypage-total').textContent        = myDiaries.length;
+    document.getElementById('mypage-public-count').textContent = myDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
+    document.getElementById('mypage-friends-count').textContent = myDiaries.filter(d => d.visibility === 'friends').length;
+
+    // 友達リスト表示
+    renderFriendsList();
+    document.getElementById('mypage-overlay').classList.add('open');
+  };
+
+  window.closeMypage = function() {
+    document.getElementById('mypage-overlay').classList.remove('open');
+  };
+
+  window.copyMyUid = function() {
+    if (!currentUser) return;
+    navigator.clipboard.writeText(currentUser.uid).then(() => {
+      alert('UIDをコピーしました！\n' + currentUser.uid);
+    });
+  };
+
+  function renderFriendsList() {
+    const listEl = document.getElementById('mypage-friends-list');
+    if (!listEl) return;
+    if (friendsList.length === 0) {
+      listEl.innerHTML = '<div style="font-family:\'Yomogi\',cursive;font-size:12px;color:#aaa;padding:4px 0;">まだ登録されていません</div>';
+      return;
+    }
+    listEl.innerHTML = '';
+    friendsList.forEach((uid, i) => {
+      const item = document.createElement('div');
+      item.className = 'mypage-friend-item';
+      item.innerHTML = `
+        <span>${uid.slice(0,8)}…${uid.slice(-4)}</span>
+        <button class="mypage-friend-remove" onclick="removeFriend(${i})" title="削除">✕</button>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+
+  window.addFriend = function() {
+    const input = document.getElementById('mypage-friend-uid-input');
+    const uid = input.value.trim();
+    if (!uid) return;
+    if (friendsList.includes(uid)) { alert('すでに登録済みです'); return; }
+    if (uid === currentUser.uid) { alert('自分自身は登録できません'); return; }
+    friendsList.push(uid);
+    localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
+    input.value = '';
+    renderFriendsList();
+  };
+
+  window.removeFriend = function(index) {
+    friendsList.splice(index, 1);
+    localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
+    renderFriendsList();
   };
 
   // ===== アルバム描画 =====
@@ -1790,19 +2104,30 @@
     const actionsRight = document.createElement('div');
     actionsRight.className = 'diary-card-actions-right';
 
+    // 投稿者本人のみ編集・削除ボタンを表示
+    const isOwner = currentUser && diary.uid && currentUser.uid === diary.uid;
+
     const editBtn = document.createElement('button');
     editBtn.className = 'diary-edit-btn';
     editBtn.textContent = '✏️ 編集';
     editBtn.onclick = () => startEdit(diary);
-    actionsRight.appendChild(editBtn);
+    if (isOwner) actionsRight.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
     delBtn.className = 'diary-delete-btn';
     delBtn.textContent = '🗑 消す';
     delBtn.onclick = () => deleteDiary(diary.fbKey);
-    actionsRight.appendChild(delBtn);
+    if (isOwner) actionsRight.appendChild(delBtn);
 
-    actions.appendChild(actionsRight);
+    // 公開範囲バッジ（全体以外なら表示）
+    if (diary.visibility === 'friends') {
+      const badge = document.createElement('span');
+      badge.className = 'visibility-badge friends';
+      badge.textContent = '⭐ 限定';
+      actionsRight.appendChild(badge);
+    }
+
+    if (actionsRight.children.length > 0) actions.appendChild(actionsRight);
 
     card.appendChild(actions);
 

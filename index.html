@@ -783,8 +783,10 @@
     /* ===== ログイン状態バー ===== */
     .auth-bar {
       position: fixed;
-      top: 16px; left: 50%;
-      transform: translateX(-50%);
+      top: 16px;
+      right: 66px; /* 設定ボタン(42px) + gap(8px) = 50px 右から */
+      left: auto;
+      transform: none;
       z-index: 200;
       display: flex;
       align-items: center;
@@ -799,6 +801,7 @@
       font-size: 13px;
       color: #2c4a7c;
       white-space: nowrap;
+      max-width: calc(100vw - 140px); /* 画面幅に収まるよう制限 */
     }
     .auth-bar-avatar {
       width: 26px; height: 26px;
@@ -806,7 +809,7 @@
       object-fit: cover;
       border: 2px solid rgba(100,150,220,0.4);
     }
-    .auth-bar-name { font-weight: 700; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+    .auth-bar-name { font-weight: 700; max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
     .auth-bar-login-btn {
       padding: 5px 14px;
       background: linear-gradient(135deg, #4a7fd4, #2a5ab8);

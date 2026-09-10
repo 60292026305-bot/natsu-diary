@@ -944,62 +944,194 @@
       background: rgba(255,255,255,0.96);
       backdrop-filter: blur(18px);
       border-radius: 24px;
-      padding: 32px 28px 28px;
-      width: min(440px, 92vw);
+      padding: 0;
+      width: min(480px, 95vw);
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       box-shadow: 0 20px 60px rgba(0,0,0,0.22);
       position: relative;
       animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
     }
     .mypage-close {
       position: absolute; top: 14px; right: 18px;
-      font-size: 22px; cursor: pointer; color: #6688cc;
-      transition: transform 0.15s;
+      font-size: 22px; cursor: pointer; color: rgba(255,255,255,0.9);
+      transition: transform 0.15s; z-index: 10;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
     }
     .mypage-close:hover { transform: scale(1.2) rotate(90deg); }
-    .mypage-modal h3 {
-      font-family: 'Yomogi', cursive;
-      color: #2c4a7c; font-size: 1.15rem;
-      margin-bottom: 20px;
-      border-bottom: 2px dashed rgba(100,150,220,0.35);
-      padding-bottom: 8px;
+
+    /* ===== プロフィールヘッダー ===== */
+    .mypage-header {
+      background: linear-gradient(160deg, #4a7fd4 0%, #2a5ab8 60%, #1a3a88 100%);
+      padding: 32px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+    .mypage-avatar-wrap {
+      position: relative;
+      cursor: pointer;
     }
     .mypage-avatar {
-      width: 72px; height: 72px; border-radius: 50%;
-      object-fit: cover; display: block; margin: 0 auto 12px;
-      border: 3px solid rgba(100,150,220,0.4);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+      width: 80px; height: 80px; border-radius: 50%;
+      object-fit: cover; display: block;
+      border: 3px solid rgba(255,255,255,0.85);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
     }
     .mypage-avatar-placeholder {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: linear-gradient(135deg,#a8d0f8,#7cb0e8);
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 12px; font-size: 2rem;
+      font-size: 2.4rem;
+      border: 3px solid rgba(255,255,255,0.6);
+    }
+    .mypage-avatar-edit-badge {
+      position: absolute; bottom: 2px; right: 2px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #fff; color: #4a7fd4;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     .mypage-displayname {
-      font-family: 'Yomogi', cursive; font-size: 1.1rem;
-      color: #2c4a7c; text-align: center; font-weight: 700;
-      margin-bottom: 4px;
+      font-family: 'Yomogi', cursive; font-size: 1.15rem;
+      color: #fff; font-weight: 700; text-align: center;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
     .mypage-email {
-      font-family: 'Zen Maru Gothic', sans-serif; font-size: 12px;
-      color: #888; text-align: center; margin-bottom: 20px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 11px;
+      color: rgba(255,255,255,0.75); text-align: center;
     }
     .mypage-stats {
-      display: flex; gap: 12px; margin-bottom: 20px;
+      display: flex; gap: 10px; margin-top: 4px;
     }
     .mypage-stat {
-      flex: 1; background: rgba(220,235,255,0.4);
-      border-radius: 12px; padding: 10px;
+      flex: 1; background: rgba(255,255,255,0.18);
+      border-radius: 10px; padding: 8px 6px;
       text-align: center;
     }
     .mypage-stat-num {
-      font-family: 'Yomogi', cursive; font-size: 1.4rem;
-      color: #2c4a7c; font-weight: 700; display: block;
+      font-family: 'Yomogi', cursive; font-size: 1.3rem;
+      color: #fff; font-weight: 700; display: block;
     }
     .mypage-stat-label {
-      font-family: 'Yomogi', cursive; font-size: 11px; color: #6a8ac8;
+      font-family: 'Yomogi', cursive; font-size: 10px;
+      color: rgba(255,255,255,0.75);
     }
-    /* 公開範囲管理リスト */
+
+    /* ===== マイページタブ ===== */
+    .mypage-tabs {
+      display: flex;
+      border-bottom: 1.5px solid rgba(100,150,220,0.2);
+      background: rgba(255,255,255,0.95);
+      flex-shrink: 0;
+    }
+    .mypage-tab {
+      flex: 1; padding: 11px 6px;
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #7a9ac8; cursor: pointer; border: none;
+      background: none; border-bottom: 2.5px solid transparent;
+      transition: all 0.2s;
+    }
+    .mypage-tab:hover { color: #2c4a7c; background: rgba(200,220,255,0.15); }
+    .mypage-tab.active {
+      color: #2c4a7c; font-weight: 700;
+      border-bottom-color: #4a7fd4;
+      background: rgba(200,220,255,0.1);
+    }
+
+    /* ===== タブコンテンツ共通 ===== */
+    .mypage-tab-content {
+      overflow-y: auto; flex: 1;
+      padding: 18px 22px 20px;
+    }
+    .mypage-tab-panel { display: none; }
+    .mypage-tab-panel.active { display: block; }
+
+    /* ===== プロフィール設定フォーム ===== */
+    .mypage-section-title {
+      font-family: 'Yomogi', cursive; font-size: 0.85rem;
+      color: #2c4a7c; font-weight: 700; margin-bottom: 8px;
+    }
+    .mypage-input {
+      width: 100%; padding: 9px 13px;
+      border: 1.5px solid rgba(100,150,220,0.4); border-radius: 10px;
+      background: rgba(255,255,255,0.8);
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 14px;
+      color: #1a2a4a; margin-bottom: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .mypage-input:focus {
+      outline: none; border-color: #5588dd;
+      box-shadow: 0 0 0 3px rgba(85,136,221,0.18);
+    }
+    .mypage-save-btn {
+      width: 100%; padding: 11px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 12px;
+      font-family: 'Yomogi', cursive; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 0 #1a3a88;
+      transition: all 0.15s; margin-top: 4px;
+    }
+    .mypage-save-btn:hover { transform: translateY(-1px); opacity: 0.93; }
+    .mypage-save-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .mypage-save-msg {
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      text-align: center; margin-top: 8px; min-height: 18px;
+    }
+    .mypage-save-msg.ok  { color: #2a8a2a; }
+    .mypage-save-msg.err { color: #c00; }
+    .mypage-uid-box {
+      background: rgba(220,235,255,0.4);
+      border: 1.5px solid rgba(100,150,220,0.25);
+      border-radius: 10px; padding: 8px 12px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 11px;
+      color: #4a6a9c; word-break: break-all;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; margin-top: 12px;
+    }
+    .mypage-uid-copy-btn {
+      padding: 3px 10px; background: rgba(85,136,221,0.15);
+      border: 1.5px solid rgba(85,136,221,0.3); border-radius: 20px;
+      font-family: 'Yomogi', cursive; font-size: 11px; color: #4a6a9c;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .mypage-uid-copy-btn:hover { background: rgba(85,136,221,0.3); }
+
+    /* ===== 自分の投稿一覧（タブ内） ===== */
+    .mypage-diary-list { display: flex; flex-direction: column; gap: 10px; }
+    .mypage-diary-item {
+      background: rgba(220,235,255,0.35);
+      border: 1.5px solid rgba(100,150,220,0.2);
+      border-radius: 12px; padding: 10px 14px;
+    }
+    .mypage-diary-item-date {
+      font-family: 'Yomogi', cursive; font-size: 11px; color: #7a9ac8;
+      margin-bottom: 4px;
+    }
+    .mypage-diary-item-text {
+      font-family: 'Yomogi', cursive; font-size: 13px; color: #2a3a5a;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ===== 投稿者アイコン（カード内） ===== */
+    .diary-card-user-icon {
+      width: 22px; height: 22px; border-radius: 50%;
+      object-fit: cover; border: 1.5px solid rgba(100,150,220,0.3);
+      flex-shrink: 0;
+    }
+    .diary-card-user-icon-placeholder {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg,#a8d0f8,#7cb0e8);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+    /* ===== 公開範囲管理リスト ===== */
     .mypage-friends-section { margin-bottom: 16px; }
     .mypage-friends-section h4 {
       font-family: 'Yomogi', cursive; font-size: 0.9rem;
@@ -1457,46 +1589,93 @@
 <div class="mypage-overlay" id="mypage-overlay" onclick="closeMypage()">
   <div class="mypage-modal" onclick="event.stopPropagation()">
     <span class="mypage-close" onclick="closeMypage()">✕</span>
-    <h3>👤 マイページ</h3>
 
-    <!-- アバター＋ユーザー情報 -->
-    <div id="mypage-avatar-wrap"></div>
-    <div class="mypage-displayname" id="mypage-displayname"></div>
-    <div class="mypage-email" id="mypage-email"></div>
-
-    <!-- 投稿統計 -->
-    <div class="mypage-stats">
-      <div class="mypage-stat">
-        <span class="mypage-stat-num" id="mypage-total">0</span>
-        <span class="mypage-stat-label">投稿数</span>
+    <!-- プロフィールヘッダー -->
+    <div class="mypage-header">
+      <div class="mypage-avatar-wrap" onclick="switchMypageTab('settings')" title="プロフィールを編集">
+        <div id="mypage-avatar-wrap-inner"></div>
+        <div class="mypage-avatar-edit-badge">✏️</div>
       </div>
-      <div class="mypage-stat">
-        <span class="mypage-stat-num" id="mypage-public-count">0</span>
-        <span class="mypage-stat-label">全体公開</span>
-      </div>
-      <div class="mypage-stat">
-        <span class="mypage-stat-num" id="mypage-friends-count">0</span>
-        <span class="mypage-stat-label">限定公開</span>
+      <div class="mypage-displayname" id="mypage-displayname"></div>
+      <div class="mypage-email" id="mypage-email"></div>
+      <div class="mypage-stats">
+        <div class="mypage-stat">
+          <span class="mypage-stat-num" id="mypage-total">0</span>
+          <span class="mypage-stat-label">投稿数</span>
+        </div>
+        <div class="mypage-stat">
+          <span class="mypage-stat-num" id="mypage-public-count">0</span>
+          <span class="mypage-stat-label">全体公開</span>
+        </div>
+        <div class="mypage-stat">
+          <span class="mypage-stat-num" id="mypage-friends-count">0</span>
+          <span class="mypage-stat-label">限定公開</span>
+        </div>
       </div>
     </div>
 
-    <!-- 親しい友達リスト管理 -->
-    <div class="mypage-friends-section">
-      <h4>⭐ 親しい友達（UID登録）</h4>
-      <p style="font-family:'Yomogi',cursive;font-size:11px;color:#888;margin-bottom:6px;">
-        登録したUIDのユーザーだけが「親しい友達のみ」投稿を見られます
-      </p>
-      <div class="mypage-friends-list" id="mypage-friends-list"></div>
-      <div class="mypage-friend-add-row">
-        <input type="text" id="mypage-friend-uid-input" placeholder="追加するユーザーのUID">
-        <button class="mypage-friend-add-btn" onclick="addFriend()">追加</button>
-      </div>
-      <p style="font-family:'Yomogi',cursive;font-size:10px;color:#aaa;margin-top:6px;">
-        💡 自分のUIDは「<span id="mypage-my-uid" style="font-weight:700;color:#5588dd;cursor:pointer;" onclick="copyMyUid()">コピー</span>」で確認・コピーできます
-      </p>
+    <!-- タブ -->
+    <div class="mypage-tabs">
+      <button class="mypage-tab active" id="mptab-posts"    onclick="switchMypageTab('posts')">📖 自分の投稿</button>
+      <button class="mypage-tab"        id="mptab-friends"  onclick="switchMypageTab('friends')">⭐ 友達</button>
+      <button class="mypage-tab"        id="mptab-settings" onclick="switchMypageTab('settings')">⚙️ 設定</button>
     </div>
 
-    <button class="mypage-logout-btn" onclick="doLogout();closeMypage()">ログアウト</button>
+    <!-- タブコンテンツ -->
+    <div class="mypage-tab-content">
+
+      <!-- 自分の投稿タブ -->
+      <div class="mypage-tab-panel active" id="mppanel-posts">
+        <div class="mypage-diary-list" id="mypage-diary-list">
+          <p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">
+            投稿がありません
+          </p>
+        </div>
+      </div>
+
+      <!-- 親しい友達タブ -->
+      <div class="mypage-tab-panel" id="mppanel-friends">
+        <div class="mypage-friends-section">
+          <p class="mypage-section-title">⭐ 親しい友達（UID登録）</p>
+          <p style="font-family:'Yomogi',cursive;font-size:11px;color:#888;margin-bottom:8px;">
+            登録したUIDのユーザーだけが「親しい友達のみ」投稿を見られます
+          </p>
+          <div class="mypage-friends-list" id="mypage-friends-list"></div>
+          <div class="mypage-friend-add-row">
+            <input type="text" id="mypage-friend-uid-input" placeholder="追加するユーザーのUID">
+            <button class="mypage-friend-add-btn" onclick="addFriend()">追加</button>
+          </div>
+        </div>
+        <div class="mypage-uid-box">
+          <span>自分のUID：<span id="mypage-my-uid" style="font-weight:700;color:#5588dd;"></span></span>
+          <button class="mypage-uid-copy-btn" onclick="copyMyUid()">📋 コピー</button>
+        </div>
+      </div>
+
+      <!-- 設定タブ -->
+      <div class="mypage-tab-panel" id="mppanel-settings">
+        <p class="mypage-section-title">📝 表示名の変更</p>
+        <input class="mypage-input" type="text" id="mypage-name-input"
+               placeholder="表示名（1〜20文字）" maxlength="20">
+
+        <p class="mypage-section-title">🖼️ プロフィールアイコンURL</p>
+        <input class="mypage-input" type="url" id="mypage-avatar-input"
+               placeholder="https://... (画像URL)">
+        <p style="font-family:'Yomogi',cursive;font-size:10px;color:#aaa;margin-top:-6px;margin-bottom:10px;">
+          ※ GoogleアカウントのアイコンURLや公開画像URLを入力してください
+        </p>
+
+        <button class="mypage-save-btn" id="mypage-save-btn" onclick="saveProfile()">
+          ✅ プロフィールを保存
+        </button>
+        <div class="mypage-save-msg" id="mypage-save-msg"></div>
+
+        <button class="mypage-logout-btn" style="margin-top:16px;" onclick="doLogout();closeMypage()">
+          ログアウト
+        </button>
+      </div>
+
+    </div><!-- /mypage-tab-content -->
   </div>
 </div>
 
@@ -1542,6 +1721,7 @@
   const db  = getDatabase(app);
   const auth = getAuth(app);
   const diariesRef = ref(db, 'diaries');
+  const usersRef   = ref(db, 'users'); // プロフィール保存用
 
   // ===== 状態 =====
   const ITEMS_PER_PAGE = 3;
@@ -1549,8 +1729,9 @@
   let allDiaries   = [];
   let pendingPhotos = [];
   let editingKey   = null;
-  let currentUser  = null; // ログイン中のユーザー（nullなら未ログイン）
-  let friendsList  = [];   // 自分が登録した「親しい友達」UIDの配列
+  let currentUser  = null;
+  let friendsList  = [];
+  let userProfile  = { displayName: '', avatarUrl: '' }; // Firebase /users/{uid} の内容
   let calYear, calMonth;
   const now = new Date();
   calYear = now.getFullYear(); calMonth = now.getMonth();
@@ -1634,18 +1815,44 @@
     if (user) {
       guestEl.style.display = 'none';
       userEl.style.display  = 'flex';
-      document.getElementById('auth-name').textContent   = user.displayName || user.email;
-      document.getElementById('auth-avatar').src         = user.photoURL    || '';
-      document.getElementById('auth-avatar').style.display = user.photoURL ? '' : 'none';
       // friendsList を LocalStorage から復元
       const saved = localStorage.getItem('friends_' + user.uid);
       friendsList = saved ? JSON.parse(saved) : [];
+
+      // Firebase /users/{uid} からプロフィールを読み込む
+      onValue(ref(db, `users/${user.uid}`), (snap) => {
+        const data = snap.val();
+        userProfile = data
+          ? { displayName: data.displayName || '', avatarUrl: data.avatarUrl || '' }
+          : { displayName: user.displayName || '', avatarUrl: user.photoURL || '' };
+
+        // auth-bar の表示名・アイコンに反映
+        const dispName = userProfile.displayName || user.displayName || user.email;
+        const avatarUrl = userProfile.avatarUrl || user.photoURL || '';
+        document.getElementById('auth-name').textContent = dispName;
+        const avatarEl = document.getElementById('auth-avatar');
+        if (avatarUrl) {
+          avatarEl.src = avatarUrl;
+          avatarEl.style.display = '';
+        } else {
+          avatarEl.style.display = 'none';
+        }
+
+        // 投稿フォームの名前欄を自動入力（まだ空の場合のみ）
+        const nameInput = document.getElementById('diary-name');
+        if (!nameInput.value) nameInput.value = userProfile.displayName || user.displayName || '';
+
+        // 表示が変わるのでアルバムも再描画
+        renderPage();
+        renderCalendar();
+      }, { onlyOnce: false });
+
     } else {
       guestEl.style.display = 'flex';
       userEl.style.display  = 'none';
-      friendsList = [];
+      friendsList  = [];
+      userProfile  = { displayName: '', avatarUrl: '' };
     }
-    // 認証状態変化時にアルバムを再描画（公開範囲フィルタ適用）
     renderPage();
     renderCalendar();
   });
@@ -1808,7 +2015,13 @@
   window.saveDiary = async function () {
     if (!requireAuth()) return; // 未ログインならログインモーダルを開く
 
-    const name    = document.getElementById('diary-name').value.trim();
+    // 名前欄が空なら userProfile.displayName を自動補完
+    const nameInput = document.getElementById('diary-name');
+    if (!nameInput.value.trim() && (userProfile.displayName || currentUser.displayName)) {
+      nameInput.value = userProfile.displayName || currentUser.displayName;
+    }
+
+    const name    = nameInput.value.trim();
     const date    = document.getElementById('diary-date').value;
     const text    = document.getElementById('diary-text').value.trim();
     const mood    = document.querySelector('input[name="mood"]:checked').value;
@@ -1932,34 +2145,136 @@
   };
 
   // ===== マイページ =====
+  // ユーザーアイコンのキャッシュ（uid → avatarUrl）
+  const userIconCache = {};
+
+  // 他ユーザーのプロフィールを取得してキャッシュ
+  function fetchUserIcon(uid) {
+    if (userIconCache[uid] !== undefined) return Promise.resolve(userIconCache[uid]);
+    return new Promise(resolve => {
+      onValue(ref(db, `users/${uid}/avatarUrl`), (snap) => {
+        const url = snap.val() || '';
+        userIconCache[uid] = url;
+        resolve(url);
+      }, { onlyOnce: true });
+    });
+  }
+
+  // カード内の投稿者アイコン要素を生成
+  async function buildUserIconEl(uid, photoURL) {
+    const url = await fetchUserIcon(uid) || photoURL || '';
+    if (url) {
+      const img = document.createElement('img');
+      img.className = 'diary-card-user-icon';
+      img.src = url; img.alt = '';
+      return img;
+    }
+    const el = document.createElement('span');
+    el.className = 'diary-card-user-icon-placeholder';
+    el.textContent = '👤';
+    return el;
+  }
+
   window.openMypage = function() {
     if (!currentUser) return;
-    // ユーザー情報表示
-    const avatarWrap = document.getElementById('mypage-avatar-wrap');
-    if (currentUser.photoURL) {
-      avatarWrap.innerHTML = `<img class="mypage-avatar" src="${currentUser.photoURL}" alt="">`;
-    } else {
-      avatarWrap.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
-    }
-    document.getElementById('mypage-displayname').textContent = currentUser.displayName || currentUser.email;
-    document.getElementById('mypage-email').textContent = currentUser.email || '';
-
-    // UID表示
-    document.getElementById('mypage-my-uid').textContent = currentUser.uid;
-
-    // 投稿統計
-    const myDiaries = allDiaries.filter(d => d.uid === currentUser.uid);
-    document.getElementById('mypage-total').textContent        = myDiaries.length;
-    document.getElementById('mypage-public-count').textContent = myDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
-    document.getElementById('mypage-friends-count').textContent = myDiaries.filter(d => d.visibility === 'friends').length;
-
-    // 友達リスト表示
-    renderFriendsList();
+    updateMypageHeader();
+    switchMypageTab('posts');
     document.getElementById('mypage-overlay').classList.add('open');
   };
 
   window.closeMypage = function() {
     document.getElementById('mypage-overlay').classList.remove('open');
+  };
+
+  function updateMypageHeader() {
+    // アバター
+    const avatarUrl = userProfile.avatarUrl || currentUser.photoURL || '';
+    const inner = document.getElementById('mypage-avatar-wrap-inner');
+    if (avatarUrl) {
+      inner.innerHTML = `<img class="mypage-avatar" src="${avatarUrl}" alt="">`;
+    } else {
+      inner.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
+    }
+    // 表示名・メール
+    const dispName = userProfile.displayName || currentUser.displayName || currentUser.email;
+    document.getElementById('mypage-displayname').textContent = dispName;
+    document.getElementById('mypage-email').textContent = currentUser.email || '';
+    // UID
+    document.getElementById('mypage-my-uid').textContent = currentUser.uid;
+    // 統計（全件から自分の投稿を探す）
+    const myDiaries = allDiaries.filter(d => d.uid === currentUser.uid);
+    document.getElementById('mypage-total').textContent         = myDiaries.length;
+    document.getElementById('mypage-public-count').textContent  = myDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
+    document.getElementById('mypage-friends-count').textContent = myDiaries.filter(d => d.visibility === 'friends').length;
+  }
+
+  window.switchMypageTab = function(tab) {
+    ['posts','friends','settings'].forEach(t => {
+      document.getElementById('mptab-'   + t).classList.toggle('active', t === tab);
+      document.getElementById('mppanel-' + t).classList.toggle('active', t === tab);
+    });
+    if (tab === 'posts')    renderMypagePosts();
+    if (tab === 'friends')  renderFriendsList();
+    if (tab === 'settings') {
+      // 設定フォームに現在値をプリセット
+      document.getElementById('mypage-name-input').value   = userProfile.displayName || currentUser.displayName || '';
+      document.getElementById('mypage-avatar-input').value = userProfile.avatarUrl   || currentUser.photoURL    || '';
+      document.getElementById('mypage-save-msg').textContent = '';
+    }
+  };
+
+  function renderMypagePosts() {
+    const myDiaries = allDiaries.filter(d => d.uid === currentUser.uid);
+    const listEl = document.getElementById('mypage-diary-list');
+    if (!listEl) return;
+    if (myDiaries.length === 0) {
+      listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">投稿がありません</p>`;
+      return;
+    }
+    listEl.innerHTML = '';
+    myDiaries.forEach(d => {
+      const item = document.createElement('div');
+      item.className = 'mypage-diary-item';
+      const badge = d.visibility === 'friends'
+        ? '<span class="visibility-badge friends" style="margin-left:6px;">⭐ 限定</span>'
+        : '';
+      item.innerHTML = `
+        <div class="mypage-diary-item-date">📅 ${d.date} ${badge}</div>
+        <div class="mypage-diary-item-text">${d.text}</div>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+
+  // ===== プロフィール保存 =====
+  window.saveProfile = async function() {
+    if (!currentUser) return;
+    const newName   = document.getElementById('mypage-name-input').value.trim();
+    const newAvatar = document.getElementById('mypage-avatar-input').value.trim();
+    const msgEl     = document.getElementById('mypage-save-msg');
+    const btn       = document.getElementById('mypage-save-btn');
+
+    if (!newName) { msgEl.textContent = '表示名を入力してください'; msgEl.className = 'mypage-save-msg err'; return; }
+
+    btn.disabled = true;
+    msgEl.textContent = ''; msgEl.className = 'mypage-save-msg';
+    try {
+      await set(ref(db, `users/${currentUser.uid}`), {
+        displayName: newName,
+        avatarUrl:   newAvatar
+      });
+      // キャッシュ更新
+      userIconCache[currentUser.uid] = newAvatar;
+      msgEl.textContent = '✅ 保存しました！';
+      msgEl.className   = 'mypage-save-msg ok';
+      // ヘッダー更新
+      updateMypageHeader();
+    } catch (e) {
+      msgEl.textContent = '保存に失敗しました: ' + e.message;
+      msgEl.className   = 'mypage-save-msg err';
+    } finally {
+      btn.disabled = false;
+    }
   };
 
   window.copyMyUid = function() {
@@ -2052,6 +2367,13 @@
           ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
         </span>` : ''}
     `;
+    // 投稿者アイコンを非同期で追加（uidがある場合）
+    if (diary.uid) {
+      buildUserIconEl(diary.uid, '').then(iconEl => {
+        iconEl.setAttribute('data-html2canvas-ignore', 'true');
+        caption.insertBefore(iconEl, caption.firstChild);
+      });
+    }
     // BGM再生ボタン（bgmIdがある場合のみ）
     if (diary.bgmId) {
       const playBtn = document.createElement('button');
@@ -2624,7 +2946,7 @@
   };
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); }
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); }
   });
 </script>
 </body>

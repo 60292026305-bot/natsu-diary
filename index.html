@@ -1239,6 +1239,72 @@
       cursor: pointer; transition: opacity 0.2s;
     }
     .mypage-friend-add-btn:hover { opacity: 0.88; }
+
+    /* ===== 友達検索UI ===== */
+    .friend-search-row {
+      display: flex; gap: 6px; margin-bottom: 8px;
+    }
+    .friend-search-row input {
+      flex: 1; padding: 8px 12px;
+      border: 1.5px solid rgba(100,150,220,0.4); border-radius: 10px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 13px;
+      background: rgba(255,255,255,0.8); color: #1a2a4a;
+    }
+    .friend-search-btn {
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      cursor: pointer; transition: opacity 0.2s; white-space: nowrap;
+    }
+    .friend-search-btn:hover { opacity: 0.88; }
+    .friend-search-results {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 12px;
+    }
+    .friend-search-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px;
+      background: rgba(220,235,255,0.4);
+      border: 1.5px solid rgba(100,150,220,0.25);
+      border-radius: 12px; transition: background 0.15s;
+    }
+    .friend-search-item:hover { background: rgba(200,220,255,0.6); }
+    .friend-search-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; border: 2px solid rgba(100,150,220,0.3);
+      flex-shrink: 0;
+    }
+    .friend-search-icon-placeholder {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg,#a8d0f8,#7cb0e8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .friend-search-name {
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      color: #2c4a7c; flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .friend-search-add-btn {
+      padding: 4px 12px; flex-shrink: 0;
+      border: none; border-radius: 20px;
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .friend-search-add-btn.add {
+      background: linear-gradient(135deg,#4a7fd4,#2a5ab8);
+      color: #fff; box-shadow: 0 2px 6px rgba(30,80,180,0.2);
+    }
+    .friend-search-add-btn.add:hover { opacity: 0.85; }
+    .friend-search-add-btn.added {
+      background: rgba(200,220,200,0.6);
+      color: #2a6a2a; cursor: default;
+    }
+    .friend-search-empty {
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #aaa; text-align: center; padding: 12px 0;
+    }
     .mypage-logout-btn {
       width: 100%; padding: 11px;
       background: rgba(240,235,255,0.8);
@@ -1703,19 +1769,29 @@
 
       <!-- 親しい友達タブ -->
       <div class="mypage-tab-panel" id="mppanel-friends">
+        <!-- 登録済み一覧 -->
         <div class="mypage-friends-section">
-          <p class="mypage-section-title">⭐ 親しい友達（UID登録）</p>
+          <p class="mypage-section-title">⭐ 登録中の親しい友達</p>
           <p style="font-family:'Yomogi',cursive;font-size:11px;color:#888;margin-bottom:8px;">
-            登録したUIDのユーザーだけが「親しい友達のみ」投稿を見られます
+            登録したユーザーだけが「親しい友達のみ」投稿を見られます
           </p>
           <div class="mypage-friends-list" id="mypage-friends-list"></div>
-          <div class="mypage-friend-add-row">
-            <input type="text" id="mypage-friend-uid-input" placeholder="追加するユーザーのUID">
-            <button class="mypage-friend-add-btn" onclick="addFriend()">追加</button>
-          </div>
         </div>
+
+        <!-- ユーザー名検索で追加 -->
+        <div style="margin-top:14px;">
+          <p class="mypage-section-title">🔍 ユーザーを検索して追加</p>
+          <div class="friend-search-row">
+            <input type="text" id="friend-search-input"
+                   placeholder="表示名で検索…"
+                   oninput="onFriendSearchInput(this.value)">
+            <button class="friend-search-btn" onclick="searchFriends()">検索</button>
+          </div>
+          <div class="friend-search-results" id="friend-search-results"></div>
+        </div>
+
         <div class="mypage-uid-box">
-          <span>自分のUID：<span id="mypage-my-uid" style="font-weight:700;color:#5588dd;"></span></span>
+          <span style="font-family:'Yomogi',cursive;font-size:11px;">自分のUID：<span id="mypage-my-uid" style="font-weight:700;color:#5588dd;"></span></span>
           <button class="mypage-uid-copy-btn" onclick="copyMyUid()">📋 コピー</button>
         </div>
       </div>
@@ -2298,7 +2374,15 @@
       document.getElementById('mppanel-' + t).classList.toggle('active', t === tab);
     });
     if (tab === 'posts')    renderMypagePosts();
-    if (tab === 'friends')  renderFriendsList();
+    if (tab === 'friends')  {
+      renderFriendsList();
+      // 検索欄・結果をリセット
+      const si = document.getElementById('friend-search-input');
+      if (si) si.value = '';
+      const sr = document.getElementById('friend-search-results');
+      if (sr) sr.innerHTML = '';
+      lastSearchResults = [];
+    }
     if (tab === 'settings') {
       // 設定フォームに現在値をプリセット
       document.getElementById('mypage-name-input').value   = userProfile.displayName || currentUser.displayName || '';
@@ -2429,31 +2513,121 @@
     listEl.innerHTML = '';
     friendsList.forEach((uid, i) => {
       const item = document.createElement('div');
-      item.className = 'mypage-friend-item';
+      item.className = 'friend-search-item';
+      // アイコン（キャッシュから取得）
+      const avatarUrl = userIconCache[uid] || '';
+      const iconHtml = avatarUrl
+        ? `<img class="friend-search-icon" src="${avatarUrl}" alt="">`
+        : `<div class="friend-search-icon-placeholder">👤</div>`;
+      // 表示名（キャッシュから取得）
+      const dispName = userNameCache[uid] || uid.slice(0,8) + '…' + uid.slice(-4);
       item.innerHTML = `
-        <span>${uid.slice(0,8)}…${uid.slice(-4)}</span>
+        ${iconHtml}
+        <span class="friend-search-name">${dispName}</span>
         <button class="mypage-friend-remove" onclick="removeFriend(${i})" title="削除">✕</button>
       `;
       listEl.appendChild(item);
     });
   }
 
-  window.addFriend = function() {
-    const input = document.getElementById('mypage-friend-uid-input');
-    const uid = input.value.trim();
-    if (!uid) return;
-    if (friendsList.includes(uid)) { alert('すでに登録済みです'); return; }
-    if (uid === currentUser.uid) { alert('自分自身は登録できません'); return; }
-    friendsList.push(uid);
-    localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
-    input.value = '';
-    renderFriendsList();
-  };
-
   window.removeFriend = function(index) {
     friendsList.splice(index, 1);
     localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
     renderFriendsList();
+    // 検索結果の「追加済み」表示も更新
+    renderFriendSearchResults(lastSearchResults);
+  };
+
+  // ===== 友達ユーザー名検索 =====
+  let lastSearchResults = []; // 最後の検索結果をキャッシュ
+  const userNameCache   = {}; // uid → displayName のキャッシュ
+  let searchDebounceTimer = null;
+
+  // 入力中のデバウンス検索（300ms後に実行）
+  window.onFriendSearchInput = function(val) {
+    clearTimeout(searchDebounceTimer);
+    if (!val.trim()) {
+      document.getElementById('friend-search-results').innerHTML = '';
+      lastSearchResults = [];
+      return;
+    }
+    searchDebounceTimer = setTimeout(() => searchFriends(), 300);
+  };
+
+  window.searchFriends = async function() {
+    const q = document.getElementById('friend-search-input').value.trim().toLowerCase();
+    const resultsEl = document.getElementById('friend-search-results');
+    if (!q) { resultsEl.innerHTML = ''; return; }
+
+    resultsEl.innerHTML = `<div class="friend-search-empty">🔍 検索中…</div>`;
+
+    try {
+      // Firebase /users 全件取得して表示名で部分一致フィルタ
+      const snap = await new Promise(resolve => {
+        onValue(ref(db, 'users'), resolve, { onlyOnce: true });
+      });
+      const data = snap.val();
+      if (!data) {
+        resultsEl.innerHTML = `<div class="friend-search-empty">ユーザーが見つかりませんでした</div>`;
+        lastSearchResults = [];
+        return;
+      }
+
+      // 部分一致で絞り込み・自分を除外
+      lastSearchResults = Object.entries(data)
+        .filter(([uid, profile]) =>
+          uid !== currentUser.uid &&
+          profile.displayName &&
+          profile.displayName.toLowerCase().includes(q)
+        )
+        .map(([uid, profile]) => ({ uid, ...profile }));
+
+      // キャッシュに保存
+      lastSearchResults.forEach(u => {
+        userIconCache[u.uid] = u.avatarUrl || '';
+        userNameCache[u.uid] = u.displayName || '';
+      });
+
+      renderFriendSearchResults(lastSearchResults);
+    } catch (e) {
+      resultsEl.innerHTML = `<div class="friend-search-empty">検索に失敗しました: ${e.message}</div>`;
+    }
+  };
+
+  function renderFriendSearchResults(results) {
+    const resultsEl = document.getElementById('friend-search-results');
+    if (!resultsEl) return;
+    if (!results || results.length === 0) {
+      resultsEl.innerHTML = `<div class="friend-search-empty">見つかりませんでした 🙈</div>`;
+      return;
+    }
+    resultsEl.innerHTML = '';
+    results.forEach(user => {
+      const isAdded = friendsList.includes(user.uid);
+      const item = document.createElement('div');
+      item.className = 'friend-search-item';
+      const iconHtml = user.avatarUrl
+        ? `<img class="friend-search-icon" src="${user.avatarUrl}" alt="">`
+        : `<div class="friend-search-icon-placeholder">👤</div>`;
+      item.innerHTML = `
+        ${iconHtml}
+        <span class="friend-search-name">${user.displayName}</span>
+        <button class="friend-search-add-btn ${isAdded ? 'added' : 'add'}"
+                ${isAdded ? 'disabled' : `onclick="addFriendByUid('${user.uid}')"`}>
+          ${isAdded ? '✅ 追加済み' : '➕ 追加'}
+        </button>
+      `;
+      resultsEl.appendChild(item);
+    });
+  }
+
+  window.addFriendByUid = function(uid) {
+    if (friendsList.includes(uid)) return;
+    if (uid === currentUser.uid) return;
+    friendsList.push(uid);
+    localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
+    renderFriendsList();
+    renderFriendSearchResults(lastSearchResults); // ボタンを「追加済み」に更新
   };
 
   // ===== アルバム描画 =====

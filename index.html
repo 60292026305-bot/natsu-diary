@@ -662,6 +662,25 @@
     }
     .settings-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1) rotate(30deg); }
 
+    /* マイページ固定ボタン（設定ボタンの下） */
+    .mypage-fixed-btn {
+      position: fixed;
+      top: 66px; /* 設定ボタン(42px) + gap(8px) = 50px + top(16px) */
+      right: 16px;
+      z-index: 200;
+      background: rgba(255,255,255,0.75);
+      border: 1.5px solid rgba(255,255,255,0.8);
+      border-radius: 50%;
+      width: 42px; height: 42px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .mypage-fixed-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
+
     /* ===== 設定モーダル ===== */
     .settings-overlay {
       display: none;
@@ -932,40 +951,56 @@
     .login-name-row { display: none; }
     .login-name-row.visible { display: block; }
 
-    /* ===== マイページモーダル ===== */
+    /* ===== マイページ（全画面） ===== */
     .mypage-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(10,20,60,0.6); z-index: 400;
-      align-items: center; justify-content: center;
-      backdrop-filter: blur(5px);
+      z-index: 400;
+      background: #f0f4ff; /* 全画面なので背景は白系 */
+      overflow-y: auto;
     }
-    .mypage-overlay.open { display: flex; }
+    .mypage-overlay.open { display: block; }
     .mypage-modal {
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(18px);
-      border-radius: 24px;
-      padding: 0;
-      width: min(480px, 95vw);
-      max-height: 90vh;
-      overflow: hidden;
+      background: transparent;
+      width: 100%;
+      min-height: 100vh;
+      max-height: none;
+      overflow: visible;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.22);
-      position: relative;
-      animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
+      animation: fadeInPage 0.2s ease;
+    }
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
     .mypage-close {
-      position: absolute; top: 14px; right: 18px;
-      font-size: 22px; cursor: pointer; color: rgba(255,255,255,0.9);
-      transition: transform 0.15s; z-index: 10;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      position: fixed; top: 16px; left: 16px;
+      z-index: 410;
+      font-size: 0; /* テキストは非表示、ボタン形式に */
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,0.85);
+      border: 1.5px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #2c4a7c;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      transition: transform 0.2s, background 0.2s;
     }
-    .mypage-close:hover { transform: scale(1.2) rotate(90deg); }
+    .mypage-close::before {
+      content: '✕';
+      font-size: 18px;
+      color: #2c4a7c;
+    }
+    .mypage-close:hover { background: rgba(255,255,255,0.98); transform: scale(1.1); }
 
     /* ===== プロフィールヘッダー ===== */
     .mypage-header {
       background: linear-gradient(160deg, #4a7fd4 0%, #2a5ab8 60%, #1a3a88 100%);
-      padding: 32px 24px 20px;
+      padding: 60px 24px 24px; /* 上部に閉じるボタン分の余白 */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1046,7 +1081,10 @@
     /* ===== タブコンテンツ共通 ===== */
     .mypage-tab-content {
       overflow-y: auto; flex: 1;
-      padding: 18px 22px 20px;
+      padding: 18px 24px 60px;
+      max-width: 660px;
+      margin: 0 auto;
+      width: 100%;
     }
     .mypage-tab-panel { display: none; }
     .mypage-tab-panel.active { display: block; }
@@ -1354,6 +1392,8 @@
 
 <!-- 設定ボタン（固定） -->
 <button class="settings-btn" onclick="openSettings()" title="設定">⚙️</button>
+<!-- マイページボタン（設定ボタンの下） -->
+<button class="mypage-fixed-btn" id="mypage-fixed-btn" onclick="openMypage()" title="マイページ" style="display:none;">👤</button>
 
 <!-- ===== ログイン状態バー ===== -->
 <div class="auth-bar" id="auth-bar">
@@ -1366,7 +1406,6 @@
   <span id="auth-bar-user" style="display:none;align-items:center;gap:8px;">
     <img class="auth-bar-avatar" id="auth-avatar" src="" alt="">
     <span class="auth-bar-name" id="auth-name"></span>
-    <button class="auth-bar-mypage-btn" onclick="openMypage()">👤 マイページ</button>
     <button class="auth-bar-logout-btn" onclick="doLogout()">ログアウト</button>
   </span>
 </div>
@@ -1586,8 +1625,8 @@
 <div id="yt-hidden-player"></div>
 
 <!-- ===== マイページモーダル ===== -->
-<div class="mypage-overlay" id="mypage-overlay" onclick="closeMypage()">
-  <div class="mypage-modal" onclick="event.stopPropagation()">
+<div class="mypage-overlay" id="mypage-overlay">
+  <div class="mypage-modal">
     <span class="mypage-close" onclick="closeMypage()">✕</span>
 
     <!-- プロフィールヘッダー -->
@@ -1815,6 +1854,9 @@
     if (user) {
       guestEl.style.display = 'none';
       userEl.style.display  = 'flex';
+      // マイページ固定ボタンを表示
+      const mypageBtn = document.getElementById('mypage-fixed-btn');
+      if (mypageBtn) mypageBtn.style.display = 'flex';
       // friendsList を LocalStorage から復元
       const saved = localStorage.getItem('friends_' + user.uid);
       friendsList = saved ? JSON.parse(saved) : [];
@@ -1852,6 +1894,9 @@
       userEl.style.display  = 'none';
       friendsList  = [];
       userProfile  = { displayName: '', avatarUrl: '' };
+      // マイページ固定ボタンを非表示
+      const mypageBtn = document.getElementById('mypage-fixed-btn');
+      if (mypageBtn) mypageBtn.style.display = 'none';
     }
     renderPage();
     renderCalendar();

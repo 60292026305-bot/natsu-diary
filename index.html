@@ -41,8 +41,11 @@
       color: #fff;
       text-shadow: 0 2px 12px rgba(0,80,160,0.5), 0 1px 0 rgba(0,0,0,0.15);
       margin-bottom: 6px;
+      margin-top: 0;
       letter-spacing: 0.08em;
       text-align: center;
+      /* PCではauth-barが右に固定されるのでパディングで避ける */
+      padding: 0 60px;
     }
     .app-subtitle {
       font-family: 'Yomogi', cursive;
@@ -797,6 +800,32 @@
       .cal-day { min-height: 36px; }
       .cal-day-num { font-size: 10px; }
       .tab-btn { padding: 8px 16px; font-size: 13px; }
+
+      /* スマホ：auth-barを上部固定からタイトル下のインライン表示に切り替え */
+      .auth-bar {
+        position: static;
+        transform: none;
+        right: auto; left: auto; top: auto;
+        max-width: 100%;
+        width: 100%;
+        border-radius: 14px;
+        margin-bottom: 14px;
+        justify-content: center;
+        font-size: 12px;
+        padding: 6px 12px;
+        order: 2; /* タイトルの後ろ */
+      }
+      .auth-bar-name { max-width: 80px; }
+
+      /* スマホ：固定ボタンは右上に小さく */
+      .settings-btn, .mypage-fixed-btn {
+        width: 36px; height: 36px; font-size: 17px;
+      }
+      .mypage-fixed-btn { top: 58px; }
+
+      /* タイトルの上余白をなくす */
+      .app-title { margin-top: 12px; font-size: 1.5rem; }
+      .app-subtitle { font-size: 0.82rem; margin-bottom: 16px; }
     }
 
     /* ===== ログイン状態バー ===== */
@@ -1697,12 +1726,22 @@
         <input class="mypage-input" type="text" id="mypage-name-input"
                placeholder="表示名（1〜20文字）" maxlength="20">
 
-        <p class="mypage-section-title">🖼️ プロフィールアイコンURL</p>
-        <input class="mypage-input" type="url" id="mypage-avatar-input"
-               placeholder="https://... (画像URL)">
-        <p style="font-family:'Yomogi',cursive;font-size:10px;color:#aaa;margin-top:-6px;margin-bottom:10px;">
-          ※ GoogleアカウントのアイコンURLや公開画像URLを入力してください
-        </p>
+        <p class="mypage-section-title">🖼️ プロフィールアイコン</p>
+        <!-- プレビュー -->
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+          <div id="mypage-avatar-preview-wrap" style="flex-shrink:0;"></div>
+          <div style="flex:1;">
+            <!-- ファイル選択（優先） -->
+            <div class="settings-upload-area" style="margin-bottom:8px;">
+              <input type="file" id="mypage-avatar-file" accept="image/*">
+              <div class="settings-upload-hint">📷 端末から画像を選択</div>
+            </div>
+            <!-- URL入力（任意） -->
+            <input class="mypage-input" type="url" id="mypage-avatar-input"
+                   placeholder="または画像URLを入力（任意）"
+                   style="margin-bottom:0;">
+          </div>
+        </div>
 
         <button class="mypage-save-btn" id="mypage-save-btn" onclick="saveProfile()">
           ✅ プロフィールを保存
@@ -2265,6 +2304,8 @@
       document.getElementById('mypage-name-input').value   = userProfile.displayName || currentUser.displayName || '';
       document.getElementById('mypage-avatar-input').value = userProfile.avatarUrl   || currentUser.photoURL    || '';
       document.getElementById('mypage-save-msg').textContent = '';
+      document.getElementById('mypage-avatar-file').value  = ''; // ファイル選択リセット
+      updateAvatarPreview(userProfile.avatarUrl || currentUser.photoURL || '');
     }
   };
 
@@ -2291,11 +2332,50 @@
     });
   }
 
+  // ===== プロフィール設定フォーム補助 =====
+  let pendingAvatarDataUrl = ''; // ファイル選択で生成したBase64
+
+  // アバタープレビュー更新
+  function updateAvatarPreview(url) {
+    const wrap = document.getElementById('mypage-avatar-preview-wrap');
+    if (!wrap) return;
+    if (url) {
+      wrap.innerHTML = `<img src="${url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(100,150,220,0.4);">`;
+    } else {
+      wrap.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a8d0f8,#7cb0e8);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">👤</div>`;
+    }
+  }
+
+  // ファイル選択 → Base64変換 → プレビュー表示
+  document.getElementById('mypage-avatar-file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      compressImage(e.target.result, 200, 0.85, (dataUrl) => {
+        pendingAvatarDataUrl = dataUrl;
+        document.getElementById('mypage-avatar-input').value = '';
+        updateAvatarPreview(dataUrl);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // URL欄を入力したらファイル選択をリセット
+  document.getElementById('mypage-avatar-input').addEventListener('input', function() {
+    if (this.value) {
+      pendingAvatarDataUrl = '';
+      document.getElementById('mypage-avatar-file').value = '';
+      updateAvatarPreview(this.value);
+    }
+  });
+
   // ===== プロフィール保存 =====
   window.saveProfile = async function() {
     if (!currentUser) return;
     const newName   = document.getElementById('mypage-name-input').value.trim();
-    const newAvatar = document.getElementById('mypage-avatar-input').value.trim();
+    // ファイル選択 → Base64 を優先、なければURL欄の値を使う
+    const newAvatar = pendingAvatarDataUrl || document.getElementById('mypage-avatar-input').value.trim();
     const msgEl     = document.getElementById('mypage-save-msg');
     const btn       = document.getElementById('mypage-save-btn');
 
@@ -2308,12 +2388,22 @@
         displayName: newName,
         avatarUrl:   newAvatar
       });
-      // キャッシュ更新
+      // キャッシュ・状態を即時更新
       userIconCache[currentUser.uid] = newAvatar;
+      userProfile.displayName = newName;
+      userProfile.avatarUrl   = newAvatar;
+      pendingAvatarDataUrl    = '';
+
       msgEl.textContent = '✅ 保存しました！';
       msgEl.className   = 'mypage-save-msg ok';
-      // ヘッダー更新
       updateMypageHeader();
+      // auth-bar も即時反映
+      document.getElementById('auth-name').textContent = newName;
+      const avatarEl = document.getElementById('auth-avatar');
+      if (newAvatar) { avatarEl.src = newAvatar; avatarEl.style.display = ''; }
+      else           { avatarEl.style.display = 'none'; }
+      // アルバム再描画（アイコン反映）
+      renderPage();
     } catch (e) {
       msgEl.textContent = '保存に失敗しました: ' + e.message;
       msgEl.className   = 'mypage-save-msg err';

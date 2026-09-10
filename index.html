@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌻 夏休みの思い出アルバム</title>
+  <title>現 螟丈ｼ代∩縺ｮ諤昴＞蜃ｺ繧｢繝ｫ繝舌Β</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ===== 背景：入道雲＋青空 ===== */
+    /* ===== 閭梧勹・壼・驕馴峇・矩搨遨ｺ ===== */
     body {
       font-family: 'Zen Maru Gothic', sans-serif;
       min-height: 100vh;
@@ -32,7 +32,7 @@
       box-shadow: 0 8px 32px rgba(31,38,135,0.13);
     }
 
-    /* ===== タイトル ===== */
+    /* ===== 繧ｿ繧､繝医Ν ===== */
     .app-title {
       font-family: 'Yomogi', cursive;
       font-size: clamp(1.6rem, 5vw, 2.4rem);
@@ -42,7 +42,7 @@
       margin-top: 0;
       letter-spacing: 0.08em;
       text-align: center;
-      padding: 0 120px; /* PCでは右の固定ボタン群を避ける */
+      padding: 0 120px; /* PC縺ｧ縺ｯ蜿ｳ縺ｮ蝗ｺ螳壹・繧ｿ繝ｳ鄒､繧帝∩縺代ｋ */
       width: 100%;
       box-sizing: border-box;
     }
@@ -55,7 +55,7 @@
       text-shadow: 0 1px 6px rgba(0,60,120,0.4);
     }
 
-    /* ===== モード切り替えタブ ===== */
+    /* ===== 繝｢繝ｼ繝牙・繧頑崛縺医ち繝・===== */
     .view-tabs {
       display: flex;
       gap: 8px;
@@ -82,7 +82,7 @@
     }
     .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.65); }
 
-    /* ===== 入力フォーム ===== */
+    /* ===== 蜈･蜉帙ヵ繧ｩ繝ｼ繝 ===== */
     .form-book {
       width: 100%;
       max-width: 560px;
@@ -135,7 +135,7 @@
     }
     textarea { resize: vertical; }
 
-    /* ===== 気分セレクター ===== */
+    /* ===== 豌怜・繧ｻ繝ｬ繧ｯ繧ｿ繝ｼ ===== */
     .mood-selector { display: flex; justify-content: space-around; margin-top: 4px; }
     .mood-box { display: none; }
     .mood-label {
@@ -152,7 +152,7 @@
       box-shadow: 0 2px 8px rgba(200,150,0,0.3);
     }
 
-    /* ===== 天気スタンプ ===== */
+    /* ===== 螟ｩ豌励せ繧ｿ繝ｳ繝・===== */
     .weather-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
     .weather-box { display: none; }
     .weather-label {
@@ -169,12 +169,12 @@
     .weather-box:checked + .weather-label {
       border-color: rgba(85,136,221,0.6);
       background: rgba(200,220,255,0.45);
-      /* ハンコっぽい質感 */
+      /* 繝上Φ繧ｳ縺｣縺ｽ縺・ｳｪ諢・*/
       box-shadow: inset 0 0 0 2px rgba(85,136,221,0.3), 0 2px 8px rgba(85,136,221,0.2);
       transform: scale(0.95) rotate(-3deg);
     }
 
-    /* ===== 写真アップロード ===== */
+    /* ===== 蜀咏悄繧｢繝・・繝ｭ繝ｼ繝・===== */
     .photo-upload-area {
       border: 2.5px dashed rgba(100,150,220,0.5);
       border-radius: 14px;
@@ -221,7 +221,7 @@
       display: flex; align-items: center; justify-content: center; padding: 0;
     }
 
-    /* ===== 保存ボタン ===== */
+    /* ===== 菫晏ｭ倥・繧ｿ繝ｳ ===== */
     .save-btn {
       width: 100%; padding: 14px;
       background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
@@ -235,7 +235,7 @@
     .save-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1a3a88; }
     .save-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* ===== アルバムセクション ===== */
+    /* ===== 繧｢繝ｫ繝舌Β繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ ===== */
     .album-section { width: 100%; max-width: 660px; margin-top: 40px; }
     .album-section > h2 {
       font-family: 'Yomogi', cursive;
@@ -246,7 +246,7 @@
       text-shadow: 0 2px 10px rgba(0,60,160,0.4);
     }
 
-    /* ===== スクラップページ ===== */
+    /* ===== 繧ｹ繧ｯ繝ｩ繝・・繝壹・繧ｸ ===== */
     .book { width: 100%; min-height: 200px; }
     .scrap-page {
       padding: 36px 20px 28px;
@@ -261,19 +261,19 @@
       border-color: transparent transparent rgba(100,140,200,0.25) transparent;
     }
 
-    /* ===== 日記カード（チェキ風） ===== */
-    /* ===== 日記カード（チェキ風） ===== */
+    /* ===== 譌･險倥き繝ｼ繝会ｼ医メ繧ｧ繧ｭ鬚ｨ・・===== */
+    /* ===== 譌･險倥き繝ｼ繝会ｼ医メ繧ｧ繧ｭ鬚ｨ・・===== */
     .diary-card {
       background: #fff;
       border-radius: 3px;
       padding: 0;
-      margin-top: 20px; /* テープがはみ出る分の余白 */
+      margin-top: 20px; /* 繝・・繝励′縺ｯ縺ｿ蜃ｺ繧句・縺ｮ菴咏區 */
       margin-bottom: 44px;
       position: relative;
       box-shadow: 0 5px 20px rgba(0,0,0,0.16), 0 1px 4px rgba(0,0,0,0.08);
       transform: rotate(-1.5deg);
       transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
-      /* overflow: hidden を削除してテープが見えるように */
+      /* overflow: hidden 繧貞炎髯､縺励※繝・・繝励′隕九∴繧九ｈ縺・↓ */
     }
     .diary-card:nth-child(2n) { transform: rotate(1.8deg); }
     .diary-card:nth-child(3n) { transform: rotate(-0.7deg); }
@@ -283,7 +283,7 @@
       box-shadow: 0 16px 40px rgba(0,0,0,0.22);
       z-index: 20;
     }
-    /* マスキングテープ：基準は上部中央 */
+    /* 繝槭せ繧ｭ繝ｳ繧ｰ繝・・繝暦ｼ壼渕貅悶・荳企Κ荳ｭ螟ｮ */
     .diary-card::before {
       content: '';
       position: absolute;
@@ -292,36 +292,36 @@
       transform: translateX(-50%) rotate(-1.5deg) translateY(0px);
       width: 68px;
       height: 20px;
-      background: rgba(255,210,100,0.65);  /* 黄色 */
+      background: rgba(255,210,100,0.65);  /* 鮟・牡 */
       border-radius: 2px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.1);
     }
-    /* 偶数カード：水色・ほんのわずかに右へ */
+    /* 蛛ｶ謨ｰ繧ｫ繝ｼ繝会ｼ壽ｰｴ濶ｲ繝ｻ縺ｻ繧薙・繧上★縺九↓蜿ｳ縺ｸ */
     .diary-card:nth-child(even)::before {
       transform: translateX(-50%) rotate(1.2deg) translateX(3px) translateY(1px);
       background: rgba(160,210,255,0.6);
       width: 66px;
     }
-    /* 3の倍数カード：緑・ほんのわずかに左へ */
+    /* 3縺ｮ蛟肴焚繧ｫ繝ｼ繝会ｼ夂ｷ代・縺ｻ繧薙・繧上★縺九↓蟾ｦ縺ｸ */
     .diary-card:nth-child(3n)::before {
       transform: translateX(-50%) rotate(-0.8deg) translateX(-2px) translateY(-1px);
       background: rgba(200,240,160,0.65);
       width: 70px;
     }
-    /* 4の倍数カード：黄色・ほぼ真っ直ぐ */
+    /* 4縺ｮ蛟肴焚繧ｫ繝ｼ繝会ｼ夐ｻ・牡繝ｻ縺ｻ縺ｼ逵溘▲逶ｴ縺・*/
     .diary-card:nth-child(4n)::before {
       transform: translateX(-50%) rotate(0.5deg) translateX(1px) translateY(0px);
       background: rgba(255,210,100,0.6);
       width: 65px;
     }
-    /* 5の倍数カード：水色・ごく小さい傾き */
+    /* 5縺ｮ蛟肴焚繧ｫ繝ｼ繝会ｼ壽ｰｴ濶ｲ繝ｻ縺斐￥蟆上＆縺・だ縺・*/
     .diary-card:nth-child(5n)::before {
       transform: translateX(-50%) rotate(-1.8deg) translateX(-1px) translateY(1px);
       background: rgba(160,210,255,0.55);
       width: 72px;
     }
 
-    /* キャプション帯 → カード最上部ヘッダーに変更 */
+    /* 繧ｭ繝｣繝励す繝ｧ繝ｳ蟶ｯ 竊・繧ｫ繝ｼ繝画怙荳企Κ繝倥ャ繝繝ｼ縺ｫ螟画峩 */
     .diary-card-caption {
       display: flex;
       flex-wrap: wrap;
@@ -329,7 +329,7 @@
       gap: 4px 10px;
       padding: 10px 14px 8px;
       background: #fff;
-      /* 区切り線：ノートの破線風 */
+      /* 蛹ｺ蛻・ｊ邱夲ｼ壹ヮ繝ｼ繝医・遐ｴ邱夐｢ｨ */
       border-bottom: 1.5px dashed rgba(100,150,220,0.35);
     }
     .diary-card-date {
@@ -344,12 +344,12 @@
       color: #7aaa88;
       white-space: nowrap;
     }
-    /* 気分・天気スタンプ：ヘッダー右端に寄せる */
+    /* 豌怜・繝ｻ螟ｩ豌励せ繧ｿ繝ｳ繝暦ｼ壹・繝・ム繝ｼ蜿ｳ遶ｯ縺ｫ蟇・○繧・*/
     .diary-card-stamps {
       display: flex;
       gap: 3px;
       align-items: center;
-      margin-left: auto; /* 右端へ押し出す */
+      margin-left: auto; /* 蜿ｳ遶ｯ縺ｸ謚ｼ縺怜・縺・*/
     }
     .diary-card-mood   { font-size: 14px; line-height: 1; }
     .diary-card-weather {
@@ -360,7 +360,7 @@
       display: inline-block;
     }
 
-    /* 本文・写真エリア */
+    /* 譛ｬ譁・・蜀咏悄繧ｨ繝ｪ繧｢ */
     .diary-card-body {
       padding: 10px 14px 12px;
     }
@@ -392,7 +392,7 @@
     }
     .diary-photo-item img { width: 100px; height: 100px; object-fit: cover; display: block; }
 
-    /* ボタンエリア */
+    /* 繝懊ち繝ｳ繧ｨ繝ｪ繧｢ */
     .diary-card-actions {
       display: flex;
       justify-content: space-between;
@@ -400,7 +400,7 @@
       padding: 6px 14px 10px;
       gap: 8px;
     }
-    /* 右側：編集＋消すを縦並びにまとめるラッパー */
+    /* 蜿ｳ蛛ｴ・夂ｷｨ髮・ｼ区ｶ医☆繧堤ｸｦ荳ｦ縺ｳ縺ｫ縺ｾ縺ｨ繧√ｋ繝ｩ繝・ヱ繝ｼ */
     .diary-card-actions-right {
       display: flex;
       flex-direction: column;
@@ -415,7 +415,7 @@
     }
     .diary-delete-btn:hover { background: #c62828; }
 
-    /* ===== 編集ボタン ===== */
+    /* ===== 邱ｨ髮・・繧ｿ繝ｳ ===== */
     .diary-edit-btn {
       padding: 4px 14px;
       background: linear-gradient(135deg, #f9a825, #f57f17);
@@ -427,7 +427,7 @@
     }
     .diary-edit-btn:hover { background: linear-gradient(135deg, #f57f17, #e65100); transform: scale(1.05); }
 
-    /* ===== 編集中バナー ===== */
+    /* ===== 邱ｨ髮・ｸｭ繝舌リ繝ｼ ===== */
     .edit-mode-banner {
       display: none;
       width: 100%; max-width: 560px;
@@ -458,7 +458,7 @@
     }
     .edit-cancel-btn:hover { background: rgba(255,255,255,0.5); }
 
-    /* ===== シェア・保存ボタン ===== */
+    /* ===== 繧ｷ繧ｧ繧｢繝ｻ菫晏ｭ倥・繧ｿ繝ｳ ===== */
     .diary-share-btn {
       padding: 4px 12px;
       background: linear-gradient(135deg, #4a9fd4, #2a7ab8);
@@ -482,7 +482,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .spin-icon { display: inline-block; animation: spin 0.8s linear infinite; }
 
-    /* ===== ページナビ ===== */
+    /* ===== 繝壹・繧ｸ繝翫ン ===== */
     .page-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
     .nav-btn {
       padding: 10px 22px;
@@ -498,7 +498,7 @@
     .nav-btn:disabled { opacity: 0.3; cursor: default; transform: none; }
     .page-indicator { font-family: 'Yomogi', cursive; font-size: 14px; color: #fff; text-shadow: 0 1px 6px rgba(0,60,120,0.5); }
 
-    /* ===== カレンダー ===== */
+    /* ===== 繧ｫ繝ｬ繝ｳ繝繝ｼ ===== */
     .calendar-section { width: 100%; max-width: 660px; margin-top: 40px; }
     .calendar-header {
       display: flex; align-items: center; justify-content: center;
@@ -558,7 +558,7 @@
     }
     .cal-day.sun .cal-day-num { color: #cc4444; }
     .cal-day.sat .cal-day-num { color: #4444cc; }
-    /* サムネイル写真 */
+    /* 繧ｵ繝繝阪う繝ｫ蜀咏悄 */
     .cal-thumb {
       width: 100%; flex: 1;
       object-fit: cover;
@@ -573,7 +573,7 @@
       opacity: 0.85;
     }
 
-    /* カレンダークリック時のポップアップ */
+    /* 繧ｫ繝ｬ繝ｳ繝繝ｼ繧ｯ繝ｪ繝・け譎ゅ・繝昴ャ繝励い繝・・ */
     .cal-popup-overlay {
       display: none;
       position: fixed; inset: 0;
@@ -612,7 +612,7 @@
       padding-right: 30px;
     }
 
-    /* ===== ライトボックス ===== */
+    /* ===== 繝ｩ繧､繝医・繝・け繧ｹ ===== */
     .lightbox {
       display: none; position: fixed; inset: 0;
       background: rgba(10,20,60,0.88); z-index: 1000;
@@ -637,7 +637,7 @@
     }
     .lightbox-close:hover { transform: scale(1.2) rotate(90deg); }
 
-    /* ===== 空メッセージ ===== */
+    /* ===== 遨ｺ繝｡繝・そ繝ｼ繧ｸ ===== */
     .empty-msg {
       text-align: center; font-family: 'Yomogi', cursive;
       color: #4a6a9c; font-size: 15px; padding: 44px 0;
@@ -645,7 +645,7 @@
       background: rgba(200,220,255,0.2);
     }
 
-    /* ===== 設定ボタン ===== */
+    /* ===== 險ｭ螳壹・繧ｿ繝ｳ ===== */
     .settings-btn {
       position: fixed;
       top: 16px;
@@ -664,10 +664,10 @@
     }
     .settings-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1) rotate(30deg); }
 
-    /* マイページ固定ボタン（設定ボタンの下） */
+    /* 繝槭う繝壹・繧ｸ蝗ｺ螳壹・繧ｿ繝ｳ・郁ｨｭ螳壹・繧ｿ繝ｳ縺ｮ荳具ｼ・*/
     .mypage-fixed-btn {
       position: fixed;
-      top: 66px; /* 設定ボタン(42px) + gap(8px) = 50px + top(16px) */
+      top: 66px; /* 險ｭ螳壹・繧ｿ繝ｳ(42px) + gap(8px) = 50px + top(16px) */
       right: 16px;
       z-index: 200;
       background: rgba(255,255,255,0.75);
@@ -683,7 +683,7 @@
     }
     .mypage-fixed-btn:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
 
-    /* ===== 設定モーダル ===== */
+    /* ===== 險ｭ螳壹Δ繝ｼ繝繝ｫ ===== */
     .settings-overlay {
       display: none;
       position: fixed; inset: 0;
@@ -739,7 +739,7 @@
       outline: none; border-color: #5588dd;
       box-shadow: 0 0 0 3px rgba(85,136,221,0.18);
     }
-    /* ファイルアップロード風エリア */
+    /* 繝輔ぃ繧､繝ｫ繧｢繝・・繝ｭ繝ｼ繝蛾｢ｨ繧ｨ繝ｪ繧｢ */
     .settings-upload-area {
       border: 2px dashed rgba(100,150,220,0.45);
       border-radius: 12px;
@@ -758,7 +758,7 @@
       font-family: 'Yomogi', cursive; font-size: 13px; color: #3a5a9c;
       pointer-events: none;
     }
-    /* 現在の背景プレビュー */
+    /* 迴ｾ蝨ｨ縺ｮ閭梧勹繝励Ξ繝薙Η繝ｼ */
     .settings-bg-preview {
       width: 100%; height: 80px;
       object-fit: cover;
@@ -768,7 +768,7 @@
       border: 1.5px solid rgba(100,150,220,0.3);
     }
     .settings-bg-preview.visible { display: block; }
-    /* ボタン群 */
+    /* 繝懊ち繝ｳ鄒､ */
     .settings-btn-row {
       display: flex; gap: 8px; margin-top: 6px;
     }
@@ -793,9 +793,9 @@
     }
     .settings-reset-btn:hover { background: rgba(220,210,255,0.9); }
 
-    /* ===== レスポンシブ ===== */
+    /* ===== 繝ｬ繧ｹ繝昴Φ繧ｷ繝・===== */
 
-    /* タブレット以下（768px）: auth-barを縮小 */
+    /* 繧ｿ繝悶Ξ繝・ヨ莉･荳具ｼ・68px・・ auth-bar繧堤ｸｮ蟆・*/
     @media (max-width: 768px) {
       .auth-bar {
         font-size: 12px;
@@ -808,93 +808,94 @@
       .auth-bar-avatar { width: 22px; height: 22px; }
     }
 
-    /* スマホ（480px以下）: auth-barを非表示、スマホ専用インラインバーに切り替え */
+    /* 繧ｹ繝槭・・・80px莉･荳具ｼ・ auth-bar繧帝撼陦ｨ遉ｺ縲√せ繝槭・蟆ら畑繧､繝ｳ繝ｩ繧､繝ｳ繝舌・縺ｫ蛻・ｊ譖ｿ縺・*/
+    /* スマホ（480px以下）: 固定ナビバーを使うため既存要素を整理 */
     @media (max-width: 480px) {
-      /* PCの固定auth-barを完全に隠す */
-      .auth-bar { display: none !important; }
-
-      /* 固定ボタンを小さく */
-      .settings-btn, .mypage-fixed-btn {
-        width: 36px; height: 36px; font-size: 17px;
-        top: 10px;
-      }
-      .settings-btn  { right: 10px; }
-      .mypage-fixed-btn { top: 54px; right: 10px; }
-
-      /* タイトル：固定ボタンに重なるよう上部に余白、右側に余白 */
+      .auth-bar         { display: none !important; }
+      .settings-btn     { display: none !important; }
+      .mypage-fixed-btn { display: none !important; }
+      body { padding-top: 56px; }
       .app-title {
-        margin-top: 10px;
-        font-size: clamp(1.1rem, 6vw, 1.5rem);
-        padding: 0 48px 0 8px; /* 右側に固定ボタン分の余白 */
+        margin-top: 8px;
+        font-size: clamp(1.15rem, 6.5vw, 1.6rem);
+        padding: 0 12px;
+        letter-spacing: 0.04em;
       }
-      .app-subtitle { font-size: 0.78rem; margin-bottom: 10px; }
-
-      /* タブ */
+      .app-subtitle { font-size: 0.78rem; margin-bottom: 12px; }
       .view-tabs { gap: 5px; flex-wrap: wrap; justify-content: center; }
       .tab-btn { padding: 7px 12px; font-size: 12px; }
-
-      /* 日記写真 */
       .diary-photo-item img { width: 75px; height: 75px; }
-
-      /* カレンダー */
       .cal-day { min-height: 36px; }
       .cal-day-num { font-size: 10px; }
     }
 
-    /* ===== スマホ専用インラインログインバー ===== */
-    .auth-bar-mobile {
-      display: none; /* PCでは非表示 */
-    }
+    /* ===== スマホ専用固定ナビバー ===== */
+    .mob-header { display: none; }
     @media (max-width: 480px) {
-      .auth-bar-mobile {
+      .mob-header {
         display: flex;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 300;
+        height: 48px;
         align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px;
-        width: calc(100% - 56px); /* 右の固定ボタン分除く */
-        max-width: calc(100vw - 68px);
-        margin: 0 0 12px 0;
-        padding: 7px 12px;
-        background: rgba(255,255,255,0.72);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1.5px solid rgba(255,255,255,0.8);
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        font-family: 'Yomogi', cursive;
-        font-size: 12px;
-        color: #2c4a7c;
+        padding: 0 10px;
+        gap: 8px;
+        background: rgba(255,255,255,0.82);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(200,220,255,0.5);
+        box-shadow: 0 2px 12px rgba(0,60,120,0.12);
         box-sizing: border-box;
-        align-self: flex-start; /* 左寄せ */
       }
-      .auth-bar-mobile img {
-        width: 22px; height: 22px; border-radius: 50%;
-        object-fit: cover; border: 1.5px solid rgba(100,150,220,0.4);
-        flex-shrink: 0;
+      .mob-header-auth {
+        flex: 1; display: flex; align-items: center;
+        gap: 6px; min-width: 0;
       }
-      .auth-bar-mobile .mob-name {
-        font-weight: 700; max-width: 90px;
+      .mob-header-auth img {
+        width: 28px; height: 28px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0;
+        border: 1.5px solid rgba(100,150,220,0.4);
+      }
+      .mob-header-name {
+        font-family: 'Yomogi', cursive; font-size: 12px;
+        font-weight: 700; color: #2c4a7c;
         overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        flex: 1; min-width: 0;
       }
-      .auth-bar-mobile button {
-        padding: 4px 10px;
-        border: none; border-radius: 16px;
-        font-family: 'Yomogi', cursive; font-size: 11px;
-        cursor: pointer; white-space: nowrap;
-      }
-      .mob-login-btn {
+      .mob-header-login-btn {
+        padding: 5px 13px;
         background: linear-gradient(135deg,#4a7fd4,#2a5ab8);
-        color: #fff;
+        color: #fff; border: none; border-radius: 20px;
+        font-family: 'Yomogi', cursive; font-size: 12px; font-weight: 700;
+        cursor: pointer; white-space: nowrap; flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(30,80,180,0.25);
       }
-      .mob-logout-btn {
-        background: rgba(240,235,255,0.8);
-        color: #6644aa;
+      .mob-header-logout-btn {
+        padding: 4px 10px;
+        background: rgba(240,235,255,0.9); color: #6644aa;
+        border: 1.5px solid rgba(120,80,200,0.3); border-radius: 16px;
+        font-family: 'Yomogi', cursive; font-size: 11px;
+        cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      }
+      .mob-header-icons { display: flex; gap: 5px; flex-shrink: 0; }
+      .mob-header-icon-btn {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: rgba(255,255,255,0.7);
+        border: 1.5px solid rgba(200,220,255,0.6);
+        font-size: 15px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+      }
+      .mob-header-icon-btn:hover { background: rgba(255,255,255,0.95); }
+    }
+    /* 旧スマホバーは非表示 */
+    .auth-bar-mobile { display: none !important; }
         border: 1.5px solid rgba(120,80,200,0.3) !important;
       }
     }
 
-    /* ===== ログイン状態バー（PCのみ固定表示） ===== */
+    /* ===== 繝ｭ繧ｰ繧､繝ｳ迥ｶ諷九ヰ繝ｼ・・C縺ｮ縺ｿ蝗ｺ螳夊｡ｨ遉ｺ・・===== */
     .auth-bar {
       position: fixed;
       top: 16px;
@@ -944,7 +945,7 @@
     }
     .auth-bar-logout-btn:hover { background: rgba(220,210,255,0.9); }
 
-    /* ===== ログインモーダル ===== */
+    /* ===== 繝ｭ繧ｰ繧､繝ｳ繝｢繝ｼ繝繝ｫ ===== */
     .login-overlay {
       display: none;
       position: fixed; inset: 0;
@@ -976,7 +977,7 @@
     }
     .login-close:hover { transform: scale(1.2) rotate(90deg); }
 
-    /* Googleボタン */
+    /* Google繝懊ち繝ｳ */
     .login-google-btn {
       width: 100%; padding: 12px;
       display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -991,7 +992,7 @@
     .login-google-btn:hover { background: #f0f4ff; transform: translateY(-1px); }
     .login-google-icon { width: 22px; height: 22px; }
 
-    /* 区切り線 */
+    /* 蛹ｺ蛻・ｊ邱・*/
     .login-divider {
       display: flex; align-items: center; gap: 10px;
       margin-bottom: 16px;
@@ -1002,7 +1003,7 @@
       height: 1px; background: rgba(100,150,220,0.25);
     }
 
-    /* メールフォーム */
+    /* 繝｡繝ｼ繝ｫ繝輔か繝ｼ繝 */
     .login-input {
       width: 100%; padding: 10px 13px; margin-bottom: 10px;
       border: 1.5px solid rgba(100,150,220,0.4); border-radius: 10px;
@@ -1044,15 +1045,15 @@
       font-family: 'Yomogi', cursive; font-size: 12px;
       color: #c00; text-align: center; margin-top: 8px; min-height: 18px;
     }
-    /* 名前入力欄（新規登録時のみ表示） */
+    /* 蜷榊燕蜈･蜉帶ｬ・ｼ域眠隕冗匳骭ｲ譎ゅ・縺ｿ陦ｨ遉ｺ・・*/
     .login-name-row { display: none; }
     .login-name-row.visible { display: block; }
 
-    /* ===== マイページ（全画面） ===== */
+    /* ===== 繝槭う繝壹・繧ｸ・亥・逕ｻ髱｢・・===== */
     .mypage-overlay {
       display: none; position: fixed; inset: 0;
       z-index: 400;
-      background: #f0f4ff; /* 全画面なので背景は白系 */
+      background: #f0f4ff; /* 蜈ｨ逕ｻ髱｢縺ｪ縺ｮ縺ｧ閭梧勹縺ｯ逋ｽ邉ｻ */
       overflow-y: auto;
     }
     .mypage-overlay.open { display: block; }
@@ -1076,7 +1077,7 @@
     .mypage-close {
       position: fixed; top: 16px; left: 16px;
       z-index: 410;
-      font-size: 0; /* テキストは非表示、ボタン形式に */
+      font-size: 0; /* 繝・く繧ｹ繝医・髱櫁｡ｨ遉ｺ縲√・繧ｿ繝ｳ蠖｢蠑上↓ */
       width: 42px; height: 42px;
       background: rgba(255,255,255,0.85);
       border: 1.5px solid rgba(255,255,255,0.9);
@@ -1088,16 +1089,16 @@
       transition: transform 0.2s, background 0.2s;
     }
     .mypage-close::before {
-      content: '✕';
+      content: '笨・;
       font-size: 18px;
       color: #2c4a7c;
     }
     .mypage-close:hover { background: rgba(255,255,255,0.98); transform: scale(1.1); }
 
-    /* ===== プロフィールヘッダー ===== */
+    /* ===== 繝励Ο繝輔ぅ繝ｼ繝ｫ繝倥ャ繝繝ｼ ===== */
     .mypage-header {
       background: linear-gradient(160deg, #4a7fd4 0%, #2a5ab8 60%, #1a3a88 100%);
-      padding: 60px 24px 24px; /* 上部に閉じるボタン分の余白 */
+      padding: 60px 24px 24px; /* 荳企Κ縺ｫ髢峨§繧九・繧ｿ繝ｳ蛻・・菴咏區 */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1154,7 +1155,7 @@
       color: rgba(255,255,255,0.75);
     }
 
-    /* ===== マイページタブ ===== */
+    /* ===== 繝槭う繝壹・繧ｸ繧ｿ繝・===== */
     .mypage-tabs {
       display: flex;
       border-bottom: 1.5px solid rgba(100,150,220,0.2);
@@ -1175,7 +1176,7 @@
       background: rgba(200,220,255,0.1);
     }
 
-    /* ===== タブコンテンツ共通 ===== */
+    /* ===== 繧ｿ繝悶さ繝ｳ繝・Φ繝・・騾・===== */
     .mypage-tab-content {
       overflow-y: auto; flex: 1;
       padding: 18px 24px 60px;
@@ -1186,7 +1187,7 @@
     .mypage-tab-panel { display: none; }
     .mypage-tab-panel.active { display: block; }
 
-    /* ===== プロフィール設定フォーム ===== */
+    /* ===== 繝励Ο繝輔ぅ繝ｼ繝ｫ險ｭ螳壹ヵ繧ｩ繝ｼ繝 ===== */
     .mypage-section-title {
       font-family: 'Yomogi', cursive; font-size: 0.85rem;
       color: #2c4a7c; font-weight: 700; margin-bottom: 8px;
@@ -1238,7 +1239,7 @@
     }
     .mypage-uid-copy-btn:hover { background: rgba(85,136,221,0.3); }
 
-    /* ===== 自分の投稿一覧（タブ内） ===== */
+    /* ===== 閾ｪ蛻・・謚慕ｨｿ荳隕ｧ・医ち繝門・・・===== */
     .mypage-diary-list { display: flex; flex-direction: column; gap: 10px; }
     .mypage-diary-item {
       background: rgba(220,235,255,0.35);
@@ -1254,7 +1255,7 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* ===== 投稿者アイコン（カード内） ===== */
+    /* ===== 謚慕ｨｿ閠・い繧､繧ｳ繝ｳ・医き繝ｼ繝牙・・・===== */
     .diary-card-user-icon {
       width: 22px; height: 22px; border-radius: 50%;
       object-fit: cover; border: 1.5px solid rgba(100,150,220,0.3);
@@ -1266,7 +1267,7 @@
       display: inline-flex; align-items: center; justify-content: center;
       font-size: 11px; flex-shrink: 0;
     }
-    /* ===== 公開範囲管理リスト ===== */
+    /* ===== 蜈ｬ髢狗ｯ・峇邂｡逅・Μ繧ｹ繝・===== */
     .mypage-friends-section { margin-bottom: 16px; }
     .mypage-friends-section h4 {
       font-family: 'Yomogi', cursive; font-size: 0.9rem;
@@ -1308,7 +1309,7 @@
     }
     .mypage-friend-add-btn:hover { opacity: 0.88; }
 
-    /* ===== 友達検索UI ===== */
+    /* ===== 蜿矩＃讀懃ｴ｢UI ===== */
     .friend-search-row {
       display: flex; gap: 6px; margin-bottom: 8px;
     }
@@ -1382,7 +1383,7 @@
     }
     .mypage-logout-btn:hover { background: rgba(220,210,255,0.9); }
 
-    /* ===== 公開範囲 セレクター（フォーム内） ===== */
+    /* ===== 蜈ｬ髢狗ｯ・峇 繧ｻ繝ｬ繧ｯ繧ｿ繝ｼ・医ヵ繧ｩ繝ｼ繝蜀・ｼ・===== */
     .visibility-selector {
       display: flex; gap: 8px; margin-top: 4px;
     }
@@ -1403,7 +1404,7 @@
       box-shadow: 0 2px 8px rgba(85,136,221,0.2);
     }
 
-    /* ===== 公開範囲バッジ（カード内） ===== */
+    /* ===== 蜈ｬ髢狗ｯ・峇繝舌ャ繧ｸ・医き繝ｼ繝牙・・・===== */
     .visibility-badge {
       font-family: 'Yomogi', cursive; font-size: 10px;
       padding: 2px 8px; border-radius: 20px; line-height: 1.4;
@@ -1411,7 +1412,7 @@
     .visibility-badge.public  { background: rgba(200,240,200,0.7); color: #2a6a2a; }
     .visibility-badge.friends { background: rgba(255,220,160,0.7); color: #7a4a00; }
 
-    /* マイページ開くボタン（auth-bar内） */
+    /* 繝槭う繝壹・繧ｸ髢九￥繝懊ち繝ｳ・・uth-bar蜀・ｼ・*/
     .auth-bar-mypage-btn {
       padding: 4px 12px;
       background: rgba(200,220,255,0.6);
@@ -1446,7 +1447,7 @@
     .bgm-search-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .bgm-search-btn:disabled { opacity: 0.5; cursor: wait; }
 
-    /* 検索結果リスト */
+    /* 讀懃ｴ｢邨先棡繝ｪ繧ｹ繝・*/
     .bgm-results {
       margin-top: 8px;
       display: flex;
@@ -1492,7 +1493,7 @@
       -webkit-box-orient: vertical;
     }
 
-    /* 選択中バッジ */
+    /* 驕ｸ謚樔ｸｭ繝舌ャ繧ｸ */
     .bgm-selected-badge {
       margin-top: 8px;
       padding: 6px 12px;
@@ -1515,7 +1516,7 @@
     }
     .bgm-badge-clear:hover { color: #ef5350; }
 
-    /* カード内BGMボタン */
+    /* 繧ｫ繝ｼ繝牙・BGM繝懊ち繝ｳ */
     .bgm-play-btn {
       background: none;
       border: none;
@@ -1539,7 +1540,7 @@
       50%       { transform: scale(1.25); }
     }
 
-    /* 隠しプレイヤー */
+    /* 髫縺励・繝ｬ繧､繝､繝ｼ */
     #yt-hidden-player {
       position: fixed;
       bottom: -200px;
@@ -1553,35 +1554,52 @@
 </head>
 <body>
 
-<!-- 設定ボタン（固定） -->
+<!-- 設定ボタン・マイページボタン（PC固定） -->
 <button class="settings-btn" onclick="openSettings()" title="設定">⚙️</button>
-<!-- マイページボタン（設定ボタンの下） -->
 <button class="mypage-fixed-btn" id="mypage-fixed-btn" onclick="openMypage()" title="マイページ" style="display:none;">👤</button>
 
-<!-- ===== ログイン状態バー ===== -->
+<!-- ===== スマホ専用固定ナビバー ===== -->
+<div class="mob-header" id="mob-header">
+  <div class="mob-header-auth">
+    <span id="mob-hdr-guest" style="display:flex;align-items:center;gap:6px;width:100%;min-width:0;">
+      <span style="font-family:'Yomogi',cursive;font-size:12px;color:#2c4a7c;white-space:nowrap;">👤 ゲスト</span>
+      <button class="mob-header-login-btn" onclick="openLogin()">ログイン</button>
+    </span>
+    <span id="mob-hdr-user" style="display:none;align-items:center;gap:6px;width:100%;min-width:0;">
+      <img id="mob-hdr-avatar" src="" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(100,150,220,0.4);">
+      <span class="mob-header-name" id="mob-hdr-name"></span>
+      <button class="mob-header-logout-btn" onclick="doLogout()">ログアウト</button>
+    </span>
+  </div>
+  <div class="mob-header-icons">
+    <button class="mob-header-icon-btn" id="mob-mypage-btn" onclick="openMypage()" title="マイページ" style="display:none;">👤</button>
+    <button class="mob-header-icon-btn" onclick="openSettings()" title="設定">⚙️</button>
+  </div>
+
+<!-- ===== 繝ｭ繧ｰ繧､繝ｳ迥ｶ諷九ヰ繝ｼ ===== -->
 <div class="auth-bar" id="auth-bar">
-  <!-- ログアウト中 -->
+  <!-- 繝ｭ繧ｰ繧｢繧ｦ繝井ｸｭ -->
   <span id="auth-bar-guest" style="display:flex;align-items:center;gap:10px;">
-    <span>👤 ゲスト（閲覧のみ）</span>
-    <button class="auth-bar-login-btn" onclick="openLogin()">ログイン／登録</button>
+    <span>側 繧ｲ繧ｹ繝茨ｼ磯夢隕ｧ縺ｮ縺ｿ・・/span>
+    <button class="auth-bar-login-btn" onclick="openLogin()">繝ｭ繧ｰ繧､繝ｳ・冗匳骭ｲ</button>
   </span>
-  <!-- ログイン中 -->
+  <!-- 繝ｭ繧ｰ繧､繝ｳ荳ｭ -->
   <span id="auth-bar-user" style="display:none;align-items:center;gap:8px;">
     <img class="auth-bar-avatar" id="auth-avatar" src="" alt="">
     <span class="auth-bar-name" id="auth-name"></span>
-    <button class="auth-bar-logout-btn" onclick="doLogout()">ログアウト</button>
+    <button class="auth-bar-logout-btn" onclick="doLogout()">繝ｭ繧ｰ繧｢繧ｦ繝・/button>
   </span>
 </div>
 
-<!-- ===== ログインモーダル ===== -->
+<!-- ===== 繝ｭ繧ｰ繧､繝ｳ繝｢繝ｼ繝繝ｫ ===== -->
 <div class="login-overlay" id="login-overlay" onclick="closeLogin()">
   <div class="login-modal" onclick="event.stopPropagation()">
-    <span class="login-close" onclick="closeLogin()">✕</span>
-    <h3>🔑 ログイン／アカウント登録</h3>
+    <span class="login-close" onclick="closeLogin()">笨・/span>
+    <h3>泊 繝ｭ繧ｰ繧､繝ｳ・上い繧ｫ繧ｦ繝ｳ繝育匳骭ｲ</h3>
 
-    <!-- Googleログイン -->
+    <!-- Google繝ｭ繧ｰ繧､繝ｳ -->
     <button class="login-google-btn" onclick="doGoogleLogin()">
-      <!-- Google SVGアイコン -->
+      <!-- Google SVG繧｢繧､繧ｳ繝ｳ -->
       <svg class="login-google-icon" viewBox="0 0 48 48">
         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
         <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -1589,326 +1607,326 @@
         <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
         <path fill="none" d="M0 0h48v48H0z"/>
       </svg>
-      Googleでログイン
+      Google縺ｧ繝ｭ繧ｰ繧､繝ｳ
     </button>
 
-    <div class="login-divider">または</div>
+    <div class="login-divider">縺ｾ縺溘・</div>
 
-    <!-- ログイン／新規登録タブ -->
+    <!-- 繝ｭ繧ｰ繧､繝ｳ・乗眠隕冗匳骭ｲ繧ｿ繝・-->
     <div class="login-tab-row">
-      <button class="login-tab active" id="tab-signin" onclick="switchLoginTab('signin')">ログイン</button>
-      <button class="login-tab" id="tab-signup" onclick="switchLoginTab('signup')">新規登録</button>
+      <button class="login-tab active" id="tab-signin" onclick="switchLoginTab('signin')">繝ｭ繧ｰ繧､繝ｳ</button>
+      <button class="login-tab" id="tab-signup" onclick="switchLoginTab('signup')">譁ｰ隕冗匳骭ｲ</button>
     </div>
 
-    <!-- 名前入力（新規登録時のみ） -->
+    <!-- 蜷榊燕蜈･蜉幢ｼ域眠隕冗匳骭ｲ譎ゅ・縺ｿ・・-->
     <div class="login-name-row" id="login-name-row">
       <input class="login-input" type="text" id="login-display-name"
-        placeholder="表示名（例：えみ）" maxlength="20">
+        placeholder="陦ｨ遉ｺ蜷搾ｼ井ｾ具ｼ壹∴縺ｿ・・ maxlength="20">
     </div>
 
-    <input class="login-input" type="email" id="login-email" placeholder="メールアドレス">
-    <input class="login-input" type="password" id="login-password" placeholder="パスワード（6文字以上）">
+    <input class="login-input" type="email" id="login-email" placeholder="繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ">
+    <input class="login-input" type="password" id="login-password" placeholder="繝代せ繝ｯ繝ｼ繝会ｼ・譁・ｭ嶺ｻ･荳奇ｼ・>
 
     <button class="login-submit-btn" id="login-submit-btn" onclick="doEmailAuth()">
-      ログイン
+      繝ｭ繧ｰ繧､繝ｳ
     </button>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
-<!-- 設定モーダル -->
+<!-- 險ｭ螳壹Δ繝ｼ繝繝ｫ -->
 <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()">
   <div class="settings-modal" onclick="event.stopPropagation()">
-    <span class="settings-close" onclick="closeSettings()">✕</span>
-    <h3>⚙️ アプリの設定</h3>
+    <span class="settings-close" onclick="closeSettings()">笨・/span>
+    <h3>笞呻ｸ・繧｢繝励Μ縺ｮ險ｭ螳・/h3>
 
-    <!-- タイトル変更 -->
+    <!-- 繧ｿ繧､繝医Ν螟画峩 -->
     <div class="settings-group">
-      <label for="settings-title-input">📝 アプリのタイトル</label>
-      <input type="text" id="settings-title-input" placeholder="🌻 夏休みの思い出アルバム" maxlength="40">
+      <label for="settings-title-input">統 繧｢繝励Μ縺ｮ繧ｿ繧､繝医Ν</label>
+      <input type="text" id="settings-title-input" placeholder="現 螟丈ｼ代∩縺ｮ諤昴＞蜃ｺ繧｢繝ｫ繝舌Β" maxlength="40">
     </div>
 
-    <!-- 背景画像変更 -->
+    <!-- 閭梧勹逕ｻ蜒丞､画峩 -->
     <div class="settings-group">
-      <label>🖼️ 背景画像</label>
-      <img id="settings-bg-preview" class="settings-bg-preview" src="" alt="現在の背景">
+      <label>名・・閭梧勹逕ｻ蜒・/label>
+      <img id="settings-bg-preview" class="settings-bg-preview" src="" alt="迴ｾ蝨ｨ縺ｮ閭梧勹">
       <div class="settings-upload-area">
         <input type="file" id="settings-bg-file" accept="image/*">
-        <div class="settings-upload-hint">📁 クリックまたはドラッグで画像を選択</div>
+        <div class="settings-upload-hint">刀 繧ｯ繝ｪ繝・け縺ｾ縺溘・繝峨Λ繝・げ縺ｧ逕ｻ蜒上ｒ驕ｸ謚・/div>
       </div>
     </div>
 
     <div class="settings-btn-row">
-      <button class="settings-apply-btn" onclick="applySettings()">✅ 適用して保存</button>
-      <button class="settings-reset-btn" onclick="resetBackground()">🔄 背景を初期値に戻す</button>
+      <button class="settings-apply-btn" onclick="applySettings()">笨・驕ｩ逕ｨ縺励※菫晏ｭ・/button>
+      <button class="settings-reset-btn" onclick="resetBackground()">売 閭梧勹繧貞・譛溷､縺ｫ謌ｻ縺・/button>
     </div>
   </div>
 </div>
 
-<h1 class="app-title" id="app-title-text">🌻 夏休みの思い出アルバム</h1>
-<p class="app-subtitle">みんなで作るデジタルスクラップブック ✂️📷</p>
+<h1 class="app-title" id="app-title-text">現 螟丈ｼ代∩縺ｮ諤昴＞蜃ｺ繧｢繝ｫ繝舌Β</h1>
+<p class="app-subtitle">縺ｿ繧薙↑縺ｧ菴懊ｋ繝・ず繧ｿ繝ｫ繧ｹ繧ｯ繝ｩ繝・・繝悶ャ繧ｯ 笨ゑｸ条沒ｷ</p>
 
-<!-- スマホ専用ログインバー（480px以下のみ表示） -->
+<!-- 繧ｹ繝槭・蟆ら畑繝ｭ繧ｰ繧､繝ｳ繝舌・・・80px莉･荳九・縺ｿ陦ｨ遉ｺ・・-->
 <div class="auth-bar-mobile" id="auth-bar-mobile">
-  <!-- ゲスト -->
+  <!-- 繧ｲ繧ｹ繝・-->
   <span id="mob-guest" style="display:flex;align-items:center;gap:6px;">
-    <span>👤 ゲスト</span>
-    <button class="mob-login-btn" onclick="openLogin()">ログイン</button>
+    <span>側 繧ｲ繧ｹ繝・/span>
+    <button class="mob-login-btn" onclick="openLogin()">繝ｭ繧ｰ繧､繝ｳ</button>
   </span>
-  <!-- ログイン中 -->
+  <!-- 繝ｭ繧ｰ繧､繝ｳ荳ｭ -->
   <span id="mob-user" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;">
     <img id="mob-avatar" src="" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0;">
     <span class="mob-name" id="mob-name"></span>
-    <button class="mob-logout-btn" onclick="doLogout()">ログアウト</button>
+    <button class="mob-logout-btn" onclick="doLogout()">繝ｭ繧ｰ繧｢繧ｦ繝・/button>
   </span>
 </div>
 
-<!-- モード切り替え -->
+<!-- 繝｢繝ｼ繝牙・繧頑崛縺・-->
 <div class="view-tabs">
-  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">✏️ 書く</button>
-  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">📖 アルバム</button>
-  <button class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
+  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">笨擾ｸ・譖ｸ縺・/button>
+  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">当 繧｢繝ｫ繝舌Β</button>
+  <button class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">套 繧ｫ繝ｬ繝ｳ繝繝ｼ</button>
 </div>
 
-<!-- ===== 編集中バナー ===== -->
+<!-- ===== 邱ｨ髮・ｸｭ繝舌リ繝ｼ ===== -->
 <div class="edit-mode-banner" id="edit-mode-banner">
-  <span>✏️ 編集モード：内容を修正して「更新する」を押してね</span>
-  <button class="edit-cancel-btn" onclick="cancelEdit()">✕ キャンセル</button>
+  <span>笨擾ｸ・邱ｨ髮・Δ繝ｼ繝会ｼ壼・螳ｹ繧剃ｿｮ豁｣縺励※縲梧峩譁ｰ縺吶ｋ縲阪ｒ謚ｼ縺励※縺ｭ</span>
+  <button class="edit-cancel-btn" onclick="cancelEdit()">笨・繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
 </div>
 
-<!-- ===== 入力フォーム ===== -->
+<!-- ===== 蜈･蜉帙ヵ繧ｩ繝ｼ繝 ===== -->
 <div class="form-book glass" id="view-write">
-  <h2>✏️ 今日の思い出を書こう</h2>
+  <h2>笨擾ｸ・莉頑律縺ｮ諤昴＞蜃ｺ繧呈嶌縺薙≧</h2>
 
   <div class="form-group">
-    <label for="diary-name">👤 名前</label>
-    <input type="text" id="diary-name" placeholder="だれが書くの？" maxlength="20">
+    <label for="diary-name">側 蜷榊燕</label>
+    <input type="text" id="diary-name" placeholder="縺繧後′譖ｸ縺上・・・ maxlength="20">
   </div>
   <div class="form-group">
-    <label for="diary-date">📅 日付</label>
+    <label for="diary-date">套 譌･莉・/label>
     <input type="date" id="diary-date">
   </div>
   <div class="form-group">
-    <label>今日の気分</label>
+    <label>莉頑律縺ｮ豌怜・</label>
     <div class="mood-selector">
-      <input type="radio" name="mood" id="mood1" value="😎" class="mood-box" checked>
-      <label for="mood1" class="mood-label" title="最高！">😎</label>
-      <input type="radio" name="mood" id="mood2" value="😃" class="mood-box">
-      <label for="mood2" class="mood-label" title="楽しい">😃</label>
-      <input type="radio" name="mood" id="mood3" value="😴" class="mood-box">
-      <label for="mood3" class="mood-label" title="のんびり">😴</label>
-      <input type="radio" name="mood" id="mood4" value="😢" class="mood-box">
-      <label for="mood4" class="mood-label" title="びみょー">😢</label>
+      <input type="radio" name="mood" id="mood1" value="・" class="mood-box" checked>
+      <label for="mood1" class="mood-label" title="譛鬮假ｼ・>・</label>
+      <input type="radio" name="mood" id="mood2" value="・" class="mood-box">
+      <label for="mood2" class="mood-label" title="讌ｽ縺励＞">・</label>
+      <input type="radio" name="mood" id="mood3" value="亢" class="mood-box">
+      <label for="mood3" class="mood-label" title="縺ｮ繧薙・繧・>亢</label>
+      <input type="radio" name="mood" id="mood4" value="个" class="mood-box">
+      <label for="mood4" class="mood-label" title="縺ｳ縺ｿ繧・・">个</label>
     </div>
   </div>
   <div class="form-group">
-    <label>🌤 今日の天気</label>
+    <label>研 莉頑律縺ｮ螟ｩ豌・/label>
     <div class="weather-selector">
-      <input type="radio" name="weather" id="w1" value="☀️" class="weather-box" checked>
-      <label for="w1" class="weather-label" title="晴れ">☀️</label>
-      <input type="radio" name="weather" id="w2" value="⛅" class="weather-box">
-      <label for="w2" class="weather-label" title="くもり">⛅</label>
-      <input type="radio" name="weather" id="w3" value="☔" class="weather-box">
-      <label for="w3" class="weather-label" title="雨">☔</label>
-      <input type="radio" name="weather" id="w4" value="🌊" class="weather-box">
-      <label for="w4" class="weather-label" title="海">🌊</label>
-      <input type="radio" name="weather" id="w5" value="🍧" class="weather-box">
-      <label for="w5" class="weather-label" title="かき氷">🍧</label>
-      <input type="radio" name="weather" id="w6" value="🎆" class="weather-box">
-      <label for="w6" class="weather-label" title="花火">🎆</label>
-      <input type="radio" name="weather" id="w7" value="🏄" class="weather-box">
-      <label for="w7" class="weather-label" title="サーフィン">🏄</label>
-      <input type="radio" name="weather" id="w8" value="🌙" class="weather-box">
-      <label for="w8" class="weather-label" title="夜">🌙</label>
+      <input type="radio" name="weather" id="w1" value="笘・・ class="weather-box" checked>
+      <label for="w1" class="weather-label" title="譎ｴ繧・>笘・・/label>
+      <input type="radio" name="weather" id="w2" value="笵・ class="weather-box">
+      <label for="w2" class="weather-label" title="縺上ｂ繧・>笵・/label>
+      <input type="radio" name="weather" id="w3" value="笘・ class="weather-box">
+      <label for="w3" class="weather-label" title="髮ｨ">笘・/label>
+      <input type="radio" name="weather" id="w4" value="穴" class="weather-box">
+      <label for="w4" class="weather-label" title="豬ｷ">穴</label>
+      <input type="radio" name="weather" id="w5" value="懇" class="weather-box">
+      <label for="w5" class="weather-label" title="縺九″豌ｷ">懇</label>
+      <input type="radio" name="weather" id="w6" value="紙" class="weather-box">
+      <label for="w6" class="weather-label" title="闃ｱ轣ｫ">紙</label>
+      <input type="radio" name="weather" id="w7" value="巡" class="weather-box">
+      <label for="w7" class="weather-label" title="繧ｵ繝ｼ繝輔ぅ繝ｳ">巡</label>
+      <input type="radio" name="weather" id="w8" value="嫌" class="weather-box">
+      <label for="w8" class="weather-label" title="螟・>嫌</label>
     </div>
   </div>
   <div class="form-group">
-    <label for="diary-text">今日の一言（140文字以内）</label>
-    <textarea id="diary-text" rows="3" placeholder="今日あったことを書こう！" maxlength="140"></textarea>
+    <label for="diary-text">莉頑律縺ｮ荳險・・40譁・ｭ嶺ｻ･蜀・ｼ・/label>
+    <textarea id="diary-text" rows="3" placeholder="莉頑律縺ゅ▲縺溘％縺ｨ繧呈嶌縺薙≧・・ maxlength="140"></textarea>
   </div>
   <div class="form-group">
-    <label>📷 写真を貼る（複数OK）</label>
+    <label>胴 蜀咏悄繧定ｲｼ繧具ｼ郁､・焚OK・・/label>
     <div class="photo-upload-area" id="upload-area">
       <input type="file" id="photo-input" accept="image/*" multiple>
-      <span class="photo-upload-icon">🖼️</span>
-      <div class="photo-upload-hint">ここに写真をドラッグ＆ドロップ<br>またはクリックして選択</div>
+      <span class="photo-upload-icon">名・・/span>
+      <div class="photo-upload-hint">縺薙％縺ｫ蜀咏悄繧偵ラ繝ｩ繝・げ・・ラ繝ｭ繝・・<br>縺ｾ縺溘・繧ｯ繝ｪ繝・け縺励※驕ｸ謚・/div>
     </div>
     <div class="photo-preview-wrap" id="photo-preview"></div>
   </div>
   <div class="form-group">
-    <label>🔒 公開範囲</label>
+    <label>白 蜈ｬ髢狗ｯ・峇</label>
     <div class="visibility-selector">
       <input type="radio" name="visibility" id="vis-public" value="public" class="visibility-box" checked>
-      <label for="vis-public" class="visibility-label">🌍 全体公開</label>
+      <label for="vis-public" class="visibility-label">訣 蜈ｨ菴灘・髢・/label>
       <input type="radio" name="visibility" id="vis-friends" value="friends" class="visibility-box">
-      <label for="vis-friends" class="visibility-label">⭐ 親しい友達のみ</label>
+      <label for="vis-friends" class="visibility-label">箝・隕ｪ縺励＞蜿矩＃縺ｮ縺ｿ</label>
     </div>
   </div>
   <div class="form-group">
-    <label>🎵 思い出のBGMを検索</label>
+    <label>七 諤昴＞蜃ｺ縺ｮBGM繧呈､懃ｴ｢</label>
     <div class="bgm-search-row">
-      <input type="text" id="bgm-search-input" placeholder="曲名やアーティスト名で検索…">
-      <button class="bgm-search-btn" id="bgm-search-btn" onclick="searchBGM()">� 検索</button>
+      <input type="text" id="bgm-search-input" placeholder="譖ｲ蜷阪ｄ繧｢繝ｼ繝・ぅ繧ｹ繝亥錐縺ｧ讀懃ｴ｢窶ｦ">
+      <button class="bgm-search-btn" id="bgm-search-btn" onclick="searchBGM()">・ｽ 讀懃ｴ｢</button>
     </div>
     <div class="bgm-results" id="bgm-results"></div>
     <div id="bgm-selected-badge" style="display:none" class="bgm-selected-badge">
-      <span>🎵</span>
+      <span>七</span>
       <span id="bgm-selected-title"></span>
-      <span class="bgm-badge-clear" onclick="clearBGM()" title="解除">✕</span>
+      <span class="bgm-badge-clear" onclick="clearBGM()" title="隗｣髯､">笨・/span>
     </div>
   </div>
 
-  <button class="save-btn" onclick="saveDiary()">思い出を貼る 📌</button>
+  <button class="save-btn" onclick="saveDiary()">諤昴＞蜃ｺ繧定ｲｼ繧・東</button>
 </div>
 
-<!-- ===== アルバム ===== -->
+<!-- ===== 繧｢繝ｫ繝舌Β ===== -->
 <div class="album-section" id="view-album" style="display:none">
-  <h2>📖 みんなの思い出</h2>
+  <h2>当 縺ｿ繧薙↑縺ｮ諤昴＞蜃ｺ</h2>
   <div class="book" id="book"></div>
   <div class="page-nav">
-    <button class="nav-btn" id="prev-btn" onclick="changePage(-1)" disabled>◀ 前のページ</button>
+    <button class="nav-btn" id="prev-btn" onclick="changePage(-1)" disabled>笳 蜑阪・繝壹・繧ｸ</button>
     <span class="page-indicator" id="page-indicator"></span>
-    <button class="nav-btn" id="next-btn" onclick="changePage(1)">次のページ ▶</button>
+    <button class="nav-btn" id="next-btn" onclick="changePage(1)">谺｡縺ｮ繝壹・繧ｸ 笆ｶ</button>
   </div>
 </div>
 
-<!-- ===== カレンダー ===== -->
+<!-- ===== 繧ｫ繝ｬ繝ｳ繝繝ｼ ===== -->
 <div class="calendar-section" id="view-calendar" style="display:none">
   <div class="calendar-header">
-    <button class="cal-nav-btn" onclick="calMove(-1)">◀</button>
+    <button class="cal-nav-btn" onclick="calMove(-1)">笳</button>
     <span class="cal-month-title" id="cal-title"></span>
-    <button class="cal-nav-btn" onclick="calMove(1)">▶</button>
+    <button class="cal-nav-btn" onclick="calMove(1)">笆ｶ</button>
   </div>
   <div class="glass calendar-grid">
     <div class="cal-weekdays">
-      <div class="cal-weekday">日</div><div class="cal-weekday">月</div>
-      <div class="cal-weekday">火</div><div class="cal-weekday">水</div>
-      <div class="cal-weekday">木</div><div class="cal-weekday">金</div>
-      <div class="cal-weekday">土</div>
+      <div class="cal-weekday">譌･</div><div class="cal-weekday">譛・/div>
+      <div class="cal-weekday">轣ｫ</div><div class="cal-weekday">豌ｴ</div>
+      <div class="cal-weekday">譛ｨ</div><div class="cal-weekday">驥・/div>
+      <div class="cal-weekday">蝨・/div>
     </div>
     <div class="cal-days" id="cal-days"></div>
   </div>
 </div>
 
-<!-- カレンダーポップアップ -->
+<!-- 繧ｫ繝ｬ繝ｳ繝繝ｼ繝昴ャ繝励い繝・・ -->
 <div class="cal-popup-overlay" id="cal-popup-overlay" onclick="closeCalPopup()">
   <div class="cal-popup" onclick="event.stopPropagation()">
-    <span class="cal-popup-close" onclick="closeCalPopup()">✕</span>
+    <span class="cal-popup-close" onclick="closeCalPopup()">笨・/span>
     <div class="cal-popup-date" id="cal-popup-date"></div>
     <div id="cal-popup-content"></div>
   </div>
 </div>
 
-<!-- 隠しYouTubeプレイヤー -->
+<!-- 髫縺雄ouTube繝励Ξ繧､繝､繝ｼ -->
 <div id="yt-hidden-player"></div>
 
-<!-- ===== マイページモーダル ===== -->
+<!-- ===== 繝槭う繝壹・繧ｸ繝｢繝ｼ繝繝ｫ ===== -->
 <div class="mypage-overlay" id="mypage-overlay">
   <div class="mypage-modal">
-    <span class="mypage-close" onclick="closeMypage()">✕</span>
+    <span class="mypage-close" onclick="closeMypage()">笨・/span>
 
-    <!-- プロフィールヘッダー -->
+    <!-- 繝励Ο繝輔ぅ繝ｼ繝ｫ繝倥ャ繝繝ｼ -->
     <div class="mypage-header">
-      <div class="mypage-avatar-wrap" onclick="switchMypageTab('settings')" title="プロフィールを編集">
+      <div class="mypage-avatar-wrap" onclick="switchMypageTab('settings')" title="繝励Ο繝輔ぅ繝ｼ繝ｫ繧堤ｷｨ髮・>
         <div id="mypage-avatar-wrap-inner"></div>
-        <div class="mypage-avatar-edit-badge">✏️</div>
+        <div class="mypage-avatar-edit-badge">笨擾ｸ・/div>
       </div>
       <div class="mypage-displayname" id="mypage-displayname"></div>
       <div class="mypage-email" id="mypage-email"></div>
       <div class="mypage-stats">
         <div class="mypage-stat">
           <span class="mypage-stat-num" id="mypage-total">0</span>
-          <span class="mypage-stat-label">投稿数</span>
+          <span class="mypage-stat-label">謚慕ｨｿ謨ｰ</span>
         </div>
         <div class="mypage-stat">
           <span class="mypage-stat-num" id="mypage-public-count">0</span>
-          <span class="mypage-stat-label">全体公開</span>
+          <span class="mypage-stat-label">蜈ｨ菴灘・髢・/span>
         </div>
         <div class="mypage-stat">
           <span class="mypage-stat-num" id="mypage-friends-count">0</span>
-          <span class="mypage-stat-label">限定公開</span>
+          <span class="mypage-stat-label">髯仙ｮ壼・髢・/span>
         </div>
       </div>
     </div>
 
-    <!-- タブ -->
+    <!-- 繧ｿ繝・-->
     <div class="mypage-tabs">
-      <button class="mypage-tab active" id="mptab-posts"    onclick="switchMypageTab('posts')">📖 自分の投稿</button>
-      <button class="mypage-tab"        id="mptab-friends"  onclick="switchMypageTab('friends')">⭐ 友達</button>
-      <button class="mypage-tab"        id="mptab-settings" onclick="switchMypageTab('settings')">⚙️ 設定</button>
+      <button class="mypage-tab active" id="mptab-posts"    onclick="switchMypageTab('posts')">当 閾ｪ蛻・・謚慕ｨｿ</button>
+      <button class="mypage-tab"        id="mptab-friends"  onclick="switchMypageTab('friends')">箝・蜿矩＃</button>
+      <button class="mypage-tab"        id="mptab-settings" onclick="switchMypageTab('settings')">笞呻ｸ・險ｭ螳・/button>
     </div>
 
-    <!-- タブコンテンツ -->
+    <!-- 繧ｿ繝悶さ繝ｳ繝・Φ繝・-->
     <div class="mypage-tab-content">
 
-      <!-- 自分の投稿タブ -->
+      <!-- 閾ｪ蛻・・謚慕ｨｿ繧ｿ繝・-->
       <div class="mypage-tab-panel active" id="mppanel-posts">
         <div class="mypage-diary-list" id="mypage-diary-list">
           <p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">
-            投稿がありません
+            謚慕ｨｿ縺後≠繧翫∪縺帙ｓ
           </p>
         </div>
       </div>
 
-      <!-- 親しい友達タブ -->
+      <!-- 隕ｪ縺励＞蜿矩＃繧ｿ繝・-->
       <div class="mypage-tab-panel" id="mppanel-friends">
-        <!-- 登録済み一覧 -->
+        <!-- 逋ｻ骭ｲ貂医∩荳隕ｧ -->
         <div class="mypage-friends-section">
-          <p class="mypage-section-title">⭐ 登録中の親しい友達</p>
+          <p class="mypage-section-title">箝・逋ｻ骭ｲ荳ｭ縺ｮ隕ｪ縺励＞蜿矩＃</p>
           <p style="font-family:'Yomogi',cursive;font-size:11px;color:#888;margin-bottom:8px;">
-            登録したユーザーだけが「親しい友達のみ」投稿を見られます
+            逋ｻ骭ｲ縺励◆繝ｦ繝ｼ繧ｶ繝ｼ縺縺代′縲瑚ｦｪ縺励＞蜿矩＃縺ｮ縺ｿ縲肴兜遞ｿ繧定ｦ九ｉ繧後∪縺・
           </p>
           <div class="mypage-friends-list" id="mypage-friends-list"></div>
         </div>
 
-        <!-- ユーザー名検索で追加 -->
+        <!-- 繝ｦ繝ｼ繧ｶ繝ｼ蜷肴､懃ｴ｢縺ｧ霑ｽ蜉 -->
         <div style="margin-top:14px;">
-          <p class="mypage-section-title">🔍 ユーザーを検索して追加</p>
+          <p class="mypage-section-title">剥 繝ｦ繝ｼ繧ｶ繝ｼ繧呈､懃ｴ｢縺励※霑ｽ蜉</p>
           <div class="friend-search-row">
             <input type="text" id="friend-search-input"
-                   placeholder="表示名で検索…"
+                   placeholder="陦ｨ遉ｺ蜷阪〒讀懃ｴ｢窶ｦ"
                    oninput="onFriendSearchInput(this.value)">
-            <button class="friend-search-btn" onclick="searchFriends()">検索</button>
+            <button class="friend-search-btn" onclick="searchFriends()">讀懃ｴ｢</button>
           </div>
           <div class="friend-search-results" id="friend-search-results"></div>
         </div>
 
         <div class="mypage-uid-box">
-          <span style="font-family:'Yomogi',cursive;font-size:11px;">自分のUID：<span id="mypage-my-uid" style="font-weight:700;color:#5588dd;"></span></span>
-          <button class="mypage-uid-copy-btn" onclick="copyMyUid()">📋 コピー</button>
+          <span style="font-family:'Yomogi',cursive;font-size:11px;">閾ｪ蛻・・UID・・span id="mypage-my-uid" style="font-weight:700;color:#5588dd;"></span></span>
+          <button class="mypage-uid-copy-btn" onclick="copyMyUid()">搭 繧ｳ繝斐・</button>
         </div>
       </div>
 
-      <!-- 設定タブ -->
+      <!-- 險ｭ螳壹ち繝・-->
       <div class="mypage-tab-panel" id="mppanel-settings">
-        <p class="mypage-section-title">📝 表示名の変更</p>
+        <p class="mypage-section-title">統 陦ｨ遉ｺ蜷阪・螟画峩</p>
         <input class="mypage-input" type="text" id="mypage-name-input"
-               placeholder="表示名（1〜20文字）" maxlength="20">
+               placeholder="陦ｨ遉ｺ蜷搾ｼ・縲・0譁・ｭ暦ｼ・ maxlength="20">
 
-        <p class="mypage-section-title">🖼️ プロフィールアイコン</p>
-        <!-- プレビュー -->
+        <p class="mypage-section-title">名・・繝励Ο繝輔ぅ繝ｼ繝ｫ繧｢繧､繧ｳ繝ｳ</p>
+        <!-- 繝励Ξ繝薙Η繝ｼ -->
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
           <div id="mypage-avatar-preview-wrap" style="flex-shrink:0;"></div>
           <div style="flex:1;">
-            <!-- ファイル選択（優先） -->
+            <!-- 繝輔ぃ繧､繝ｫ驕ｸ謚橸ｼ亥━蜈茨ｼ・-->
             <div class="settings-upload-area" style="margin-bottom:8px;">
               <input type="file" id="mypage-avatar-file" accept="image/*">
-              <div class="settings-upload-hint">📷 端末から画像を選択</div>
+              <div class="settings-upload-hint">胴 遶ｯ譛ｫ縺九ｉ逕ｻ蜒上ｒ驕ｸ謚・/div>
             </div>
-            <!-- URL入力（任意） -->
+            <!-- URL蜈･蜉幢ｼ井ｻｻ諢擾ｼ・-->
             <input class="mypage-input" type="url" id="mypage-avatar-input"
-                   placeholder="または画像URLを入力（任意）"
+                   placeholder="縺ｾ縺溘・逕ｻ蜒酋RL繧貞・蜉幢ｼ井ｻｻ諢擾ｼ・
                    style="margin-bottom:0;">
           </div>
         </div>
 
         <button class="mypage-save-btn" id="mypage-save-btn" onclick="saveProfile()">
-          ✅ プロフィールを保存
+          笨・繝励Ο繝輔ぅ繝ｼ繝ｫ繧剃ｿ晏ｭ・
         </button>
         <div class="mypage-save-msg" id="mypage-save-msg"></div>
 
         <button class="mypage-logout-btn" style="margin-top:16px;" onclick="doLogout();closeMypage()">
-          ログアウト
+          繝ｭ繧ｰ繧｢繧ｦ繝・
         </button>
       </div>
 
@@ -1916,11 +1934,11 @@
   </div>
 </div>
 
-<!-- ライトボックス -->
+<!-- 繝ｩ繧､繝医・繝・け繧ｹ -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <span class="lightbox-close" onclick="closeLightbox()">笨・/span>
   <div class="lightbox-frame" onclick="event.stopPropagation()">
-    <img id="lightbox-img" src="" alt="写真">
+    <img id="lightbox-img" src="" alt="蜀咏悄">
   </div>
 </div>
 
@@ -1935,14 +1953,14 @@
     signOut, updateProfile
   } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
-  // ===== YouTube API キー =====
-  // ここに取得したAPIキーを入力してください
+  // ===== YouTube API 繧ｭ繝ｼ =====
+  // 縺薙％縺ｫ蜿門ｾ励＠縺蘗PI繧ｭ繝ｼ繧貞・蜉帙＠縺ｦ縺上□縺輔＞
   const YOUTUBE_API_KEY = 'AIzaSyA9MlZCxp1X-9eS8sz6rzAgCjf83OEElOU';
 
-  // ===== BGM 状態 =====
-  let pendingBgm = { id: '', title: '' }; // フォーム入力中の選択
-  let ytPlayer = null;          // YouTube IFrame Player インスタンス
-  let currentPlayingBtn = null; // 現在再生中のボタン要素
+  // ===== BGM 迥ｶ諷・=====
+  let pendingBgm = { id: '', title: '' }; // 繝輔か繝ｼ繝蜈･蜉帑ｸｭ縺ｮ驕ｸ謚・
+  let ytPlayer = null;          // YouTube IFrame Player 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ
+  let currentPlayingBtn = null; // 迴ｾ蝨ｨ蜀咲函荳ｭ縺ｮ繝懊ち繝ｳ隕∫ｴ
 
   const firebaseConfig = {
     apiKey: "AIzaSyAGEv-sh80o1Dz0Z-rG3OKKJQMSS7xlU0A",
@@ -1958,9 +1976,9 @@
   const db  = getDatabase(app);
   const auth = getAuth(app);
   const diariesRef = ref(db, 'diaries');
-  const usersRef   = ref(db, 'users'); // プロフィール保存用
+  const usersRef   = ref(db, 'users'); // 繝励Ο繝輔ぅ繝ｼ繝ｫ菫晏ｭ倡畑
 
-  // ===== 状態 =====
+  // ===== 迥ｶ諷・=====
   const ITEMS_PER_PAGE = 3;
   let currentPage  = 0;
   let allDiaries   = [];
@@ -1968,16 +1986,16 @@
   let editingKey   = null;
   let currentUser  = null;
   let friendsList  = [];
-  let userProfile  = { displayName: '', avatarUrl: '' }; // Firebase /users/{uid} の内容
+  let userProfile  = { displayName: '', avatarUrl: '' }; // Firebase /users/{uid} 縺ｮ蜀・ｮｹ
   let calYear, calMonth;
   const now = new Date();
   calYear = now.getFullYear(); calMonth = now.getMonth();
 
-  // ===== 初期化 =====
+  // ===== 蛻晄悄蛹・=====
   document.getElementById('diary-date').valueAsDate = new Date();
   setupPhotoUpload();
 
-  // Firebase リアルタイム監視
+  // Firebase 繝ｪ繧｢繝ｫ繧ｿ繧､繝逶｣隕・
   const diariesQuery = query(diariesRef, orderByChild('createdAt'));
   onValue(diariesQuery, (snapshot) => {
     const data = snapshot.val();
@@ -1990,11 +2008,11 @@
           return b.createdAt - a.createdAt;
         });
 
-    // ===== 公開範囲フィルタ =====
+    // ===== 蜈ｬ髢狗ｯ・峇繝輔ぅ繝ｫ繧ｿ =====
     allDiaries = raw.filter(d => {
       if (!d.visibility || d.visibility === 'public') return true;
       const myUid = currentUser ? currentUser.uid : null;
-      if (myUid && d.uid === myUid) return true; // 投稿者本人
+      if (myUid && d.uid === myUid) return true; // 謚慕ｨｿ閠・悽莠ｺ
       const ownerFriends = d.ownerFriends ? JSON.parse(d.ownerFriends) : [];
       return myUid && ownerFriends.includes(myUid);
     });
@@ -2002,15 +2020,15 @@
     currentPage = 0;
     renderPage();
     renderCalendar();
-    // 接続成功インジケーター更新
+    // 謗･邯壽・蜉溘う繝ｳ繧ｸ繧ｱ繝ｼ繧ｿ繝ｼ譖ｴ譁ｰ
     setConnectionStatus(true);
   }, (error) => {
-    // ルール期限切れ・権限エラーなどを画面に表示
-    console.error('Firebase接続エラー:', error);
+    // 繝ｫ繝ｼ繝ｫ譛滄剞蛻・ｌ繝ｻ讓ｩ髯舌お繝ｩ繝ｼ縺ｪ縺ｩ繧堤判髱｢縺ｫ陦ｨ遉ｺ
+    console.error('Firebase謗･邯壹お繝ｩ繝ｼ:', error);
     setConnectionStatus(false, error.code);
   });
 
-  // ===== 接続ステータス表示 =====
+  // ===== 謗･邯壹せ繝・・繧ｿ繧ｹ陦ｨ遉ｺ =====
   function setConnectionStatus(ok, code) {
     let el = document.getElementById('fb-status');
     if (!el) {
@@ -2028,8 +2046,8 @@
     if (ok) {
       el.style.background = 'rgba(100,220,120,0.85)';
       el.style.color = '#1a4a22';
-      el.textContent = '🟢 Firebase 同期中';
-      // 3秒後にフェードアウト
+      el.textContent = '泙 Firebase 蜷梧悄荳ｭ';
+      // 3遘貞ｾ後↓繝輔ぉ繝ｼ繝峨い繧ｦ繝・
       setTimeout(() => { el.style.opacity = '0'; }, 3000);
       el.style.opacity = '1';
     } else {
@@ -2038,13 +2056,13 @@
       el.style.pointerEvents = 'auto';
       el.style.opacity = '1';
       const codeMsg = code === 'PERMISSION_DENIED'
-        ? 'ルールの期限切れです。Firebaseコンソールでルールを更新してください。'
-        : `接続エラー: ${code}`;
-      el.innerHTML = `⚠️ Firebase未接続 — ${codeMsg}`;
+        ? '繝ｫ繝ｼ繝ｫ縺ｮ譛滄剞蛻・ｌ縺ｧ縺吶・irebase繧ｳ繝ｳ繧ｽ繝ｼ繝ｫ縺ｧ繝ｫ繝ｼ繝ｫ繧呈峩譁ｰ縺励※縺上□縺輔＞縲・
+        : `謗･邯壹お繝ｩ繝ｼ: ${code}`;
+      el.innerHTML = `笞・・Firebase譛ｪ謗･邯・窶・${codeMsg}`;
     }
   }
 
-  // ===== Firebase Auth 状態監視 =====
+  // ===== Firebase Auth 迥ｶ諷狗屮隕・=====
   onAuthStateChanged(auth, (user) => {
     currentUser = user;
     const guestEl = document.getElementById('auth-bar-guest');
@@ -2052,21 +2070,21 @@
     if (user) {
       guestEl.style.display = 'none';
       userEl.style.display  = 'flex';
-      // マイページ固定ボタンを表示
+      // 繝槭う繝壹・繧ｸ蝗ｺ螳壹・繧ｿ繝ｳ繧定｡ｨ遉ｺ
       const mypageBtn = document.getElementById('mypage-fixed-btn');
       if (mypageBtn) mypageBtn.style.display = 'flex';
-      // friendsList を LocalStorage から復元
+      // friendsList 繧・LocalStorage 縺九ｉ蠕ｩ蜈・
       const saved = localStorage.getItem('friends_' + user.uid);
       friendsList = saved ? JSON.parse(saved) : [];
 
-      // Firebase /users/{uid} からプロフィールを読み込む
+      // Firebase /users/{uid} 縺九ｉ繝励Ο繝輔ぅ繝ｼ繝ｫ繧定ｪｭ縺ｿ霎ｼ繧
       onValue(ref(db, `users/${user.uid}`), (snap) => {
         const data = snap.val();
         userProfile = data
           ? { displayName: data.displayName || '', avatarUrl: data.avatarUrl || '' }
           : { displayName: user.displayName || '', avatarUrl: user.photoURL || '' };
 
-        // auth-bar の表示名・アイコンに反映
+        // auth-bar 縺ｮ陦ｨ遉ｺ蜷阪・繧｢繧､繧ｳ繝ｳ縺ｫ蜿肴丐
         const dispName = userProfile.displayName || user.displayName || user.email;
         const avatarUrl = userProfile.avatarUrl || user.photoURL || '';
         document.getElementById('auth-name').textContent = dispName;
@@ -2078,19 +2096,23 @@
           avatarEl.style.display = 'none';
         }
 
-        // スマホバーも更新
-        document.getElementById('mob-guest').style.display = 'none';
-        document.getElementById('mob-user').style.display  = 'flex';
-        document.getElementById('mob-name').textContent    = dispName;
-        const mobAv = document.getElementById('mob-avatar');
-        if (avatarUrl) { mobAv.src = avatarUrl; mobAv.style.display = ''; }
-        else            { mobAv.style.display = 'none'; }
+        // スマホナビバー（mob-hdr-*）も更新
+        const hdrGuest = document.getElementById('mob-hdr-guest');
+        const hdrUser  = document.getElementById('mob-hdr-user');
+        if (hdrGuest) hdrGuest.style.display = 'none';
+        if (hdrUser)  hdrUser.style.display  = 'flex';
+        const hdrName = document.getElementById('mob-hdr-name');
+        if (hdrName) hdrName.textContent = dispName;
+        const hdrAv = document.getElementById('mob-hdr-avatar');
+        if (hdrAv) { if (avatarUrl) { hdrAv.src = avatarUrl; hdrAv.style.display = ''; } else { hdrAv.style.display = 'none'; } }
+        const mobMypageBtn = document.getElementById('mob-mypage-btn');
+        if (mobMypageBtn) mobMypageBtn.style.display = 'flex';
 
-        // 投稿フォームの名前欄を自動入力（まだ空の場合のみ）
+        // 謚慕ｨｿ繝輔か繝ｼ繝縺ｮ蜷榊燕谺・ｒ閾ｪ蜍募・蜉幢ｼ医∪縺遨ｺ縺ｮ蝣ｴ蜷医・縺ｿ・・
         const nameInput = document.getElementById('diary-name');
         if (!nameInput.value) nameInput.value = userProfile.displayName || user.displayName || '';
 
-        // 表示が変わるのでアルバムも再描画
+        // 陦ｨ遉ｺ縺悟､峨ｏ繧九・縺ｧ繧｢繝ｫ繝舌Β繧ょ・謠冗判
         renderPage();
         renderCalendar();
       }, { onlyOnce: false });
@@ -2100,18 +2122,25 @@
       userEl.style.display  = 'none';
       friendsList  = [];
       userProfile  = { displayName: '', avatarUrl: '' };
-      // マイページ固定ボタンを非表示
+      // 繝槭う繝壹・繧ｸ蝗ｺ螳壹・繧ｿ繝ｳ繧帝撼陦ｨ遉ｺ
       const mypageBtn = document.getElementById('mypage-fixed-btn');
       if (mypageBtn) mypageBtn.style.display = 'none';
-      // スマホバーをゲスト表示に戻す
+      // 繧ｹ繝槭・繝舌・繧偵ご繧ｹ繝郁｡ｨ遉ｺ縺ｫ謌ｻ縺・
       document.getElementById('mob-guest').style.display = 'flex';
       document.getElementById('mob-user').style.display  = 'none';
+      // スマホナビバーもゲスト表示に戻す
+      const hdrG = document.getElementById('mob-hdr-guest');
+      const hdrU = document.getElementById('mob-hdr-user');
+      const mmbtn = document.getElementById('mob-mypage-btn');
+      if (hdrG) hdrG.style.display = 'flex';
+      if (hdrU) hdrU.style.display = 'none';
+      if (mmbtn) mmbtn.style.display = 'none';
     }
     renderPage();
     renderCalendar();
   });
 
-  // ===== ログインモーダル 開閉 =====
+  // ===== 繝ｭ繧ｰ繧､繝ｳ繝｢繝ｼ繝繝ｫ 髢矩哩 =====
   window.openLogin = function() {
     document.getElementById('login-overlay').classList.add('open');
     document.getElementById('login-error').textContent = '';
@@ -2120,28 +2149,28 @@
     document.getElementById('login-overlay').classList.remove('open');
   };
 
-  // ===== タブ切り替え（ログイン／新規登録） =====
+  // ===== 繧ｿ繝門・繧頑崛縺茨ｼ医Ο繧ｰ繧､繝ｳ・乗眠隕冗匳骭ｲ・・=====
   window.switchLoginTab = function(tab) {
     const isSignup = tab === 'signup';
     document.getElementById('tab-signin').classList.toggle('active', !isSignup);
     document.getElementById('tab-signup').classList.toggle('active',  isSignup);
-    document.getElementById('login-submit-btn').textContent = isSignup ? '新規登録' : 'ログイン';
+    document.getElementById('login-submit-btn').textContent = isSignup ? '譁ｰ隕冗匳骭ｲ' : '繝ｭ繧ｰ繧､繝ｳ';
     document.getElementById('login-name-row').classList.toggle('visible', isSignup);
     document.getElementById('login-error').textContent = '';
   };
 
-  // ===== Googleログイン =====
+  // ===== Google繝ｭ繧ｰ繧､繝ｳ =====
   window.doGoogleLogin = async function() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       closeLogin();
     } catch (e) {
-      document.getElementById('login-error').textContent = 'Googleログインに失敗しました: ' + e.message;
+      document.getElementById('login-error').textContent = 'Google繝ｭ繧ｰ繧､繝ｳ縺ｫ螟ｱ謨励＠縺ｾ縺励◆: ' + e.message;
     }
   };
 
-  // ===== メール認証（ログイン or 新規登録） =====
+  // ===== 繝｡繝ｼ繝ｫ隱崎ｨｼ・医Ο繧ｰ繧､繝ｳ or 譁ｰ隕冗匳骭ｲ・・=====
   window.doEmailAuth = async function() {
     const isSignup = document.getElementById('tab-signup').classList.contains('active');
     const email    = document.getElementById('login-email').value.trim();
@@ -2150,8 +2179,8 @@
     const errEl    = document.getElementById('login-error');
     const btn      = document.getElementById('login-submit-btn');
 
-    if (!email || !password) { errEl.textContent = 'メールアドレスとパスワードを入力してください'; return; }
-    if (isSignup && !dispName) { errEl.textContent = '表示名を入力してください'; return; }
+    if (!email || !password) { errEl.textContent = '繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ縺ｨ繝代せ繝ｯ繝ｼ繝峨ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞'; return; }
+    if (isSignup && !dispName) { errEl.textContent = '陦ｨ遉ｺ蜷阪ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞'; return; }
 
     btn.disabled = true;
     errEl.textContent = '';
@@ -2163,39 +2192,39 @@
         await signInWithEmailAndPassword(auth, email, password);
       }
       closeLogin();
-      // 入力欄をリセット
+      // 蜈･蜉帶ｬ・ｒ繝ｪ繧ｻ繝・ヨ
       document.getElementById('login-email').value = '';
       document.getElementById('login-password').value = '';
       document.getElementById('login-display-name').value = '';
     } catch (e) {
       const msgs = {
-        'auth/email-already-in-use': 'このメールアドレスはすでに使われています',
-        'auth/invalid-email':        'メールアドレスの形式が正しくありません',
-        'auth/weak-password':        'パスワードは6文字以上にしてください',
-        'auth/user-not-found':       'アカウントが見つかりません',
-        'auth/wrong-password':       'パスワードが違います',
-        'auth/invalid-credential':   'メールアドレスまたはパスワードが違います',
+        'auth/email-already-in-use': '縺薙・繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ縺ｯ縺吶〒縺ｫ菴ｿ繧上ｌ縺ｦ縺・∪縺・,
+        'auth/invalid-email':        '繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ縺ｮ蠖｢蠑上′豁｣縺励￥縺ゅｊ縺ｾ縺帙ｓ',
+        'auth/weak-password':        '繝代せ繝ｯ繝ｼ繝峨・6譁・ｭ嶺ｻ･荳翫↓縺励※縺上□縺輔＞',
+        'auth/user-not-found':       '繧｢繧ｫ繧ｦ繝ｳ繝医′隕九▽縺九ｊ縺ｾ縺帙ｓ',
+        'auth/wrong-password':       '繝代せ繝ｯ繝ｼ繝峨′驕輔＞縺ｾ縺・,
+        'auth/invalid-credential':   '繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ縺ｾ縺溘・繝代せ繝ｯ繝ｼ繝峨′驕輔＞縺ｾ縺・,
       };
-      errEl.textContent = msgs[e.code] || ('エラー: ' + e.message);
+      errEl.textContent = msgs[e.code] || ('繧ｨ繝ｩ繝ｼ: ' + e.message);
     } finally {
       btn.disabled = false;
     }
   };
 
-  // ===== ログアウト =====
+  // ===== 繝ｭ繧ｰ繧｢繧ｦ繝・=====
   window.doLogout = async function() {
-    if (!confirm('ログアウトしますか？')) return;
+    if (!confirm('繝ｭ繧ｰ繧｢繧ｦ繝医＠縺ｾ縺吶°・・)) return;
     await signOut(auth);
   };
 
-  // ===== ログイン必須チェック（書き込み系で使う） =====
+  // ===== 繝ｭ繧ｰ繧､繝ｳ蠢・医メ繧ｧ繝・け・域嶌縺崎ｾｼ縺ｿ邉ｻ縺ｧ菴ｿ縺・ｼ・=====
   function requireAuth() {
     if (currentUser) return true;
     openLogin();
     return false;
   }
 
-  // ===== タブ切り替え =====
+  // ===== 繧ｿ繝門・繧頑崛縺・=====
   window.switchTab = function(tab) {
     ['write','album','calendar'].forEach(t => {
       document.getElementById('view-'+t).style.display = (t === tab) ? '' : 'none';
@@ -2204,7 +2233,7 @@
     if (tab === 'calendar') renderCalendar();
   };
 
-  // ===== 写真アップロード =====
+  // ===== 蜀咏悄繧｢繝・・繝ｭ繝ｼ繝・=====
   function setupPhotoUpload() {
     const area  = document.getElementById('upload-area');
     const input = document.getElementById('photo-input');
@@ -2257,7 +2286,7 @@
       img.src = src;
       const removeBtn = document.createElement('button');
       removeBtn.className = 'photo-remove-btn';
-      removeBtn.textContent = '✕';
+      removeBtn.textContent = '笨・;
       removeBtn.onclick = () => { pendingPhotos.splice(i, 1); renderPreview(); };
       wrapItem.appendChild(img);
       wrapItem.appendChild(removeBtn);
@@ -2265,11 +2294,11 @@
     });
   }
 
-  // ===== 保存（新規 or 更新） =====
+  // ===== 菫晏ｭ假ｼ域眠隕・or 譖ｴ譁ｰ・・=====
   window.saveDiary = async function () {
-    if (!requireAuth()) return; // 未ログインならログインモーダルを開く
+    if (!requireAuth()) return; // 譛ｪ繝ｭ繧ｰ繧､繝ｳ縺ｪ繧峨Ο繧ｰ繧､繝ｳ繝｢繝ｼ繝繝ｫ繧帝幕縺・
 
-    // 名前欄が空なら userProfile.displayName を自動補完
+    // 蜷榊燕谺・′遨ｺ縺ｪ繧・userProfile.displayName 繧定・蜍戊｣懷ｮ・
     const nameInput = document.getElementById('diary-name');
     if (!nameInput.value.trim() && (userProfile.displayName || currentUser.displayName)) {
       nameInput.value = userProfile.displayName || currentUser.displayName;
@@ -2281,12 +2310,12 @@
     const mood    = document.querySelector('input[name="mood"]:checked').value;
     const weather = document.querySelector('input[name="weather"]:checked').value;
 
-    if (!name) { alert('名前を入力してね！'); return; }
-    if (!text) { alert('日記の内容を入力してね！'); return; }
+    if (!name) { alert('蜷榊燕繧貞・蜉帙＠縺ｦ縺ｭ・・); return; }
+    if (!text) { alert('譌･險倥・蜀・ｮｹ繧貞・蜉帙＠縺ｦ縺ｭ・・); return; }
 
     const saveBtn = document.querySelector('.save-btn');
     saveBtn.disabled = true;
-    saveBtn.textContent = editingKey ? '更新中…' : '貼り付け中…';
+    saveBtn.textContent = editingKey ? '譖ｴ譁ｰ荳ｭ窶ｦ' : '雋ｼ繧贋ｻ倥￠荳ｭ窶ｦ';
 
     const entryData = {
       name, date, mood, weather, text,
@@ -2295,33 +2324,33 @@
       bgmTitle:     pendingBgm.title || '',
       uid:          currentUser.uid,
       visibility:   document.querySelector('input[name="visibility"]:checked').value,
-      // 「親しい友達のみ」投稿には投稿者のfriendsList（誰に見せるか）を埋め込む
+      // 縲瑚ｦｪ縺励＞蜿矩＃縺ｮ縺ｿ縲肴兜遞ｿ縺ｫ縺ｯ謚慕ｨｿ閠・・friendsList・郁ｪｰ縺ｫ隕九○繧九°・峨ｒ蝓九ａ霎ｼ繧
       ownerFriends: JSON.stringify(friendsList)
     };
 
     try {
       if (editingKey) {
-        // ===== 更新モード：既存データを上書き =====
+        // ===== 譖ｴ譁ｰ繝｢繝ｼ繝会ｼ壽里蟄倥ョ繝ｼ繧ｿ繧剃ｸ頑嶌縺・=====
         const existing = allDiaries.find(d => d.fbKey === editingKey);
         entryData.createdAt = existing ? existing.createdAt : Date.now();
         await set(ref(db, `diaries/${editingKey}`), entryData);
         cancelEdit();
       } else {
-        // ===== 新規作成モード =====
+        // ===== 譁ｰ隕丈ｽ懈・繝｢繝ｼ繝・=====
         entryData.createdAt = Date.now();
         await push(diariesRef, entryData);
       }
-      // フォームリセット
+      // 繝輔か繝ｼ繝繝ｪ繧ｻ繝・ヨ
       resetForm();
     } catch (e) {
-      console.error('保存エラー:', e);
+      console.error('菫晏ｭ倥お繝ｩ繝ｼ:', e);
       const msg = e.code === 'PERMISSION_DENIED'
-        ? 'Firebaseのルールが期限切れです。\nFirebaseコンソール → Realtime Database → ルール\nから書き込み権限を更新してください。'
-        : '保存に失敗しました。\n' + e.message;
+        ? 'Firebase縺ｮ繝ｫ繝ｼ繝ｫ縺梧悄髯仙・繧後〒縺吶・nFirebase繧ｳ繝ｳ繧ｽ繝ｼ繝ｫ 竊・Realtime Database 竊・繝ｫ繝ｼ繝ｫ\n縺九ｉ譖ｸ縺崎ｾｼ縺ｿ讓ｩ髯舌ｒ譖ｴ譁ｰ縺励※縺上□縺輔＞縲・
+        : '菫晏ｭ倥↓螟ｱ謨励＠縺ｾ縺励◆縲・n' + e.message;
       alert(msg);
     } finally {
       saveBtn.disabled = false;
-      saveBtn.textContent = '思い出を貼る 📌';
+      saveBtn.textContent = '諤昴＞蜃ｺ繧定ｲｼ繧・東';
     }
   };
 
@@ -2334,43 +2363,43 @@
     pendingPhotos = [];
     document.getElementById('mood1').checked = true;
     document.getElementById('w1').checked = true;
-    document.getElementById('vis-public').checked = true; // 公開範囲リセット
+    document.getElementById('vis-public').checked = true; // 蜈ｬ髢狗ｯ・峇繝ｪ繧ｻ繝・ヨ
     clearBGM();
   }
 
-  // ===== 編集モード開始 =====
+  // ===== 邱ｨ髮・Δ繝ｼ繝蛾幕蟋・=====
   window.startEdit = function(diary) {
     if (!requireAuth()) return;
     editingKey = diary.fbKey;
 
-    // フォームに値を読み込む
+    // 繝輔か繝ｼ繝縺ｫ蛟､繧定ｪｭ縺ｿ霎ｼ繧
     document.getElementById('diary-name').value  = diary.name  || '';
     document.getElementById('diary-date').value  = diary.date  || '';
     document.getElementById('diary-text').value  = diary.text  || '';
 
-    // 気分を選択
+    // 豌怜・繧帝∈謚・
     const moodVal = diary.mood || '';
     document.querySelectorAll('input[name="mood"]').forEach(r => {
       r.checked = (r.value === moodVal);
     });
 
-    // 天気を選択
+    // 螟ｩ豌励ｒ驕ｸ謚・
     const weatherVal = diary.weather || '';
     document.querySelectorAll('input[name="weather"]').forEach(r => {
       r.checked = (r.value === weatherVal);
     });
 
-    // 公開範囲を選択
+    // 蜈ｬ髢狗ｯ・峇繧帝∈謚・
     const visVal = diary.visibility || 'public';
     document.querySelectorAll('input[name="visibility"]').forEach(r => {
       r.checked = (r.value === visVal);
     });
 
-    // 写真を読み込む
+    // 蜀咏悄繧定ｪｭ縺ｿ霎ｼ繧
     pendingPhotos = JSON.parse(diary.photos || '[]');
     renderPreview();
 
-    // BGMを読み込む
+    // BGM繧定ｪｭ縺ｿ霎ｼ繧
     if (diary.bgmId) {
       pendingBgm = { id: diary.bgmId, title: diary.bgmTitle || '' };
       document.getElementById('bgm-selected-title').textContent = diary.bgmTitle || diary.bgmId;
@@ -2379,30 +2408,30 @@
       clearBGM();
     }
 
-    // ボタン表示を「更新する」に変更
-    document.querySelector('.save-btn').textContent = '更新する 💾';
+    // 繝懊ち繝ｳ陦ｨ遉ｺ繧偵梧峩譁ｰ縺吶ｋ縲阪↓螟画峩
+    document.querySelector('.save-btn').textContent = '譖ｴ譁ｰ縺吶ｋ 沈';
 
-    // 編集バナーを表示
+    // 邱ｨ髮・ヰ繝翫・繧定｡ｨ遉ｺ
     document.getElementById('edit-mode-banner').classList.add('visible');
 
-    // 書くタブに切り替えてフォームへスクロール
+    // 譖ｸ縺上ち繝悶↓蛻・ｊ譖ｿ縺医※繝輔か繝ｼ繝縺ｸ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
     switchTab('write');
     document.getElementById('view-write').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // ===== 編集キャンセル =====
+  // ===== 邱ｨ髮・く繝｣繝ｳ繧ｻ繝ｫ =====
   window.cancelEdit = function() {
     editingKey = null;
     resetForm();
-    document.querySelector('.save-btn').textContent = '思い出を貼る 📌';
+    document.querySelector('.save-btn').textContent = '諤昴＞蜃ｺ繧定ｲｼ繧・東';
     document.getElementById('edit-mode-banner').classList.remove('visible');
   };
 
-  // ===== マイページ =====
-  // ユーザーアイコンのキャッシュ（uid → avatarUrl）
+  // ===== 繝槭う繝壹・繧ｸ =====
+  // 繝ｦ繝ｼ繧ｶ繝ｼ繧｢繧､繧ｳ繝ｳ縺ｮ繧ｭ繝｣繝・す繝･・・id 竊・avatarUrl・・
   const userIconCache = {};
 
-  // 他ユーザーのプロフィールを取得してキャッシュ
+  // 莉悶Θ繝ｼ繧ｶ繝ｼ縺ｮ繝励Ο繝輔ぅ繝ｼ繝ｫ繧貞叙蠕励＠縺ｦ繧ｭ繝｣繝・す繝･
   function fetchUserIcon(uid) {
     if (userIconCache[uid] !== undefined) return Promise.resolve(userIconCache[uid]);
     return new Promise(resolve => {
@@ -2414,7 +2443,7 @@
     });
   }
 
-  // カード内の投稿者アイコン要素を生成
+  // 繧ｫ繝ｼ繝牙・縺ｮ謚慕ｨｿ閠・い繧､繧ｳ繝ｳ隕∫ｴ繧堤函謌・
   async function buildUserIconEl(uid, photoURL) {
     const url = await fetchUserIcon(uid) || photoURL || '';
     if (url) {
@@ -2425,7 +2454,7 @@
     }
     const el = document.createElement('span');
     el.className = 'diary-card-user-icon-placeholder';
-    el.textContent = '👤';
+    el.textContent = '側';
     return el;
   }
 
@@ -2441,21 +2470,21 @@
   };
 
   function updateMypageHeader() {
-    // アバター
+    // 繧｢繝舌ち繝ｼ
     const avatarUrl = userProfile.avatarUrl || currentUser.photoURL || '';
     const inner = document.getElementById('mypage-avatar-wrap-inner');
     if (avatarUrl) {
       inner.innerHTML = `<img class="mypage-avatar" src="${avatarUrl}" alt="">`;
     } else {
-      inner.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
+      inner.innerHTML = `<div class="mypage-avatar-placeholder">側</div>`;
     }
-    // 表示名・メール
+    // 陦ｨ遉ｺ蜷阪・繝｡繝ｼ繝ｫ
     const dispName = userProfile.displayName || currentUser.displayName || currentUser.email;
     document.getElementById('mypage-displayname').textContent = dispName;
     document.getElementById('mypage-email').textContent = currentUser.email || '';
     // UID
     document.getElementById('mypage-my-uid').textContent = currentUser.uid;
-    // 統計（全件から自分の投稿を探す）
+    // 邨ｱ險茨ｼ亥・莉ｶ縺九ｉ閾ｪ蛻・・謚慕ｨｿ繧呈爾縺呻ｼ・
     const myDiaries = allDiaries.filter(d => d.uid === currentUser.uid);
     document.getElementById('mypage-total').textContent         = myDiaries.length;
     document.getElementById('mypage-public-count').textContent  = myDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
@@ -2470,7 +2499,7 @@
     if (tab === 'posts')    renderMypagePosts();
     if (tab === 'friends')  {
       renderFriendsList();
-      // 検索欄・結果をリセット
+      // 讀懃ｴ｢谺・・邨先棡繧偵Μ繧ｻ繝・ヨ
       const si = document.getElementById('friend-search-input');
       if (si) si.value = '';
       const sr = document.getElementById('friend-search-results');
@@ -2478,11 +2507,11 @@
       lastSearchResults = [];
     }
     if (tab === 'settings') {
-      // 設定フォームに現在値をプリセット
+      // 險ｭ螳壹ヵ繧ｩ繝ｼ繝縺ｫ迴ｾ蝨ｨ蛟､繧偵・繝ｪ繧ｻ繝・ヨ
       document.getElementById('mypage-name-input').value   = userProfile.displayName || currentUser.displayName || '';
       document.getElementById('mypage-avatar-input').value = userProfile.avatarUrl   || currentUser.photoURL    || '';
       document.getElementById('mypage-save-msg').textContent = '';
-      document.getElementById('mypage-avatar-file').value  = ''; // ファイル選択リセット
+      document.getElementById('mypage-avatar-file').value  = ''; // 繝輔ぃ繧､繝ｫ驕ｸ謚槭Μ繧ｻ繝・ヨ
       updateAvatarPreview(userProfile.avatarUrl || currentUser.photoURL || '');
     }
   };
@@ -2492,7 +2521,7 @@
     const listEl = document.getElementById('mypage-diary-list');
     if (!listEl) return;
     if (myDiaries.length === 0) {
-      listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">投稿がありません</p>`;
+      listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">謚慕ｨｿ縺後≠繧翫∪縺帙ｓ</p>`;
       return;
     }
     listEl.innerHTML = '';
@@ -2500,31 +2529,31 @@
       const item = document.createElement('div');
       item.className = 'mypage-diary-item';
       const badge = d.visibility === 'friends'
-        ? '<span class="visibility-badge friends" style="margin-left:6px;">⭐ 限定</span>'
+        ? '<span class="visibility-badge friends" style="margin-left:6px;">箝・髯仙ｮ・/span>'
         : '';
       item.innerHTML = `
-        <div class="mypage-diary-item-date">📅 ${d.date} ${badge}</div>
+        <div class="mypage-diary-item-date">套 ${d.date} ${badge}</div>
         <div class="mypage-diary-item-text">${d.text}</div>
       `;
       listEl.appendChild(item);
     });
   }
 
-  // ===== プロフィール設定フォーム補助 =====
-  let pendingAvatarDataUrl = ''; // ファイル選択で生成したBase64
+  // ===== 繝励Ο繝輔ぅ繝ｼ繝ｫ險ｭ螳壹ヵ繧ｩ繝ｼ繝陬懷勧 =====
+  let pendingAvatarDataUrl = ''; // 繝輔ぃ繧､繝ｫ驕ｸ謚槭〒逕滓・縺励◆Base64
 
-  // アバタープレビュー更新
+  // 繧｢繝舌ち繝ｼ繝励Ξ繝薙Η繝ｼ譖ｴ譁ｰ
   function updateAvatarPreview(url) {
     const wrap = document.getElementById('mypage-avatar-preview-wrap');
     if (!wrap) return;
     if (url) {
       wrap.innerHTML = `<img src="${url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(100,150,220,0.4);">`;
     } else {
-      wrap.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a8d0f8,#7cb0e8);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">👤</div>`;
+      wrap.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a8d0f8,#7cb0e8);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">側</div>`;
     }
   }
 
-  // ファイル選択 → Base64変換 → プレビュー表示
+  // 繝輔ぃ繧､繝ｫ驕ｸ謚・竊・Base64螟画鋤 竊・繝励Ξ繝薙Η繝ｼ陦ｨ遉ｺ
   document.getElementById('mypage-avatar-file').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
@@ -2539,7 +2568,7 @@
     reader.readAsDataURL(file);
   });
 
-  // URL欄を入力したらファイル選択をリセット
+  // URL谺・ｒ蜈･蜉帙＠縺溘ｉ繝輔ぃ繧､繝ｫ驕ｸ謚槭ｒ繝ｪ繧ｻ繝・ヨ
   document.getElementById('mypage-avatar-input').addEventListener('input', function() {
     if (this.value) {
       pendingAvatarDataUrl = '';
@@ -2548,16 +2577,16 @@
     }
   });
 
-  // ===== プロフィール保存 =====
+  // ===== 繝励Ο繝輔ぅ繝ｼ繝ｫ菫晏ｭ・=====
   window.saveProfile = async function() {
     if (!currentUser) return;
     const newName   = document.getElementById('mypage-name-input').value.trim();
-    // ファイル選択 → Base64 を優先、なければURL欄の値を使う
+    // 繝輔ぃ繧､繝ｫ驕ｸ謚・竊・Base64 繧貞━蜈医√↑縺代ｌ縺ｰURL谺・・蛟､繧剃ｽｿ縺・
     const newAvatar = pendingAvatarDataUrl || document.getElementById('mypage-avatar-input').value.trim();
     const msgEl     = document.getElementById('mypage-save-msg');
     const btn       = document.getElementById('mypage-save-btn');
 
-    if (!newName) { msgEl.textContent = '表示名を入力してください'; msgEl.className = 'mypage-save-msg err'; return; }
+    if (!newName) { msgEl.textContent = '陦ｨ遉ｺ蜷阪ｒ蜈･蜉帙＠縺ｦ縺上□縺輔＞'; msgEl.className = 'mypage-save-msg err'; return; }
 
     btn.disabled = true;
     msgEl.textContent = ''; msgEl.className = 'mypage-save-msg';
@@ -2566,24 +2595,24 @@
         displayName: newName,
         avatarUrl:   newAvatar
       });
-      // キャッシュ・状態を即時更新
+      // 繧ｭ繝｣繝・す繝･繝ｻ迥ｶ諷九ｒ蜊ｳ譎よ峩譁ｰ
       userIconCache[currentUser.uid] = newAvatar;
       userProfile.displayName = newName;
       userProfile.avatarUrl   = newAvatar;
       pendingAvatarDataUrl    = '';
 
-      msgEl.textContent = '✅ 保存しました！';
+      msgEl.textContent = '笨・菫晏ｭ倥＠縺ｾ縺励◆・・;
       msgEl.className   = 'mypage-save-msg ok';
       updateMypageHeader();
-      // auth-bar も即時反映
+      // auth-bar 繧ょ叉譎ょ渚譏
       document.getElementById('auth-name').textContent = newName;
       const avatarEl = document.getElementById('auth-avatar');
       if (newAvatar) { avatarEl.src = newAvatar; avatarEl.style.display = ''; }
       else           { avatarEl.style.display = 'none'; }
-      // アルバム再描画（アイコン反映）
+      // 繧｢繝ｫ繝舌Β蜀肴緒逕ｻ・医い繧､繧ｳ繝ｳ蜿肴丐・・
       renderPage();
     } catch (e) {
-      msgEl.textContent = '保存に失敗しました: ' + e.message;
+      msgEl.textContent = '菫晏ｭ倥↓螟ｱ謨励＠縺ｾ縺励◆: ' + e.message;
       msgEl.className   = 'mypage-save-msg err';
     } finally {
       btn.disabled = false;
@@ -2593,7 +2622,7 @@
   window.copyMyUid = function() {
     if (!currentUser) return;
     navigator.clipboard.writeText(currentUser.uid).then(() => {
-      alert('UIDをコピーしました！\n' + currentUser.uid);
+      alert('UID繧偵さ繝斐・縺励∪縺励◆・―n' + currentUser.uid);
     });
   };
 
@@ -2601,24 +2630,24 @@
     const listEl = document.getElementById('mypage-friends-list');
     if (!listEl) return;
     if (friendsList.length === 0) {
-      listEl.innerHTML = '<div style="font-family:\'Yomogi\',cursive;font-size:12px;color:#aaa;padding:4px 0;">まだ登録されていません</div>';
+      listEl.innerHTML = '<div style="font-family:\'Yomogi\',cursive;font-size:12px;color:#aaa;padding:4px 0;">縺ｾ縺逋ｻ骭ｲ縺輔ｌ縺ｦ縺・∪縺帙ｓ</div>';
       return;
     }
     listEl.innerHTML = '';
     friendsList.forEach((uid, i) => {
       const item = document.createElement('div');
       item.className = 'friend-search-item';
-      // アイコン（キャッシュから取得）
+      // 繧｢繧､繧ｳ繝ｳ・医く繝｣繝・す繝･縺九ｉ蜿門ｾ暦ｼ・
       const avatarUrl = userIconCache[uid] || '';
       const iconHtml = avatarUrl
         ? `<img class="friend-search-icon" src="${avatarUrl}" alt="">`
-        : `<div class="friend-search-icon-placeholder">👤</div>`;
-      // 表示名（キャッシュから取得）
-      const dispName = userNameCache[uid] || uid.slice(0,8) + '…' + uid.slice(-4);
+        : `<div class="friend-search-icon-placeholder">側</div>`;
+      // 陦ｨ遉ｺ蜷搾ｼ医く繝｣繝・す繝･縺九ｉ蜿門ｾ暦ｼ・
+      const dispName = userNameCache[uid] || uid.slice(0,8) + '窶ｦ' + uid.slice(-4);
       item.innerHTML = `
         ${iconHtml}
         <span class="friend-search-name">${dispName}</span>
-        <button class="mypage-friend-remove" onclick="removeFriend(${i})" title="削除">✕</button>
+        <button class="mypage-friend-remove" onclick="removeFriend(${i})" title="蜑企勁">笨・/button>
       `;
       listEl.appendChild(item);
     });
@@ -2628,16 +2657,16 @@
     friendsList.splice(index, 1);
     localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
     renderFriendsList();
-    // 検索結果の「追加済み」表示も更新
+    // 讀懃ｴ｢邨先棡縺ｮ縲瑚ｿｽ蜉貂医∩縲崎｡ｨ遉ｺ繧よ峩譁ｰ
     renderFriendSearchResults(lastSearchResults);
   };
 
-  // ===== 友達ユーザー名検索 =====
-  let lastSearchResults = []; // 最後の検索結果をキャッシュ
-  const userNameCache   = {}; // uid → displayName のキャッシュ
+  // ===== 蜿矩＃繝ｦ繝ｼ繧ｶ繝ｼ蜷肴､懃ｴ｢ =====
+  let lastSearchResults = []; // 譛蠕後・讀懃ｴ｢邨先棡繧偵く繝｣繝・す繝･
+  const userNameCache   = {}; // uid 竊・displayName 縺ｮ繧ｭ繝｣繝・す繝･
   let searchDebounceTimer = null;
 
-  // 入力中のデバウンス検索（300ms後に実行）
+  // 蜈･蜉帑ｸｭ縺ｮ繝・ヰ繧ｦ繝ｳ繧ｹ讀懃ｴ｢・・00ms蠕後↓螳溯｡鯉ｼ・
   window.onFriendSearchInput = function(val) {
     clearTimeout(searchDebounceTimer);
     if (!val.trim()) {
@@ -2653,21 +2682,21 @@
     const resultsEl = document.getElementById('friend-search-results');
     if (!q) { resultsEl.innerHTML = ''; return; }
 
-    resultsEl.innerHTML = `<div class="friend-search-empty">🔍 検索中…</div>`;
+    resultsEl.innerHTML = `<div class="friend-search-empty">剥 讀懃ｴ｢荳ｭ窶ｦ</div>`;
 
     try {
-      // Firebase /users 全件取得して表示名で部分一致フィルタ
+      // Firebase /users 蜈ｨ莉ｶ蜿門ｾ励＠縺ｦ陦ｨ遉ｺ蜷阪〒驛ｨ蛻・ｸ閾ｴ繝輔ぅ繝ｫ繧ｿ
       const snap = await new Promise(resolve => {
         onValue(ref(db, 'users'), resolve, { onlyOnce: true });
       });
       const data = snap.val();
       if (!data) {
-        resultsEl.innerHTML = `<div class="friend-search-empty">ユーザーが見つかりませんでした</div>`;
+        resultsEl.innerHTML = `<div class="friend-search-empty">繝ｦ繝ｼ繧ｶ繝ｼ縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ縺ｧ縺励◆</div>`;
         lastSearchResults = [];
         return;
       }
 
-      // 部分一致で絞り込み・自分を除外
+      // 驛ｨ蛻・ｸ閾ｴ縺ｧ邨槭ｊ霎ｼ縺ｿ繝ｻ閾ｪ蛻・ｒ髯､螟・
       lastSearchResults = Object.entries(data)
         .filter(([uid, profile]) =>
           uid !== currentUser.uid &&
@@ -2676,7 +2705,7 @@
         )
         .map(([uid, profile]) => ({ uid, ...profile }));
 
-      // キャッシュに保存
+      // 繧ｭ繝｣繝・す繝･縺ｫ菫晏ｭ・
       lastSearchResults.forEach(u => {
         userIconCache[u.uid] = u.avatarUrl || '';
         userNameCache[u.uid] = u.displayName || '';
@@ -2684,7 +2713,7 @@
 
       renderFriendSearchResults(lastSearchResults);
     } catch (e) {
-      resultsEl.innerHTML = `<div class="friend-search-empty">検索に失敗しました: ${e.message}</div>`;
+      resultsEl.innerHTML = `<div class="friend-search-empty">讀懃ｴ｢縺ｫ螟ｱ謨励＠縺ｾ縺励◆: ${e.message}</div>`;
     }
   };
 
@@ -2692,7 +2721,7 @@
     const resultsEl = document.getElementById('friend-search-results');
     if (!resultsEl) return;
     if (!results || results.length === 0) {
-      resultsEl.innerHTML = `<div class="friend-search-empty">見つかりませんでした 🙈</div>`;
+      resultsEl.innerHTML = `<div class="friend-search-empty">隕九▽縺九ｊ縺ｾ縺帙ｓ縺ｧ縺励◆ 刪</div>`;
       return;
     }
     resultsEl.innerHTML = '';
@@ -2702,13 +2731,13 @@
       item.className = 'friend-search-item';
       const iconHtml = user.avatarUrl
         ? `<img class="friend-search-icon" src="${user.avatarUrl}" alt="">`
-        : `<div class="friend-search-icon-placeholder">👤</div>`;
+        : `<div class="friend-search-icon-placeholder">側</div>`;
       item.innerHTML = `
         ${iconHtml}
         <span class="friend-search-name">${user.displayName}</span>
         <button class="friend-search-add-btn ${isAdded ? 'added' : 'add'}"
                 ${isAdded ? 'disabled' : `onclick="addFriendByUid('${user.uid}')"`}>
-          ${isAdded ? '✅ 追加済み' : '➕ 追加'}
+          ${isAdded ? '笨・霑ｽ蜉貂医∩' : '筐・霑ｽ蜉'}
         </button>
       `;
       resultsEl.appendChild(item);
@@ -2721,16 +2750,16 @@
     friendsList.push(uid);
     localStorage.setItem('friends_' + currentUser.uid, JSON.stringify(friendsList));
     renderFriendsList();
-    renderFriendSearchResults(lastSearchResults); // ボタンを「追加済み」に更新
+    renderFriendSearchResults(lastSearchResults); // 繝懊ち繝ｳ繧偵瑚ｿｽ蜉貂医∩縲阪↓譖ｴ譁ｰ
   };
 
-  // ===== アルバム描画 =====
+  // ===== 繧｢繝ｫ繝舌Β謠冗判 =====
   function renderPage() {
     const book = document.getElementById('book');
     book.innerHTML = '';
 
     if (allDiaries.length === 0) {
-      book.innerHTML = '<p class="empty-msg">まだ思い出がありません。<br>最初の1枚を貼ってみよう！🌻</p>';
+      book.innerHTML = '<p class="empty-msg">縺ｾ縺諤昴＞蜃ｺ縺後≠繧翫∪縺帙ｓ縲・br>譛蛻昴・1譫壹ｒ雋ｼ縺｣縺ｦ縺ｿ繧医≧・Å沍ｻ</p>';
       document.getElementById('page-indicator').textContent = '';
       document.getElementById('prev-btn').disabled = true;
       document.getElementById('next-btn').disabled = true;
@@ -2748,7 +2777,7 @@
 
     document.getElementById('prev-btn').disabled = (currentPage === 0);
     document.getElementById('next-btn').disabled = (currentPage >= totalPages - 1);
-    document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${totalPages} ページ`;
+    document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${totalPages} 繝壹・繧ｸ`;
   }
 
   function buildCard(diary) {
@@ -2756,40 +2785,40 @@
     const card = document.createElement('div');
     card.className = 'diary-card';
 
-    // ===== ① ヘッダー（日付・名前・スタンプ）最上部 =====
+    // ===== 竭 繝倥ャ繝繝ｼ・域律莉倥・蜷榊燕繝ｻ繧ｹ繧ｿ繝ｳ繝暦ｼ画怙荳企Κ =====
     const moodEmoji = diary.mood ? [...diary.mood.trim()][0] : '';
 
     const caption = document.createElement('div');
     caption.className = 'diary-card-caption';
     caption.innerHTML = `
-      <span class="diary-card-date">📅 ${diary.date}</span>
-      ${diary.name ? `<span class="diary-card-author">✏️ ${diary.name}</span>` : ''}
+      <span class="diary-card-date">套 ${diary.date}</span>
+      ${diary.name ? `<span class="diary-card-author">笨擾ｸ・${diary.name}</span>` : ''}
       ${(moodEmoji || diary.weather) ? `
         <span class="diary-card-stamps">
           ${moodEmoji     ? `<span class="diary-card-mood">${moodEmoji}</span>`        : ''}
           ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
         </span>` : ''}
     `;
-    // 投稿者アイコンを非同期で追加（uidがある場合）
+    // 謚慕ｨｿ閠・い繧､繧ｳ繝ｳ繧帝撼蜷梧悄縺ｧ霑ｽ蜉・・id縺後≠繧句ｴ蜷茨ｼ・
     if (diary.uid) {
       buildUserIconEl(diary.uid, '').then(iconEl => {
         iconEl.setAttribute('data-html2canvas-ignore', 'true');
         caption.insertBefore(iconEl, caption.firstChild);
       });
     }
-    // BGM再生ボタン（bgmIdがある場合のみ）
+    // BGM蜀咲函繝懊ち繝ｳ・・gmId縺後≠繧句ｴ蜷医・縺ｿ・・
     if (diary.bgmId) {
       const playBtn = document.createElement('button');
       playBtn.className = 'bgm-play-btn';
-      playBtn.title = diary.bgmTitle || 'BGMを再生';
-      playBtn.textContent = '▶️';
+      playBtn.title = diary.bgmTitle || 'BGM繧貞・逕・;
+      playBtn.textContent = '笆ｶ・・;
       playBtn.setAttribute('data-html2canvas-ignore', 'true');
       playBtn.onclick = () => toggleBGM(diary.bgmId, playBtn);
       caption.appendChild(playBtn);
     }
     card.appendChild(caption);
 
-    // ===== ② 本文・写真エリア =====
+    // ===== 竭｡ 譛ｬ譁・・蜀咏悄繧ｨ繝ｪ繧｢ =====
     const body = document.createElement('div');
     body.className = 'diary-card-body';
 
@@ -2805,7 +2834,7 @@
         const item = document.createElement('div');
         item.className = 'diary-photo-item';
         const img = document.createElement('img');
-        img.src = src; img.alt = '思い出';
+        img.src = src; img.alt = '諤昴＞蜃ｺ';
         img.onclick = () => openLightbox(src);
         item.appendChild(img);
         grid.appendChild(item);
@@ -2814,41 +2843,41 @@
     }
     card.appendChild(body);
 
-    // ===== ③ ボタンエリア =====
+    // ===== 竭｢ 繝懊ち繝ｳ繧ｨ繝ｪ繧｢ =====
     const actions = document.createElement('div');
     actions.className = 'diary-card-actions';
     actions.setAttribute('data-html2canvas-ignore', 'true');
 
     const shareBtn = document.createElement('button');
     shareBtn.className = 'diary-share-btn';
-    shareBtn.innerHTML = '📸 シェア／保存';
+    shareBtn.innerHTML = '萄 繧ｷ繧ｧ繧｢・丈ｿ晏ｭ・;
     shareBtn.onclick = () => shareCard(card, diary.date, shareBtn);
     actions.appendChild(shareBtn);
 
-    // 右側：編集＋消すを縦並びラッパーにまとめる
+    // 蜿ｳ蛛ｴ・夂ｷｨ髮・ｼ区ｶ医☆繧堤ｸｦ荳ｦ縺ｳ繝ｩ繝・ヱ繝ｼ縺ｫ縺ｾ縺ｨ繧√ｋ
     const actionsRight = document.createElement('div');
     actionsRight.className = 'diary-card-actions-right';
 
-    // 投稿者本人のみ編集・削除ボタンを表示
+    // 謚慕ｨｿ閠・悽莠ｺ縺ｮ縺ｿ邱ｨ髮・・蜑企勁繝懊ち繝ｳ繧定｡ｨ遉ｺ
     const isOwner = currentUser && diary.uid && currentUser.uid === diary.uid;
 
     const editBtn = document.createElement('button');
     editBtn.className = 'diary-edit-btn';
-    editBtn.textContent = '✏️ 編集';
+    editBtn.textContent = '笨擾ｸ・邱ｨ髮・;
     editBtn.onclick = () => startEdit(diary);
     if (isOwner) actionsRight.appendChild(editBtn);
 
     const delBtn = document.createElement('button');
     delBtn.className = 'diary-delete-btn';
-    delBtn.textContent = '🗑 消す';
+    delBtn.textContent = '卵 豸医☆';
     delBtn.onclick = () => deleteDiary(diary.fbKey);
     if (isOwner) actionsRight.appendChild(delBtn);
 
-    // 公開範囲バッジ（全体以外なら表示）
+    // 蜈ｬ髢狗ｯ・峇繝舌ャ繧ｸ・亥・菴謎ｻ･螟悶↑繧芽｡ｨ遉ｺ・・
     if (diary.visibility === 'friends') {
       const badge = document.createElement('span');
       badge.className = 'visibility-badge friends';
-      badge.textContent = '⭐ 限定';
+      badge.textContent = '箝・髯仙ｮ・;
       actionsRight.appendChild(badge);
     }
 
@@ -2859,14 +2888,14 @@
     return card;
   }
 
-  // ===== ページめくり =====
+  // ===== 繝壹・繧ｸ繧√￥繧・=====
   window.changePage = function(dir) {
-    // ページ移動時は再生中のBGMを止める
+    // 繝壹・繧ｸ遘ｻ蜍墓凾縺ｯ蜀咲函荳ｭ縺ｮBGM繧呈ｭ｢繧√ｋ
     if (ytReady && ytPlayer) {
       ytPlayer.stopVideo();
     }
     if (currentPlayingBtn) {
-      currentPlayingBtn.textContent = '▶️';
+      currentPlayingBtn.textContent = '笆ｶ・・;
       currentPlayingBtn.classList.remove('playing');
       currentPlayingBtn = null;
     }
@@ -2897,47 +2926,47 @@
     }, 430);
   };
 
-  // ===== シェア・保存 =====
+  // ===== 繧ｷ繧ｧ繧｢繝ｻ菫晏ｭ・=====
   window.shareCard = async function(card, date, btn) {
     if (btn.classList.contains('loading')) return;
     btn.classList.add('loading');
-    btn.innerHTML = '<span class="spin-icon">⏳</span> 変換中…';
+    btn.innerHTML = '<span class="spin-icon">竢ｳ</span> 螟画鋤荳ｭ窶ｦ';
 
     try {
-      // カードの傾きを一時的にリセットして真っ直ぐに撮影
+      // 繧ｫ繝ｼ繝峨・蛯ｾ縺阪ｒ荳譎ら噪縺ｫ繝ｪ繧ｻ繝・ヨ縺励※逵溘▲逶ｴ縺舌↓謦ｮ蠖ｱ
       const prevTransform = card.style.transform;
       card.style.transform = 'rotate(0deg)';
       card.style.transition = 'none';
 
-      // シェアボタン自体は画像に含めない
+      // 繧ｷ繧ｧ繧｢繝懊ち繝ｳ閾ｪ菴薙・逕ｻ蜒上↓蜷ｫ繧√↑縺・
       btn.style.display = 'none';
 
       const canvas = await html2canvas(card, {
-        scale: 2,           // 高解像度
+        scale: 2,           // 鬮倩ｧ｣蜒丞ｺｦ
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
       });
 
-      // 元に戻す
+      // 蜈・↓謌ｻ縺・
       card.style.transform = prevTransform;
       card.style.transition = '';
       btn.style.display = '';
 
-      // Blobに変換
+      // Blob縺ｫ螟画鋤
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       const fileName = `natsu-diary-${date || 'memory'}.png`;
 
-      // Web Share API（スマホ等）が使える場合
+      // Web Share API・医せ繝槭・遲会ｼ峨′菴ｿ縺医ｋ蝣ｴ蜷・
       if (navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
         const file = new File([blob], fileName, { type: 'image/png' });
         await navigator.share({
-          title: '夏休みの思い出',
-          text: '夏休みの思い出アルバムより 🌻',
+          title: '螟丈ｼ代∩縺ｮ諤昴＞蜃ｺ',
+          text: '螟丈ｼ代∩縺ｮ諤昴＞蜃ｺ繧｢繝ｫ繝舌Β繧医ｊ 現',
           files: [file],
         });
       } else {
-        // フォールバック：ダウンロード
+        // 繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ・壹ム繧ｦ繝ｳ繝ｭ繝ｼ繝・
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -2946,21 +2975,21 @@
         setTimeout(() => URL.revokeObjectURL(url), 3000);
       }
     } catch (e) {
-      // ユーザーがシェアをキャンセルした場合はエラーにしない
+      // 繝ｦ繝ｼ繧ｶ繝ｼ縺後す繧ｧ繧｢繧偵く繝｣繝ｳ繧ｻ繝ｫ縺励◆蝣ｴ蜷医・繧ｨ繝ｩ繝ｼ縺ｫ縺励↑縺・
       if (e.name !== 'AbortError') {
-        alert('画像の生成に失敗しました。\n' + e.message);
+        alert('逕ｻ蜒上・逕滓・縺ｫ螟ｱ謨励＠縺ｾ縺励◆縲・n' + e.message);
       }
     } finally {
       btn.classList.remove('loading');
-      btn.innerHTML = '📸 シェア／保存';
+      btn.innerHTML = '萄 繧ｷ繧ｧ繧｢・丈ｿ晏ｭ・;
       btn.style.display = '';
     }
   };
 
-  // ===== BGM検索 =====
+  // ===== BGM讀懃ｴ｢ =====
   window.searchBGM = async function() {
     if (!YOUTUBE_API_KEY) {
-      const msg = 'APIキーが設定されていません。コード内の YOUTUBE_API_KEY にキーを設定してください。';
+      const msg = 'API繧ｭ繝ｼ縺瑚ｨｭ螳壹＆繧後※縺・∪縺帙ｓ縲ゅさ繝ｼ繝牙・縺ｮ YOUTUBE_API_KEY 縺ｫ繧ｭ繝ｼ繧定ｨｭ螳壹＠縺ｦ縺上□縺輔＞縲・;
       console.warn(msg);
       document.getElementById('bgm-results').innerHTML =
         `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#c00;padding:6px;">${msg}</p>`;
@@ -2970,7 +2999,7 @@
     if (!q) return;
 
     const btn = document.getElementById('bgm-search-btn');
-    btn.disabled = true; btn.textContent = '検索中…';
+    btn.disabled = true; btn.textContent = '讀懃ｴ｢荳ｭ窶ｦ';
 
     try {
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=3&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
@@ -2982,7 +3011,7 @@
       container.innerHTML = '';
 
       if (!data.items || data.items.length === 0) {
-        container.innerHTML = '<p style="font-family:\'Yomogi\',cursive;font-size:12px;color:#888;padding:6px;">見つかりませんでした🙈</p>';
+        container.innerHTML = '<p style="font-family:\'Yomogi\',cursive;font-size:12px;color:#888;padding:6px;">隕九▽縺九ｊ縺ｾ縺帙ｓ縺ｧ縺励◆刪</p>';
         return;
       }
 
@@ -3003,23 +3032,23 @@
       });
     } catch (e) {
       document.getElementById('bgm-results').innerHTML =
-        `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#c00;padding:6px;">検索に失敗しました: ${e.message}</p>`;
+        `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#c00;padding:6px;">讀懃ｴ｢縺ｫ螟ｱ謨励＠縺ｾ縺励◆: ${e.message}</p>`;
     } finally {
-      btn.disabled = false; btn.textContent = '🔍 検索';
+      btn.disabled = false; btn.textContent = '剥 讀懃ｴ｢';
     }
   };
 
-  // エンターキーでも検索できるように
+  // 繧ｨ繝ｳ繧ｿ繝ｼ繧ｭ繝ｼ縺ｧ繧よ､懃ｴ｢縺ｧ縺阪ｋ繧医≧縺ｫ
   document.getElementById('bgm-search-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') searchBGM();
   });
 
   function selectBGM(id, title) {
     pendingBgm = { id, title };
-    // 選択済みバッジ更新
+    // 驕ｸ謚樊ｸ医∩繝舌ャ繧ｸ譖ｴ譁ｰ
     document.getElementById('bgm-selected-title').textContent = title;
     document.getElementById('bgm-selected-badge').style.display = 'flex';
-    // 選択状態を結果リストに反映
+    // 驕ｸ謚樒憾諷九ｒ邨先棡繝ｪ繧ｹ繝医↓蜿肴丐
     document.querySelectorAll('.bgm-result-item').forEach(el => el.classList.remove('selected'));
     document.querySelectorAll('.bgm-result-item').forEach(el => {
       if (el.querySelector('.bgm-result-title')?.textContent === title) el.classList.add('selected');
@@ -3036,10 +3065,10 @@
   };
 
   // ===== YouTube IFrame Player API =====
-  // ★ プレイヤーは1つだけ作り、曲替えは loadVideoById() で行う
+  // 笘・繝励Ξ繧､繝､繝ｼ縺ｯ1縺､縺縺台ｽ懊ｊ縲∵峇譖ｿ縺医・ loadVideoById() 縺ｧ陦後≧
   let ytReady = false;
 
-  // IFrame API スクリプトを先頭スクリプトの前に挿入（推奨方式）
+  // IFrame API 繧ｹ繧ｯ繝ｪ繝励ヨ繧貞・鬆ｭ繧ｹ繧ｯ繝ｪ繝励ヨ縺ｮ蜑阪↓謖ｿ蜈･・域耳螂ｨ譁ｹ蠑擾ｼ・
   (function() {
     if (document.getElementById('yt-iframe-api')) return;
     const tag = document.createElement('script');
@@ -3049,20 +3078,20 @@
     first.parentNode.insertBefore(tag, first);
   })();
 
-  // API 準備完了コールバック（グローバルに登録必須）
+  // API 貅門ｙ螳御ｺ・さ繝ｼ繝ｫ繝舌ャ繧ｯ・医げ繝ｭ繝ｼ繝舌Ν縺ｫ逋ｻ骭ｲ蠢・茨ｼ・
   window.onYouTubeIframeAPIReady = function() {
-    // 隠しコンテナに固定 div を用意してプレイヤーを1度だけ生成
+    // 髫縺励さ繝ｳ繝・リ縺ｫ蝗ｺ螳・div 繧堤畑諢上＠縺ｦ繝励Ξ繧､繝､繝ｼ繧・蠎ｦ縺縺醍函謌・
     const container = document.getElementById('yt-hidden-player');
     container.innerHTML = '<div id="yt-player-inner"></div>';
 
     ytPlayer = new YT.Player('yt-player-inner', {
       width:  '200',
       height: '112',
-      videoId: '',           // 最初は空
+      videoId: '',           // 譛蛻昴・遨ｺ
       playerVars: {
-        autoplay:       0,   // ユーザー操作で再生するので 0
+        autoplay:       0,   // 繝ｦ繝ｼ繧ｶ繝ｼ謫堺ｽ懊〒蜀咲函縺吶ｋ縺ｮ縺ｧ 0
         controls:       0,
-        playsinline:    1,   // iOS Safari でインライン再生
+        playsinline:    1,   // iOS Safari 縺ｧ繧､繝ｳ繝ｩ繧､繝ｳ蜀咲函
         loop:           1,
         rel:            0,
         modestbranding: 1,
@@ -3074,7 +3103,7 @@
           ytPlayer.setVolume(70);
         },
         onStateChange: (e) => {
-          // 曲が終わったらループ（playlist指定なしでも動くように）
+          // 譖ｲ縺檎ｵゅｏ縺｣縺溘ｉ繝ｫ繝ｼ繝暦ｼ・laylist謖・ｮ壹↑縺励〒繧ょ虚縺上ｈ縺・↓・・
           if (e.data === YT.PlayerState.ENDED && currentPlayingBtn) {
             ytPlayer.seekTo(0);
             ytPlayer.playVideo();
@@ -3082,7 +3111,7 @@
         },
         onError: () => {
           if (currentPlayingBtn) {
-            currentPlayingBtn.textContent = '▶️';
+            currentPlayingBtn.textContent = '笆ｶ・・;
             currentPlayingBtn.classList.remove('playing');
             currentPlayingBtn = null;
           }
@@ -3091,33 +3120,33 @@
     });
   };
 
-  // ===== BGM 再生 / 一時停止 =====
+  // ===== BGM 蜀咲函 / 荳譎ょ●豁｢ =====
   window.toggleBGM = function(videoId, btn) {
-    // --- 同じボタンを押した：トグル ---
+    // --- 蜷後§繝懊ち繝ｳ繧呈款縺励◆・壹ヨ繧ｰ繝ｫ ---
     if (currentPlayingBtn === btn && ytReady) {
       const state = ytPlayer.getPlayerState();
       if (state === YT.PlayerState.PLAYING) {
         ytPlayer.pauseVideo();
-        btn.textContent = '▶️';
+        btn.textContent = '笆ｶ・・;
         btn.classList.remove('playing');
       } else {
         ytPlayer.playVideo();
-        btn.textContent = '⏸️';
+        btn.textContent = '竢ｸ・・;
         btn.classList.add('playing');
       }
       return;
     }
 
-    // --- 別の曲 or 初回：前のボタンをリセット ---
+    // --- 蛻･縺ｮ譖ｲ or 蛻晏屓・壼燕縺ｮ繝懊ち繝ｳ繧偵Μ繧ｻ繝・ヨ ---
     if (currentPlayingBtn && currentPlayingBtn !== btn) {
-      currentPlayingBtn.textContent = '▶️';
+      currentPlayingBtn.textContent = '笆ｶ・・;
       currentPlayingBtn.classList.remove('playing');
     }
     currentPlayingBtn = btn;
-    btn.textContent = '⏳';
+    btn.textContent = '竢ｳ';
     btn.classList.remove('playing');
 
-    // API未準備ならポーリング待機
+    // API譛ｪ貅門ｙ縺ｪ繧峨・繝ｼ繝ｪ繝ｳ繧ｰ蠕・ｩ・
     if (!ytReady) {
       const wait = setInterval(() => {
         if (ytReady) {
@@ -3130,45 +3159,45 @@
     playVideo(videoId, btn);
   };
 
-  // loadVideoById でプレイヤー1つを使い回す（自動再生制限を回避）
+  // loadVideoById 縺ｧ繝励Ξ繧､繝､繝ｼ1縺､繧剃ｽｿ縺・屓縺呻ｼ郁・蜍募・逕溷宛髯舌ｒ蝗樣∩・・
   function playVideo(videoId, btn) {
-    // ★ユーザーのクリックイベントのコールスタック内で呼ぶことが重要
+    // 笘・Θ繝ｼ繧ｶ繝ｼ縺ｮ繧ｯ繝ｪ繝・け繧､繝吶Φ繝医・繧ｳ繝ｼ繝ｫ繧ｹ繧ｿ繝・け蜀・〒蜻ｼ縺ｶ縺薙→縺碁㍾隕・
     ytPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
-    // loadVideoById は autoplay:0 でも再生開始するので追加で playVideo は不要
-    // ただし念のため少し待って状態確認
+    // loadVideoById 縺ｯ autoplay:0 縺ｧ繧ょ・逕滄幕蟋九☆繧九・縺ｧ霑ｽ蜉縺ｧ playVideo 縺ｯ荳崎ｦ・
+    // 縺溘□縺怜ｿｵ縺ｮ縺溘ａ蟆代＠蠕・▲縺ｦ迥ｶ諷狗｢ｺ隱・
     setTimeout(() => {
       const state = ytPlayer.getPlayerState();
-      // PLAYING(1) でなければ明示的に playVideo()
+      // PLAYING(1) 縺ｧ縺ｪ縺代ｌ縺ｰ譏守､ｺ逧・↓ playVideo()
       if (state !== 1) ytPlayer.playVideo();
-      btn.textContent = '⏸️';
+      btn.textContent = '竢ｸ・・;
       btn.classList.add('playing');
     }, 800);
   }
 
-  // ===== 削除 =====
+  // ===== 蜑企勁 =====
   window.deleteDiary = async function(fbKey) {
     if (!requireAuth()) return;
-    if (!confirm('この思い出を消してもいいですか？')) return;
+    if (!confirm('縺薙・諤昴＞蜃ｺ繧呈ｶ医＠縺ｦ繧ゅ＞縺・〒縺吶°・・)) return;
     try { await remove(ref(db, `diaries/${fbKey}`)); }
     catch(e) {
-      console.error('削除エラー:', e);
+      console.error('蜑企勁繧ｨ繝ｩ繝ｼ:', e);
       const msg = e.code === 'PERMISSION_DENIED'
-        ? 'Firebaseのルールが期限切れです。\nFirebaseコンソールでルールを更新してください。'
-        : '削除に失敗しました。\n' + e.message;
+        ? 'Firebase縺ｮ繝ｫ繝ｼ繝ｫ縺梧悄髯仙・繧後〒縺吶・nFirebase繧ｳ繝ｳ繧ｽ繝ｼ繝ｫ縺ｧ繝ｫ繝ｼ繝ｫ繧呈峩譁ｰ縺励※縺上□縺輔＞縲・
+        : '蜑企勁縺ｫ螟ｱ謨励＠縺ｾ縺励◆縲・n' + e.message;
       alert(msg);
     }
   };
 
-  // ===== カレンダー描画 =====
+  // ===== 繧ｫ繝ｬ繝ｳ繝繝ｼ謠冗判 =====
   function renderCalendar() {
     const titleEl = document.getElementById('cal-title');
     const daysEl  = document.getElementById('cal-days');
     if (!titleEl || !daysEl) return;
 
-    titleEl.textContent = `${calYear}年 ${calMonth + 1}月`;
+    titleEl.textContent = `${calYear}蟷ｴ ${calMonth + 1}譛・;
     daysEl.innerHTML = '';
 
-    // その月の日記をdate→配列でマップ
+    // 縺昴・譛医・譌･險倥ｒdate竊帝・蛻励〒繝槭ャ繝・
     const dateMap = {};
     allDiaries.forEach(d => {
       if (!d.date) return;
@@ -3180,7 +3209,7 @@
     const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 
-    // 空白マス
+    // 遨ｺ逋ｽ繝槭せ
     for (let i = 0; i < firstDay; i++) {
       const blank = document.createElement('div');
       blank.className = 'cal-day empty';
@@ -3207,7 +3236,7 @@
       numEl.textContent = d;
       cell.appendChild(numEl);
 
-      // 写真サムネイル（最初の1枚）
+      // 蜀咏悄繧ｵ繝繝阪う繝ｫ・域怙蛻昴・1譫夲ｼ・
       if (entries.length > 0) {
         const photos = JSON.parse(entries[0].photos || '[]');
         if (photos.length > 0) {
@@ -3217,7 +3246,7 @@
           thumb.alt = '';
           cell.appendChild(thumb);
         }
-        // 天気スタンプ
+        // 螟ｩ豌励せ繧ｿ繝ｳ繝・
         if (entries[0].weather) {
           const stamp = document.createElement('span');
           stamp.className = 'cal-weather-stamp';
@@ -3237,9 +3266,9 @@
     renderCalendar();
   };
 
-  // ===== カレンダーポップアップ =====
+  // ===== 繧ｫ繝ｬ繝ｳ繝繝ｼ繝昴ャ繝励い繝・・ =====
   window.openCalPopup = function(dateStr, entries) {
-    document.getElementById('cal-popup-date').textContent = `📅 ${dateStr} の思い出`;
+    document.getElementById('cal-popup-date').textContent = `套 ${dateStr} 縺ｮ諤昴＞蜃ｺ`;
     const content = document.getElementById('cal-popup-content');
     content.innerHTML = '';
     entries.forEach(diary => content.appendChild(buildCard(diary)));
@@ -3249,7 +3278,7 @@
     document.getElementById('cal-popup-overlay').classList.remove('open');
   };
 
-  // ===== ライトボックス =====
+  // ===== 繝ｩ繧､繝医・繝・け繧ｹ =====
   window.openLightbox = function(src) {
     document.getElementById('lightbox-img').src = src;
     document.getElementById('lightbox').classList.add('open');
@@ -3258,10 +3287,10 @@
     document.getElementById('lightbox').classList.remove('open');
     document.getElementById('lightbox-img').src = '';
   };
-  // ===== 設定機能（タイトル・背景） =====
+  // ===== 險ｭ螳壽ｩ溯・・医ち繧､繝医Ν繝ｻ閭梧勹・・=====
   const DEFAULT_BG = "url('https://images.unsplash.com/photo-1601297183305-6df142704ea2?w=1600') center center / cover no-repeat fixed";
 
-  // 起動時にLocalStorageから設定を復元
+  // 襍ｷ蜍墓凾縺ｫLocalStorage縺九ｉ險ｭ螳壹ｒ蠕ｩ蜈・
   (function initSettings() {
     const savedTitle = localStorage.getItem('appTitle');
     const savedBg    = localStorage.getItem('appBgDataUrl');
@@ -3276,7 +3305,7 @@
   })();
 
   window.openSettings = function() {
-    // 現在の値をフォームにセット
+    // 迴ｾ蝨ｨ縺ｮ蛟､繧偵ヵ繧ｩ繝ｼ繝縺ｫ繧ｻ繝・ヨ
     document.getElementById('settings-title-input').value =
       document.getElementById('app-title-text').textContent;
 
@@ -3296,7 +3325,7 @@
     document.getElementById('settings-overlay').classList.remove('open');
   };
 
-  // ファイル選択時にプレビュー表示
+  // 繝輔ぃ繧､繝ｫ驕ｸ謚樊凾縺ｫ繝励Ξ繝薙Η繝ｼ陦ｨ遉ｺ
   document.getElementById('settings-bg-file').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
@@ -3310,7 +3339,7 @@
   });
 
   window.applySettings = function() {
-    // --- タイトル ---
+    // --- 繧ｿ繧､繝医Ν ---
     const newTitle = document.getElementById('settings-title-input').value.trim();
     if (newTitle) {
       document.getElementById('app-title-text').textContent = newTitle;
@@ -3318,7 +3347,7 @@
       localStorage.setItem('appTitle', newTitle);
     }
 
-    // --- 背景画像 ---
+    // --- 閭梧勹逕ｻ蜒・---
     const file = document.getElementById('settings-bg-file').files[0];
     if (file) {
       const reader = new FileReader();
@@ -3327,7 +3356,7 @@
         try {
           localStorage.setItem('appBgDataUrl', dataUrl);
         } catch {
-          alert('画像が大きすぎて保存できませんでした。もう少し小さい画像をお試しください。');
+          alert('逕ｻ蜒上′螟ｧ縺阪☆縺弱※菫晏ｭ倥〒縺阪∪縺帙ｓ縺ｧ縺励◆縲ゅｂ縺・ｰ代＠蟆上＆縺・判蜒上ｒ縺願ｩｦ縺励￥縺縺輔＞縲・);
           return;
         }
         document.body.style.background =

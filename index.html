@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -1649,11 +1649,11 @@
 
     <!-- 閭梧勹逕ｻ蜒丞､画峩 -->
     <div class="settings-group">
-      <label>名・・閭梧勹逕ｻ蜒・/label>
+      <label>🖼️ 背景画像/label>
       <img id="settings-bg-preview" class="settings-bg-preview" src="" alt="現在の背景">
       <div class="settings-upload-area">
         <input type="file" id="settings-bg-file" accept="image/*">
-        <div class="settings-upload-hint">刀 繧ｯ繝ｪ繝・け縺ｾ縺溘・繝峨Λ繝・げ縺ｧ逕ｻ蜒上ｒ驕ｸ謚・/div>
+        <div class="settings-upload-hint">刀 繧ｯ繝ｪ繝・けまたは繝峨Λ繝・げ縺ｧ逕ｻ蜒上ｒ驕ｸ謚・/div>
       </div>
     </div>
 
@@ -1687,8 +1687,8 @@
 
 <!-- 繝｢繝ｼ繝牙・繧頑崛縺・-->
 <div class="view-tabs">
-  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">笨擾ｸ・譖ｸ縺・/button>
-  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">当 繧｢繝ｫ繝舌Β</button>
+  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">✏️ 書く/button>
+  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">📖 アルバム</button>
   <button class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">套 繧ｫ繝ｬ繝ｳ繝繝ｼ</button>
 </div>
 
@@ -1753,7 +1753,7 @@
     <div class="photo-upload-area" id="upload-area">
       <input type="file" id="photo-input" accept="image/*" multiple>
       <span class="photo-upload-icon">名・・/span>
-      <div class="photo-upload-hint">縺薙％縺ｫ蜀咏悄繧偵ラ繝ｩ繝・げ・・ラ繝ｭ繝・・<br>縺ｾ縺溘・繧ｯ繝ｪ繝・け縺励※驕ｸ謚・/div>
+      <div class="photo-upload-hint">縺薙％縺ｫ蜀咏悄繧偵ラ繝ｩ繝・げ・・ラ繝ｭ繝・・<br>または繧ｯ繝ｪ繝・け縺励※驕ｸ謚・/div>
     </div>
     <div class="photo-preview-wrap" id="photo-preview"></div>
   </div>
@@ -1785,12 +1785,12 @@
 
 <!-- ===== 繧｢繝ｫ繝舌Β ===== -->
 <div class="album-section" id="view-album" style="display:none">
-  <h2>当 縺ｿ繧薙↑縺ｮ思い出</h2>
+  <h2>📖 みんなの思い出</h2>
   <div class="book" id="book"></div>
   <div class="page-nav">
     <button class="nav-btn" id="prev-btn" onclick="changePage(-1)" disabled>笳 蜑阪・繝壹・繧ｸ</button>
     <span class="page-indicator" id="page-indicator"></span>
-    <button class="nav-btn" id="next-btn" onclick="changePage(1)">谺｡縺ｮ繝壹・繧ｸ 笆ｶ</button>
+    <button class="nav-btn" id="next-btn" onclick="changePage(1)">次のページ ▶</button>
   </div>
 </div>
 
@@ -1919,7 +1919,7 @@
             </div>
             <!-- URL蜈･蜉幢ｼ井ｻｻ諢擾ｼ・-->
             <input class="mypage-input" type="url" id="mypage-avatar-input"
-                   placeholder="縺ｾ縺溘・逕ｻ蜒酋RL繧貞・蜉幢ｼ井ｻｻ諢擾ｼ・
+                   placeholder="または逕ｻ蜒酋RL繧貞・蜉幢ｼ井ｻｻ諢擾ｼ・
                    style="margin-bottom:0;">
           </div>
         </div>
@@ -2207,7 +2207,7 @@
         'auth/weak-password':        'パスワードは6文字以上にしてください',
         'auth/user-not-found':       'アカウントが見つかりません',
         'auth/wrong-password':       'パスワードが違います,
-        'auth/invalid-credential':   '繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹ縺ｾ縺溘・パスワードが違います,
+        'auth/invalid-credential':   '繝｡繝ｼ繝ｫ繧｢繝峨Ξ繧ｹまたはパスワードが違います,
       };
       errEl.textContent = msgs[e.code] || ('エラー: ' + e.message);
     } finally {
@@ -2607,7 +2607,7 @@
       userProfile.avatarUrl   = newAvatar;
       pendingAvatarDataUrl    = '';
 
-      msgEl.textContent = '✕菫晏ｭ倥＠縺ｾ縺励◆・・;
+      msgEl.textContent = '✅ 保存しました！';
       msgEl.className   = 'mypage-save-msg ok';
       updateMypageHeader();
       // auth-bar 繧ょ叉譎ょ渚譏
@@ -2618,7 +2618,7 @@
       // 繧｢繝ｫ繝舌Β蜀肴緒逕ｻ・医い繧､繧ｳ繝ｳ蜿肴丐・・
       renderPage();
     } catch (e) {
-      msgEl.textContent = '菫晏ｭ倥↓螟ｱ謨励＠縺ｾ縺励◆: ' + e.message;
+      msgEl.textContent = '保存に失敗しました: ' + e.message;
       msgEl.className   = 'mypage-save-msg err';
     } finally {
       btn.disabled = false;

@@ -3173,6 +3173,7 @@
   };
 
   // ===== スクラップブック作成 =====
+  window.createScrapbook = async function() {
     if (!requireAuth()) return;
     const title = document.getElementById('scrapbook-title-input').value.trim();
     const theme = document.querySelector('input[name="sb-theme"]:checked')?.value || 'summer';

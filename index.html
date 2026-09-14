@@ -1402,6 +1402,103 @@
     .scrapbook-picker-item span { font-family: 'Yomogi', cursive; font-size: 13px; color: #2c4a7c; flex: 1; }
     .scrapbook-picker-add { font-size: 12px; color: #5588dd; white-space: nowrap; }
 
+    /* ===== スクラップブック詳細モーダル ===== */
+    .sb-detail-overlay {
+      display: none; position: fixed; inset: 0;
+      z-index: 450;
+      overflow-y: auto;
+      background: rgba(10,20,60,0.55);
+      backdrop-filter: blur(6px);
+      align-items: flex-start; justify-content: center;
+    }
+    .sb-detail-overlay.open { display: flex; }
+    .sb-detail-modal {
+      width: min(580px, 96vw);
+      margin: 40px auto 60px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    /* ヘッダー（テーマカラー適用） */
+    .sb-detail-header {
+      padding: 20px 20px 16px;
+      display: flex; align-items: center; gap: 12px;
+      position: relative;
+    }
+    .sb-detail-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      background: rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+    .sb-detail-title {
+      font-family: 'Yomogi', cursive; font-size: 1.1rem;
+      font-weight: 700; color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sb-detail-theme-label {
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: rgba(255,255,255,0.8);
+    }
+    .sb-detail-close {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 22px; cursor: pointer; color: rgba(255,255,255,0.85);
+      transition: transform 0.15s; line-height: 1;
+    }
+    .sb-detail-close:hover { transform: scale(1.2) rotate(90deg); }
+    /* コンテンツ */
+    .sb-detail-content {
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(12px);
+      padding: 18px 18px 24px;
+    }
+    .sb-detail-count {
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #7a9ac8; margin-bottom: 14px;
+    }
+    .sb-detail-posts { display: flex; flex-direction: column; gap: 12px; }
+    /* 詳細内の投稿カード */
+    .sb-post-item {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border: 1.5px solid rgba(100,150,220,0.2);
+    }
+    .sb-post-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      background: rgba(220,235,255,0.4);
+      border-bottom: 1px solid rgba(100,150,220,0.15);
+    }
+    .sb-post-date {
+      font-family: 'Yomogi', cursive; font-size: 11px; color: #7a9ac8;
+    }
+    .sb-post-author {
+      font-family: 'Yomogi', cursive; font-size: 11px; color: #7aaa88;
+    }
+    .sb-post-text {
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      line-height: 1.7; color: #2a3a5a; padding: 10px 12px;
+      white-space: pre-wrap;
+    }
+    .sb-post-photos {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 10px;
+    }
+    .sb-post-photos img {
+      width: 80px; height: 80px; object-fit: cover;
+      border-radius: 8px; cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .sb-post-photos img:hover { transform: scale(1.05); }
+    .sb-detail-empty {
+      text-align: center; font-family: 'Yomogi', cursive;
+      font-size: 14px; color: #aaa; padding: 32px 0;
+    }
+
     /* ===== 自分の投稿一覧（タブ内） ===== */
     .mypage-diary-list { display: flex; flex-direction: column; gap: 10px; }
     .mypage-diary-item {
@@ -2130,6 +2227,24 @@
       </div>
 
     </div><!-- /mypage-tab-content -->
+  </div>
+</div>
+
+<!-- スクラップブック詳細モーダル -->
+<div class="sb-detail-overlay" id="sb-detail-overlay" onclick="closeScrapbookDetail()">
+  <div class="sb-detail-modal" id="sb-detail-modal" onclick="event.stopPropagation()">
+    <div class="sb-detail-header" id="sb-detail-header">
+      <div class="sb-detail-icon" id="sb-detail-icon"></div>
+      <div>
+        <div class="sb-detail-title" id="sb-detail-title"></div>
+        <div class="sb-detail-theme-label" id="sb-detail-theme-label"></div>
+      </div>
+      <span class="sb-detail-close" onclick="closeScrapbookDetail()">✕</span>
+    </div>
+    <div class="sb-detail-content">
+      <div class="sb-detail-count" id="sb-detail-count"></div>
+      <div class="sb-detail-posts" id="sb-detail-posts"></div>
+    </div>
   </div>
 </div>
 
@@ -2932,14 +3047,132 @@
             <div class="scrapbook-title">${sb.title || '無題'}</div>
             <div class="scrapbook-meta">${theme.label}</div>
           </div>
+          <span style="font-size:11px;color:#5588dd;white-space:nowrap;">▶ 開く</span>
         `;
+        item.onclick = () => openScrapbookDetail(sbId, sb, uid);
         listEl.appendChild(item);
       });
     }, { onlyOnce: true });
   }
 
-  // スクラップブック作成
-  window.createScrapbook = async function() {
+  // ===== スクラップブック詳細を開く =====
+  window.openScrapbookDetail = async function(sbId, sb, ownerUid) {
+    const theme = SB_THEMES[sb.theme] || SB_THEMES.summer;
+
+    // ヘッダーにテーマカラーを適用
+    const header = document.getElementById('sb-detail-header');
+    header.style.background = `linear-gradient(135deg, ${theme.border.replace('0.', '0.8,').replace(',0.', ',0.6,').replace(')', '')}, ${theme.border})`;
+    // よりシンプルに：テーマ別グラデーション
+    const gradients = {
+      summer:  'linear-gradient(135deg, #f9c200, #f57f17)',
+      ocean:   'linear-gradient(135deg, #1e90d4, #0a5a9a)',
+      star:    'linear-gradient(135deg, #7850c8, #4a2a8a)',
+      flower:  'linear-gradient(135deg, #f064a0, #c8286a)',
+      retro:   'linear-gradient(135deg, #a0641e, #6a3c0a)',
+      rainbow: 'linear-gradient(135deg, #50b450, #228822)',
+    };
+    header.style.background = gradients[sb.theme] || gradients.summer;
+
+    document.getElementById('sb-detail-icon').textContent        = theme.emoji;
+    document.getElementById('sb-detail-title').textContent       = sb.title || '無題';
+    document.getElementById('sb-detail-theme-label').textContent = theme.label;
+
+    const postsEl = document.getElementById('sb-detail-posts');
+    const countEl = document.getElementById('sb-detail-count');
+    postsEl.innerHTML = `<p class="sb-detail-empty">読み込み中…</p>`;
+    countEl.textContent = '';
+
+    document.getElementById('sb-detail-overlay').classList.add('open');
+
+    try {
+      // scrapbookItems/$sbId から投稿キー一覧を取得
+      const itemsSnap = await new Promise((resolve, reject) =>
+        onValue(ref(db, `scrapbookItems/${sbId}`), resolve, reject, { onlyOnce: true })
+      );
+      const itemsData = itemsSnap.val();
+
+      if (!itemsData) {
+        postsEl.innerHTML = `<p class="sb-detail-empty">保存された投稿がまだありません 📭</p>`;
+        countEl.textContent = '0件の投稿';
+        return;
+      }
+
+      const postKeys = Object.keys(itemsData);
+      countEl.textContent = `${postKeys.length}件の投稿`;
+      postsEl.innerHTML = '';
+
+      // allDiaries から該当投稿を探して表示（Firebase上の全データから照合）
+      const found = [];
+      postKeys.forEach(key => {
+        const diary = allDiaries.find(d => d.fbKey === key);
+        if (diary) found.push({ ...diary, addedAt: itemsData[key].addedAt });
+      });
+
+      // allDiaries に存在しない（他ユーザーの非公開等）は直接DBから取得
+      const missing = postKeys.filter(k => !allDiaries.find(d => d.fbKey === k));
+      for (const key of missing) {
+        try {
+          const dSnap = await new Promise((resolve, reject) =>
+            onValue(ref(db, `diaries/${key}`), resolve, reject, { onlyOnce: true })
+          );
+          const d = dSnap.val();
+          if (d) found.push({ ...d, fbKey: key, addedAt: itemsData[key].addedAt });
+        } catch (_) {}
+      }
+
+      if (found.length === 0) {
+        postsEl.innerHTML = `<p class="sb-detail-empty">投稿が見つかりませんでした</p>`;
+        return;
+      }
+
+      // 追加日時の新しい順に並べて描画
+      found.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0)).forEach(diary => {
+        const photos = JSON.parse(diary.photos || '[]');
+        const card = document.createElement('div');
+        card.className = 'sb-post-item';
+        // ヘッダー
+        const head = document.createElement('div');
+        head.className = 'sb-post-header';
+        head.innerHTML = `
+          <span class="sb-post-date">📅 ${diary.date || ''}</span>
+          ${diary.name ? `<span class="sb-post-author">✏️ ${diary.name}</span>` : ''}
+          ${diary.mood   ? `<span style="font-size:13px;">${[...diary.mood.trim()][0]}</span>` : ''}
+          ${diary.weather ? `<span style="font-size:13px;">${diary.weather}</span>` : ''}
+        `;
+        card.appendChild(head);
+        // 本文
+        if (diary.text) {
+          const textEl = document.createElement('div');
+          textEl.className = 'sb-post-text';
+          textEl.textContent = diary.text;
+          card.appendChild(textEl);
+        }
+        // 写真
+        if (photos.length > 0) {
+          const photosEl = document.createElement('div');
+          photosEl.className = 'sb-post-photos';
+          photos.forEach(src => {
+            const img = document.createElement('img');
+            img.src = src; img.alt = '写真';
+            img.onclick = () => openLightbox(src);
+            photosEl.appendChild(img);
+          });
+          card.appendChild(photosEl);
+        }
+        postsEl.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error('スクラップブック詳細取得エラー:', err);
+      postsEl.innerHTML = `<p class="sb-detail-empty">読み込みに失敗しました 😢</p>`;
+    }
+  };
+
+  window.closeScrapbookDetail = function() {
+    document.getElementById('sb-detail-overlay').classList.remove('open');
+  };
+
+  // ===== スクラップブック作成 =====
     if (!requireAuth()) return;
     const title = document.getElementById('scrapbook-title-input').value.trim();
     const theme = document.querySelector('input[name="sb-theme"]:checked')?.value || 'summer';
@@ -3876,7 +4109,7 @@
   };
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); }
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); }
   });
 </script>
 </body>

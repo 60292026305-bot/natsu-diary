@@ -806,6 +806,241 @@
     }
     .settings-reset-btn:hover { background: rgba(220,210,255,0.9); }
 
+    /* ===== 掲示板タブ ===== */
+    #view-board {
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    /* コルクボードのスクロール可能エリア */
+    .board-viewport {
+      width: 100%;
+      height: calc(100vh - 200px);
+      min-height: 480px;
+      overflow: hidden;
+      border-radius: 16px;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      /* コルクボード風背景 */
+      background-color: #c8a96e;
+      background-image:
+        radial-gradient(ellipse at 20% 30%, rgba(190,155,90,0.5) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(170,130,70,0.4) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0.3'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .board-viewport.grabbing { cursor: grabbing; }
+
+    /* 無限キャンバス */
+    .board-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 3000px;
+      height: 3000px;
+      will-change: transform;
+    }
+
+    /* メモ用紙 */
+    .board-memo {
+      position: absolute;
+      width: 180px;
+      min-height: 140px;
+      padding: 28px 14px 14px;
+      border-radius: 3px;
+      box-shadow: 3px 4px 12px rgba(0,0,0,0.22), 1px 2px 4px rgba(0,0,0,0.12);
+      font-family: 'Yomogi', cursive;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #3a2a1a;
+      word-break: break-all;
+      transition: box-shadow 0.15s, transform 0.15s;
+      cursor: default;
+    }
+    .board-memo:hover {
+      box-shadow: 5px 6px 18px rgba(0,0,0,0.3), 1px 2px 4px rgba(0,0,0,0.14);
+      z-index: 10;
+    }
+    /* 選択状態 */
+    .board-memo.selected {
+      outline: 3px solid #5588dd;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 5px rgba(85,136,221,0.35), 3px 4px 12px rgba(0,0,0,0.22);
+    }
+    /* 画鋲 */
+    .board-memo::before {
+      content: '📌';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+      z-index: 1;
+    }
+    /* 日時 */
+    .board-memo-date {
+      position: absolute;
+      bottom: 6px; right: 8px;
+      font-size: 9px;
+      color: rgba(0,0,0,0.3);
+    }
+
+    /* パステルカラー */
+    .memo-yellow  { background: #fffde7; border-top: 3px solid #f9e04b; }
+    .memo-pink    { background: #fce4ec; border-top: 3px solid #f48fb1; }
+    .memo-mint    { background: #e8f5e9; border-top: 3px solid #81c784; }
+    .memo-blue    { background: #e3f2fd; border-top: 3px solid #64b5f6; }
+
+    /* 固定アクションボタン群 */
+    .board-actions {
+      position: fixed;
+      bottom: 24px; right: 20px;
+      display: none;  /* 掲示板タブ表示時だけ visible にする */
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      z-index: 200;
+    }
+    .board-actions.visible { display: flex; }
+    .board-write-btn {
+      padding: 14px 22px;
+      background: linear-gradient(135deg, #ff7043, #e64a19);
+      color: #fff; border: none; border-radius: 30px;
+      font-family: 'Yomogi', cursive; font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #bf360c, 0 6px 20px rgba(200,60,0,0.4);
+      transition: all 0.15s;
+    }
+    .board-write-btn:hover { transform: translateY(-2px); opacity: 0.93; }
+    .board-write-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #bf360c; }
+    .board-summary-btn {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.8);
+      color: #5a4a2a; border: 1.5px solid rgba(180,140,80,0.5);
+      border-radius: 20px;
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+    }
+    .board-summary-btn:hover { background: rgba(255,250,220,0.95); }
+    .board-summary-btn.active {
+      background: rgba(255,220,80,0.85);
+      border-color: rgba(200,160,0,0.6);
+      font-weight: 700;
+    }
+
+    /* 書き込みモーダル */
+    .board-post-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.55); z-index: 700;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .board-post-overlay.open { display: flex; }
+    .board-post-modal {
+      background: rgba(255,253,240,0.97);
+      border-radius: 20px;
+      padding: 28px 24px 22px;
+      width: min(400px, 90vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      position: relative;
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .board-post-modal h3 {
+      font-family: 'Yomogi', cursive; font-size: 1.1rem;
+      color: #5a3a0a; margin-bottom: 16px;
+      border-bottom: 2px dashed rgba(180,130,50,0.3);
+      padding-bottom: 8px;
+    }
+    .board-post-modal textarea {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid rgba(180,140,50,0.4);
+      border-radius: 10px; resize: vertical;
+      font-family: 'Yomogi', cursive; font-size: 14px;
+      color: #3a2a0a; background: rgba(255,255,240,0.8);
+      margin-bottom: 12px; min-height: 80px;
+    }
+    .board-color-selector {
+      display: flex; gap: 8px; margin-bottom: 16px; align-items: center;
+    }
+    .board-color-selector span {
+      font-family: 'Yomogi', cursive; font-size: 12px; color: #5a4a2a;
+    }
+    .board-color-opt { display: none; }
+    .board-color-label {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2.5px solid transparent; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .board-color-opt:checked + .board-color-label {
+      border-color: #5588dd;
+      transform: scale(1.2);
+      box-shadow: 0 0 0 3px rgba(85,136,221,0.3);
+    }
+    .board-submit-btn {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, #ff7043, #e64a19);
+      color: #fff; border: none; border-radius: 12px;
+      font-family: 'Yomogi', cursive; font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #bf360c;
+      transition: all 0.15s;
+    }
+    .board-submit-btn:hover { transform: translateY(-1px); opacity: 0.93; }
+    .board-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .board-post-close {
+      position: absolute; top: 12px; right: 16px;
+      font-size: 20px; cursor: pointer; color: #9a7a4a;
+      transition: transform 0.15s;
+    }
+    .board-post-close:hover { transform: scale(1.2) rotate(90deg); }
+
+    /* まとめモーダル */
+    .board-summary-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.55); z-index: 700;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .board-summary-overlay.open { display: flex; }
+    .board-summary-modal {
+      background: rgba(255,253,240,0.97);
+      border-radius: 20px; padding: 24px 22px 20px;
+      width: min(380px, 90vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      position: relative;
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .board-summary-modal h3 {
+      font-family: 'Yomogi', cursive; font-size: 1rem;
+      color: #5a3a0a; margin-bottom: 14px;
+    }
+    .board-summary-modal input {
+      width: 100%; padding: 9px 13px;
+      border: 1.5px solid rgba(180,140,50,0.4);
+      border-radius: 10px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 14px;
+      color: #3a2a0a; background: rgba(255,255,240,0.8);
+      margin-bottom: 10px;
+    }
+    .board-summary-save-btn {
+      width: 100%; padding: 10px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .board-summary-save-btn:hover { opacity: 0.88; }
+    .board-summary-info {
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: #9a7a4a; margin-bottom: 10px; text-align: center;
+    }
+
     /* ===== レスポンシブ ===== */
 
     /* タブレット以下（768px）: auth-barを縮小 */
@@ -1936,9 +2171,10 @@
 
 <!-- モード切り替え -->
 <div class="view-tabs">
-  <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">✏️ 書く</button>
-  <button class="tab-btn" id="tab-album" onclick="switchTab('album')">📖 アルバム</button>
-  <button class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
+  <button class="tab-btn active" id="tab-write"    onclick="switchTab('write')">✏️ 書く</button>
+  <button class="tab-btn"        id="tab-album"    onclick="switchTab('album')">📖 アルバム</button>
+  <button class="tab-btn"        id="tab-calendar" onclick="switchTab('calendar')">📅 カレンダー</button>
+  <button class="tab-btn"        id="tab-board"    onclick="switchTab('board')">📋 掲示板</button>
 </div>
 
 <!-- ===== 編集中バナー ===== -->
@@ -2068,6 +2304,51 @@
     <div class="cal-popup-date" id="cal-popup-date"></div>
     <div id="cal-popup-content"></div>
   </div>
+</div>
+
+<!-- ===== 掲示板ビュー ===== -->
+<div id="view-board" style="display:none">
+  <div class="board-viewport" id="board-viewport">
+    <div class="board-canvas" id="board-canvas"></div>
+  </div>
+</div>
+
+<!-- 掲示板：書き込みモーダル -->
+<div class="board-post-overlay" id="board-post-overlay" onclick="closeBoardPost()">
+  <div class="board-post-modal" onclick="event.stopPropagation()">
+    <span class="board-post-close" onclick="closeBoardPost()">✕</span>
+    <h3>📝 掲示板に書き込む</h3>
+    <textarea id="board-post-text" maxlength="140" placeholder="ひとこと書いてみよう！（140文字以内）"></textarea>
+    <div class="board-color-selector">
+      <span>色を選ぶ：</span>
+      <input type="radio" name="board-color" id="bc1" value="yellow" class="board-color-opt" checked>
+      <label for="bc1" class="board-color-label" style="background:#fffde7; border-color:#f9e04b;" title="イエロー"></label>
+      <input type="radio" name="board-color" id="bc2" value="pink"   class="board-color-opt">
+      <label for="bc2" class="board-color-label" style="background:#fce4ec; border-color:#f48fb1;" title="ピンク"></label>
+      <input type="radio" name="board-color" id="bc3" value="mint"   class="board-color-opt">
+      <label for="bc3" class="board-color-label" style="background:#e8f5e9; border-color:#81c784;" title="ミント"></label>
+      <input type="radio" name="board-color" id="bc4" value="blue"   class="board-color-opt">
+      <label for="bc4" class="board-color-label" style="background:#e3f2fd; border-color:#64b5f6;" title="ブルー"></label>
+    </div>
+    <button class="board-submit-btn" id="board-submit-btn" onclick="submitBoardPost()">📌 ボードに貼る</button>
+  </div>
+</div>
+
+<!-- 掲示板：まとめ保存モーダル -->
+<div class="board-summary-overlay" id="board-summary-overlay" onclick="closeBoardSummaryModal()">
+  <div class="board-summary-modal" onclick="event.stopPropagation()">
+    <span class="board-post-close" onclick="closeBoardSummaryModal()">✕</span>
+    <h3>📂 まとめを保存する</h3>
+    <div class="board-summary-info" id="board-summary-info">0件のメモを選択中</div>
+    <input type="text" id="board-summary-title" placeholder="まとめのタイトル（例：文化祭2026）" maxlength="40">
+    <button class="board-summary-save-btn" onclick="saveBoardSummary()">💾 まとめを保存</button>
+  </div>
+</div>
+
+<!-- 掲示板：固定ボタン群 -->
+<div class="board-actions" id="board-actions">
+  <button class="board-summary-btn" id="board-summary-btn" onclick="toggleSummaryMode()">📂 まとめる</button>
+  <button class="board-write-btn" onclick="openBoardPost()">✏️ 書き込む</button>
 </div>
 
 <!-- 隠しYouTubeプレイヤー -->
@@ -2541,11 +2822,15 @@
 
   // ===== タブ切り替え =====
   window.switchTab = function(tab) {
-    ['write','album','calendar'].forEach(t => {
+    ['write','album','calendar','board'].forEach(t => {
       document.getElementById('view-'+t).style.display = (t === tab) ? '' : 'none';
       document.getElementById('tab-'+t).classList.toggle('active', t === tab);
     });
+    // 掲示板ボタン表示制御
+    const boardActions = document.getElementById('board-actions');
+    if (boardActions) boardActions.classList.toggle('visible', tab === 'board');
     if (tab === 'calendar') renderCalendar();
+    if (tab === 'board')    initBoard();
   };
 
   // ===== 写真アップロード =====
@@ -4109,8 +4394,226 @@
     document.getElementById('settings-bg-file').value = '';
   };
 
+  // ===== 掲示板（ゲスト掲示板） =====
+  const BOARD_REF   = ref(db, 'guestBoard/posts');
+  const BOARD_WIDTH = 3000;
+  const BOARD_HEIGHT= 3000;
+  const MEMO_COLORS = {
+    yellow: 'memo-yellow',
+    pink:   'memo-pink',
+    mint:   'memo-mint',
+    blue:   'memo-blue',
+  };
+
+  let boardInitialized  = false;
+  let summaryMode       = false;
+  let selectedMemos     = new Set(); // 選択中の postId
+  let boardDragState    = { dragging: false, startX: 0, startY: 0, ox: 0, oy: 0 };
+  let boardOffset       = { x: 0, y: 0 }; // キャンバスの現在オフセット
+
+  function initBoard() {
+    if (boardInitialized) return;
+    boardInitialized = true;
+    setupBoardDrag();
+    // Firebase リアルタイム監視
+    onValue(BOARD_REF, (snap) => {
+      const data = snap.val() || {};
+      renderBoardPosts(data);
+    });
+  }
+
+  function renderBoardPosts(data) {
+    const canvas = document.getElementById('board-canvas');
+    if (!canvas) return;
+    canvas.innerHTML = '';
+    Object.entries(data).forEach(([postId, post]) => {
+      addMemoElement(canvas, postId, post);
+    });
+  }
+
+  function addMemoElement(canvas, postId, post) {
+    const el = document.createElement('div');
+    el.className = `board-memo ${MEMO_COLORS[post.color] || 'memo-yellow'}`;
+    el.style.left    = `${post.posX || 100}px`;
+    el.style.top     = `${post.posY || 100}px`;
+    el.style.transform = `rotate(${post.angle || 0}deg)`;
+    el.dataset.postId = postId;
+
+    const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    el.innerHTML = `
+      ${escapeHtml(post.content || '')}
+      <span class="board-memo-date">${date}</span>
+    `;
+
+    el.addEventListener('click', (e) => {
+      if (!summaryMode) return;
+      e.stopPropagation();
+      if (selectedMemos.has(postId)) {
+        selectedMemos.delete(postId);
+        el.classList.remove('selected');
+      } else {
+        selectedMemos.add(postId);
+        el.classList.add('selected');
+      }
+      updateSummaryInfo();
+    });
+    canvas.appendChild(el);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+  }
+
+  // ドラッグスクロール
+  function setupBoardDrag() {
+    const viewport = document.getElementById('board-viewport');
+    if (!viewport) return;
+
+    // マウス
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.board-memo') && summaryMode) return;
+      boardDragState = { dragging: true, startX: e.clientX, startY: e.clientY, ox: boardOffset.x, oy: boardOffset.y };
+      viewport.classList.add('grabbing');
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!boardDragState.dragging) return;
+      boardOffset.x = boardDragState.ox + (e.clientX - boardDragState.startX);
+      boardOffset.y = boardDragState.oy + (e.clientY - boardDragState.startY);
+      applyBoardOffset();
+    });
+    window.addEventListener('mouseup', () => {
+      boardDragState.dragging = false;
+      viewport.classList.remove('grabbing');
+    });
+
+    // タッチ
+    let lastTouchX = 0, lastTouchY = 0;
+    viewport.addEventListener('touchstart', (e) => {
+      lastTouchX = e.touches[0].clientX;
+      lastTouchY = e.touches[0].clientY;
+    }, { passive: true });
+    viewport.addEventListener('touchmove', (e) => {
+      const dx = e.touches[0].clientX - lastTouchX;
+      const dy = e.touches[0].clientY - lastTouchY;
+      lastTouchX = e.touches[0].clientX;
+      lastTouchY = e.touches[0].clientY;
+      boardOffset.x += dx;
+      boardOffset.y += dy;
+      applyBoardOffset();
+    }, { passive: true });
+  }
+
+  function applyBoardOffset() {
+    const canvas = document.getElementById('board-canvas');
+    if (canvas) canvas.style.transform = `translate(${boardOffset.x}px, ${boardOffset.y}px)`;
+  }
+
+  // 書き込みモーダル
+  window.openBoardPost = function() {
+    document.getElementById('board-post-overlay').classList.add('open');
+    document.getElementById('board-post-text').focus();
+  };
+  window.closeBoardPost = function() {
+    document.getElementById('board-post-overlay').classList.remove('open');
+    document.getElementById('board-post-text').value = '';
+  };
+
+  window.submitBoardPost = async function() {
+    const content = document.getElementById('board-post-text').value.trim();
+    if (!content) return;
+    const color = document.querySelector('input[name="board-color"]:checked')?.value || 'yellow';
+    const btn = document.getElementById('board-submit-btn');
+    btn.disabled = true;
+    try {
+      // ランダム座標・角度
+      const posX  = Math.floor(Math.random() * (BOARD_WIDTH  - 250)) + 50;
+      const posY  = Math.floor(Math.random() * (BOARD_HEIGHT - 220)) + 50;
+      const angle = (Math.random() * 6 - 3).toFixed(2);
+      await push(BOARD_REF, { content, color, angle: parseFloat(angle), posX, posY, createdAt: Date.now() });
+      closeBoardPost();
+      // 投稿位置が見えるようにキャンバスをスクロール
+      const vp = document.getElementById('board-viewport');
+      if (vp) {
+        boardOffset.x = -(posX - vp.clientWidth  / 2);
+        boardOffset.y = -(posY - vp.clientHeight / 2);
+        applyBoardOffset();
+      }
+    } catch (e) {
+      alert('投稿に失敗しました: ' + e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  // まとめモード
+  window.toggleSummaryMode = function() {
+    summaryMode = !summaryMode;
+    selectedMemos.clear();
+    document.querySelectorAll('.board-memo').forEach(el => el.classList.remove('selected'));
+    const btn = document.getElementById('board-summary-btn');
+    btn.classList.toggle('active', summaryMode);
+    btn.textContent = summaryMode ? '✅ まとめる（選択中）' : '📂 まとめる';
+    if (summaryMode) {
+      updateSummaryInfo();
+    }
+  };
+
+  function updateSummaryInfo() {
+    const n = selectedMemos.size;
+    const infoEl = document.getElementById('board-summary-info');
+    if (infoEl) infoEl.textContent = `${n}件のメモを選択中`;
+  }
+
+  window.openBoardSummaryModal = function() {
+    if (selectedMemos.size === 0) { alert('まとめるメモを選んでください'); return; }
+    updateSummaryInfo();
+    document.getElementById('board-summary-overlay').classList.add('open');
+  };
+  window.closeBoardSummaryModal = function() {
+    document.getElementById('board-summary-overlay').classList.remove('open');
+  };
+
+  window.saveBoardSummary = async function() {
+    const title = document.getElementById('board-summary-title').value.trim();
+    if (!title) { alert('タイトルを入力してください'); return; }
+    if (selectedMemos.size === 0) { alert('メモを選択してください'); return; }
+    try {
+      const items = {};
+      selectedMemos.forEach(id => { items[id] = true; });
+      await push(ref(db, 'guestBoard/summaries'), {
+        title, items, createdAt: Date.now()
+      });
+      closeBoardSummaryModal();
+      // まとめモード終了
+      summaryMode = false;
+      selectedMemos.clear();
+      document.querySelectorAll('.board-memo').forEach(el => el.classList.remove('selected'));
+      const btn = document.getElementById('board-summary-btn');
+      btn.classList.remove('active');
+      btn.textContent = '📂 まとめる';
+      document.getElementById('board-summary-title').value = '';
+      // 完了トースト
+      const fb = document.createElement('div');
+      fb.textContent = `📂「${title}」を保存しました！`;
+      fb.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(50,100,200,0.9);color:#fff;padding:9px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(fb);
+      setTimeout(() => fb.remove(), 2500);
+    } catch (e) {
+      alert('保存に失敗しました: ' + e.message);
+    }
+  };
+
+  // まとめるボタン（長押しでモーダル）
+  document.getElementById('board-summary-btn').addEventListener('click', function() {
+    if (summaryMode) {
+      openBoardSummaryModal();
+    } else {
+      toggleSummaryMode();
+    }
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); }
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); }
   });
 </script>
 </body>

@@ -344,7 +344,19 @@
       font-size: 11px;
       color: #7aaa88;
       white-space: nowrap;
+      cursor: pointer;
+      transition: opacity 0.15s;
     }
+    .diary-card-author:hover { opacity: 0.7; }
+
+    /* 投稿者アイコンのクリック可能スタイル */
+    .diary-card-user-icon,
+    .diary-card-user-icon-placeholder {
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .diary-card-user-icon:hover,
+    .diary-card-user-icon-placeholder:hover { opacity: 0.75; transform: scale(1.08); }
     /* 気分・天気スタンプ：ヘッダー右端に寄せる */
     .diary-card-stamps {
       display: flex;
@@ -2596,6 +2608,20 @@
     switchMypageTab('posts');
   };
 
+  // ===== 投稿カードから投稿者のマイページへ遷移 =====
+  window.navigateToUserMypage = function(uid) {
+    if (!uid) return;
+    // タブをアルバムから切り替えてマイページを開く
+    switchTab('write'); // フォームに戻してからマイページを開く（アルバム遷移の安定のため）
+    if (currentUser && uid === currentUser.uid) {
+      // 自分の投稿 → 自分のマイページ
+      openMypage();
+    } else {
+      // 他人の投稿 → 他人のマイページ閲覧モード
+      openOtherMypage(uid);
+    }
+  };
+
   function updateMypageHeader() {
     // アバター
     const avatarUrl = userProfile.avatarUrl || currentUser.photoURL || '';
@@ -2933,7 +2959,7 @@
     caption.className = 'diary-card-caption';
     caption.innerHTML = `
       <span class="diary-card-date">📅 ${diary.date}</span>
-      ${diary.name ? `<span class="diary-card-author">✏️ ${diary.name}</span>` : ''}
+      ${diary.name ? `<span class="diary-card-author" onclick="navigateToUserMypage('${diary.uid || ''}')" title="${diary.name}のページへ">✏️ ${diary.name}</span>` : ''}
       ${(moodEmoji || diary.weather) ? `
         <span class="diary-card-stamps">
           ${moodEmoji     ? `<span class="diary-card-mood">${moodEmoji}</span>`        : ''}
@@ -2944,6 +2970,8 @@
     if (diary.uid) {
       buildUserIconEl(diary.uid, '').then(iconEl => {
         iconEl.setAttribute('data-html2canvas-ignore', 'true');
+        iconEl.title = `${diary.name || '投稿者'}のページへ`;
+        iconEl.onclick = () => navigateToUserMypage(diary.uid);
         caption.insertBefore(iconEl, caption.firstChild);
       });
     }

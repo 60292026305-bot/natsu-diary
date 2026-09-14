@@ -1092,7 +1092,6 @@
     /* 他ユーザー閲覧時は自分用UIを非表示 */
     .mypage-overlay.viewing-other #mptab-friends,
     .mypage-overlay.viewing-other #mptab-settings,
-    .mypage-overlay.viewing-other #mptab-scrapbooks,
     .mypage-overlay.viewing-other .mypage-avatar-edit-badge,
     .mypage-overlay.viewing-other .scrapbook-create-form {
       display: none !important;
@@ -2689,6 +2688,7 @@
 
     overlay.classList.add('open');
     overlay.classList.add('viewing-other');
+    viewingOtherUid = uid;
     banner.classList.add('visible');
     label.textContent = '👁 他のユーザーのページを表示中';
 
@@ -2771,6 +2771,7 @@
   window.backToOwnMypage = function() {
     const overlay = document.getElementById('mypage-overlay');
     overlay.classList.remove('viewing-other');
+    viewingOtherUid = null;
     document.getElementById('mypage-viewer-banner').classList.remove('visible');
     // タブ見出しを「自分の投稿」に戻す
     const postsTab = document.getElementById('mptab-posts');
@@ -2822,7 +2823,11 @@
       document.getElementById('mppanel-' + t)?.classList.toggle('active', t === tab);
     });
     if (tab === 'posts')       renderMypagePosts();
-    if (tab === 'scrapbooks')  renderScrapbooks();
+    if (tab === 'scrapbooks')  {
+      const overlay = document.getElementById('mypage-overlay');
+      const uid = overlay?.classList.contains('viewing-other') ? viewingOtherUid : null;
+      renderScrapbooks(uid);
+    }
     if (tab === 'friends')  {
       renderFriendsList();
       // 検索欄・結果をリセット
@@ -2878,44 +2883,59 @@
 
   let myScrapbooks    = {}; // { sbId: { title, theme, createdAt } }
   let pickerTargetKey = null; // スクラップ追加対象の fbKey
+  let viewingOtherUid = null; // 他ユーザー閲覧時のUID
 
   // 自分のスクラップブック一覧をリアルタイム監視
   function setupScrapbookListener() {
     if (!currentUser) return;
     onValue(ref(db, `scrapbooks/${currentUser.uid}`), (snap) => {
       myScrapbooks = snap.val() || {};
-      // スクラップブックタブが開いていれば再描画
-      if (document.getElementById('mppanel-scrapbooks')?.classList.contains('active')) {
+      // スクラップブックタブが開いていれば再描画（自分のページのみ）
+      const overlay = document.getElementById('mypage-overlay');
+      if (document.getElementById('mppanel-scrapbooks')?.classList.contains('active')
+          && !overlay?.classList.contains('viewing-other')) {
         renderScrapbooks();
       }
     });
   }
 
-  // スクラップブック一覧を描画
-  function renderScrapbooks() {
+  // スクラップブック一覧を描画（省略時は自分のもの）
+  function renderScrapbooks(targetUid) {
     const listEl = document.getElementById('scrapbook-list');
-    if (!listEl || !currentUser) return;
-    const entries = Object.entries(myScrapbooks);
-    if (entries.length === 0) {
-      listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">スクラップブックがまだありません</p>`;
-      return;
-    }
-    listEl.innerHTML = '';
-    entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0)).forEach(([sbId, sb]) => {
-      const theme = SB_THEMES[sb.theme] || SB_THEMES.summer;
-      const item = document.createElement('div');
-      item.className = 'scrapbook-item';
-      item.style.borderColor = theme.border;
-      item.style.background  = theme.bg;
-      item.innerHTML = `
-        <div class="scrapbook-theme-badge">${theme.emoji}</div>
-        <div class="scrapbook-info">
-          <div class="scrapbook-title">${sb.title || '無題'}</div>
-          <div class="scrapbook-meta">${theme.label}</div>
-        </div>
-      `;
-      listEl.appendChild(item);
-    });
+    if (!listEl) return;
+    const uid = targetUid || (currentUser ? currentUser.uid : null);
+    if (!uid) return;
+
+    listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">読み込み中…</p>`;
+
+    onValue(ref(db, `scrapbooks/${uid}`), (snap) => {
+      const data = snap.val() || {};
+      // 自分のものなら myScrapbooks も更新
+      if (!targetUid && currentUser && uid === currentUser.uid) {
+        myScrapbooks = data;
+      }
+      const entries = Object.entries(data);
+      if (entries.length === 0) {
+        listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">スクラップブックがまだありません</p>`;
+        return;
+      }
+      listEl.innerHTML = '';
+      entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0)).forEach(([sbId, sb]) => {
+        const theme = SB_THEMES[sb.theme] || SB_THEMES.summer;
+        const item = document.createElement('div');
+        item.className = 'scrapbook-item';
+        item.style.borderColor = theme.border;
+        item.style.background  = theme.bg;
+        item.innerHTML = `
+          <div class="scrapbook-theme-badge">${theme.emoji}</div>
+          <div class="scrapbook-info">
+            <div class="scrapbook-title">${sb.title || '無題'}</div>
+            <div class="scrapbook-meta">${theme.label}</div>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }, { onlyOnce: true });
   }
 
   // スクラップブック作成

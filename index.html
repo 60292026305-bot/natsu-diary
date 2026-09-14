@@ -1049,6 +1049,41 @@
     .login-name-row { display: none; }
     .login-name-row.visible { display: block; }
 
+    /* ===== 他ユーザーのマイページ閲覧バナー ===== */
+    .mypage-viewer-banner {
+      display: none;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff;
+      padding: 10px 20px;
+      font-family: 'Yomogi', cursive;
+      font-size: 13px;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .mypage-viewer-banner.visible { display: flex; }
+    .mypage-viewer-back-btn {
+      margin-left: auto;
+      padding: 5px 14px;
+      background: rgba(255,255,255,0.25);
+      border: 1.5px solid rgba(255,255,255,0.6);
+      border-radius: 20px;
+      color: #fff;
+      font-family: 'Yomogi', cursive;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .mypage-viewer-back-btn:hover { background: rgba(255,255,255,0.4); }
+
+    /* 他ユーザー閲覧時は自分用UIを非表示 */
+    .mypage-overlay.viewing-other #mptab-friends,
+    .mypage-overlay.viewing-other #mptab-settings,
+    .mypage-overlay.viewing-other .mypage-avatar-edit-badge {
+      display: none !important;
+    }
+
     /* ===== マイページ（全画面） ===== */
     .mypage-overlay {
       display: none; position: fixed; inset: 0;
@@ -1370,6 +1405,16 @@
       background: rgba(200,220,200,0.6);
       color: #2a6a2a; cursor: default;
     }
+    .friend-search-view-btn {
+      padding: 4px 10px; flex-shrink: 0;
+      background: rgba(220,235,255,0.7);
+      border: 1.5px solid rgba(100,150,220,0.4);
+      border-radius: 20px;
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: #2c4a7c; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .friend-search-view-btn:hover { background: rgba(200,220,255,0.9); }
     .friend-search-empty {
       font-family: 'Yomogi', cursive; font-size: 12px;
       color: #aaa; text-align: center; padding: 12px 0;
@@ -1806,6 +1851,12 @@
 <!-- ===== マイページモーダル ===== -->
 <div class="mypage-overlay" id="mypage-overlay">
   <div class="mypage-modal">
+    <!-- 他ユーザー閲覧中バナー -->
+    <div class="mypage-viewer-banner" id="mypage-viewer-banner">
+      <span id="mypage-viewer-label">👁 他のユーザーのページを表示中</span>
+      <button class="mypage-viewer-back-btn" onclick="backToOwnMypage()">自分のページに戻る</button>
+    </div>
+
     <span class="mypage-close" onclick="closeMypage()">✕</span>
 
     <!-- プロフィールヘッダー -->
@@ -2439,6 +2490,110 @@
 
   window.closeMypage = function() {
     document.getElementById('mypage-overlay').classList.remove('open');
+    document.getElementById('mypage-overlay').classList.remove('viewing-other');
+    document.getElementById('mypage-viewer-banner').classList.remove('visible');
+  };
+
+  // ===== 他ユーザーのマイページを開く =====
+  window.openOtherMypage = async function(uid) {
+    if (!uid) return;
+
+    const overlay = document.getElementById('mypage-overlay');
+    const banner  = document.getElementById('mypage-viewer-banner');
+    const inner   = document.getElementById('mypage-avatar-wrap-inner');
+    const label   = document.getElementById('mypage-viewer-label');
+
+    // 自分自身なら通常のマイページを開く
+    if (currentUser && uid === currentUser.uid) {
+      openMypage();
+      return;
+    }
+
+    overlay.classList.add('open');
+    overlay.classList.add('viewing-other');
+    banner.classList.add('visible');
+    label.textContent = '👁 他のユーザーのページを表示中';
+
+    // プロフィール読み込み
+    try {
+      const snap = await new Promise((resolve, reject) =>
+        onValue(ref(db, `users/${uid}`), resolve, reject, { onlyOnce: true })
+      );
+      const profile = snap.val() || {};
+      const dispName = profile.displayName || uid.slice(0, 8) + '…';
+      const avatarUrl = profile.avatarUrl || '';
+
+      // ヘッダー更新
+      inner.innerHTML = avatarUrl
+        ? `<img class="mypage-avatar" src="${avatarUrl}" alt="">`
+        : `<div class="mypage-avatar-placeholder">👤</div>`;
+      document.getElementById('mypage-displayname').textContent = dispName;
+      document.getElementById('mypage-email').textContent = '';
+      label.textContent = `👁 ${dispName} のページを表示中`;
+
+      // 統計：対象ユーザーの公開投稿だけカウント
+      const theirDiaries = allDiaries.filter(d => d.uid === uid);
+      document.getElementById('mypage-total').textContent          = theirDiaries.length;
+      document.getElementById('mypage-public-count').textContent   = theirDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
+      document.getElementById('mypage-friends-count').textContent  = theirDiaries.filter(d => d.visibility === 'friends').length;
+
+      // 自分の投稿タブに対象ユーザーの投稿を表示
+      ['posts','friends','settings'].forEach(t => {
+        document.getElementById('mptab-'   + t).classList.toggle('active', t === 'posts');
+        document.getElementById('mppanel-' + t).classList.toggle('active', t === 'posts');
+      });
+      renderOtherUserPosts(uid, theirDiaries);
+
+    } catch (err) {
+      console.error('他ユーザープロフィール取得エラー:', err);
+      inner.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
+      document.getElementById('mypage-displayname').textContent = '取得失敗';
+    }
+  };
+
+  // 他ユーザーの投稿を自分の投稿タブに描画
+  function renderOtherUserPosts(uid, diaries) {
+    const listEl = document.getElementById('mypage-diary-list');
+    if (!listEl) return;
+
+    // 公開範囲フィルタ（public + 自分がfriendsListに入っているfriends）
+    const viewable = diaries.filter(d => {
+      if (!d.visibility || d.visibility === 'public') return true;
+      if (!currentUser) return false;
+      const ownerFriends = d.ownerFriends ? JSON.parse(d.ownerFriends) : [];
+      return ownerFriends.includes(currentUser.uid);
+    });
+
+    if (viewable.length === 0) {
+      listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">
+        公開されている投稿がありません
+      </p>`;
+      return;
+    }
+
+    listEl.innerHTML = '';
+    viewable.forEach(d => {
+      const item = document.createElement('div');
+      item.className = 'mypage-diary-item';
+      const badge = d.visibility === 'friends'
+        ? '<span class="visibility-badge friends" style="margin-left:6px;">⭐ 限定</span>'
+        : '';
+      item.innerHTML = `
+        <div class="mypage-diary-item-date">📅 ${d.date} ${badge}</div>
+        <div class="mypage-diary-item-text">${d.text}</div>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+
+  // 自分のマイページに戻る
+  window.backToOwnMypage = function() {
+    const overlay = document.getElementById('mypage-overlay');
+    overlay.classList.remove('viewing-other');
+    document.getElementById('mypage-viewer-banner').classList.remove('visible');
+    if (!currentUser) { closeMypage(); return; }
+    updateMypageHeader();
+    switchMypageTab('posts');
   };
 
   function updateMypageHeader() {
@@ -2724,6 +2879,7 @@
                 ${isAdded ? 'disabled' : `onclick="addFriendByUid('${user.uid}')"`}>
           ${isAdded ? '✅ 追加済み' : '➕ 追加'}
         </button>
+        <button class="friend-search-view-btn" onclick="openOtherMypage('${user.uid}')">👁 見る</button>
       `;
       resultsEl.appendChild(item);
     });

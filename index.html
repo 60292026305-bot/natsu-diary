@@ -1286,6 +1286,121 @@
     }
     .mypage-uid-copy-btn:hover { background: rgba(85,136,221,0.3); }
 
+    /* ===== スクラップブック ===== */
+    .scrapbook-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .scrapbook-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 2px solid rgba(100,150,220,0.25);
+      background: rgba(220,235,255,0.35);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .scrapbook-item:hover { background: rgba(200,220,255,0.55); border-color: rgba(85,136,221,0.5); }
+    .scrapbook-theme-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .scrapbook-info { flex: 1; min-width: 0; }
+    .scrapbook-title {
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      color: #2c4a7c; font-weight: 700;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .scrapbook-meta {
+      font-family: 'Yomogi', cursive; font-size: 10px; color: #7a9ac8;
+    }
+    /* スクラップブック作成フォーム */
+    .scrapbook-create-form {
+      background: rgba(220,235,255,0.3);
+      border: 1.5px dashed rgba(100,150,220,0.4);
+      border-radius: 14px; padding: 14px; margin-bottom: 12px;
+    }
+    .scrapbook-create-form h4 {
+      font-family: 'Yomogi', cursive; font-size: 13px;
+      color: #2c4a7c; margin-bottom: 10px;
+    }
+    .scrapbook-theme-selector {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .scrapbook-theme-option {
+      display: none;
+    }
+    .scrapbook-theme-label {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; cursor: pointer;
+      border: 2.5px solid transparent;
+      background: rgba(255,255,255,0.6);
+      transition: all 0.2s;
+    }
+    .scrapbook-theme-label:hover { transform: scale(1.1); }
+    .scrapbook-theme-option:checked + .scrapbook-theme-label {
+      border-color: #5588dd;
+      background: rgba(200,220,255,0.7);
+      box-shadow: 0 2px 8px rgba(85,136,221,0.3);
+    }
+    .scrapbook-create-btn {
+      width: 100%; padding: 9px;
+      background: linear-gradient(135deg, #4a7fd4, #2a5ab8);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .scrapbook-create-btn:hover { opacity: 0.88; }
+    .scrapbook-create-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    /* スクラップ追加ボタン（カード内） */
+    .scrapbook-add-btn {
+      padding: 4px 10px;
+      background: rgba(255,220,120,0.7);
+      border: 1.5px solid rgba(200,150,0,0.35);
+      border-radius: 20px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 11px;
+      color: #7a5000; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .scrapbook-add-btn:hover { background: rgba(255,200,60,0.85); }
+    /* スクラップ選択ポップアップ */
+    .scrapbook-picker-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.5); z-index: 600;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .scrapbook-picker-overlay.open { display: flex; }
+    .scrapbook-picker {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px);
+      border-radius: 20px; padding: 24px 20px 20px;
+      width: min(360px, 90vw);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+      position: relative;
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .scrapbook-picker h4 {
+      font-family: 'Yomogi', cursive; font-size: 0.95rem;
+      color: #2c4a7c; margin-bottom: 12px;
+    }
+    .scrapbook-picker-close {
+      position: absolute; top: 12px; right: 16px;
+      font-size: 20px; cursor: pointer; color: #6688cc;
+      transition: transform 0.15s;
+    }
+    .scrapbook-picker-close:hover { transform: scale(1.2) rotate(90deg); }
+    .scrapbook-picker-list { display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; }
+    .scrapbook-picker-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 10px;
+      background: rgba(220,235,255,0.4);
+      border: 1.5px solid rgba(100,150,220,0.2);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .scrapbook-picker-item:hover { background: rgba(200,220,255,0.65); }
+    .scrapbook-picker-item span { font-family: 'Yomogi', cursive; font-size: 13px; color: #2c4a7c; flex: 1; }
+    .scrapbook-picker-add { font-size: 12px; color: #5588dd; white-space: nowrap; }
+
     /* ===== 自分の投稿一覧（タブ内） ===== */
     .mypage-diary-list { display: flex; flex-direction: column; gap: 10px; }
     .mypage-diary-item {
@@ -1897,9 +2012,10 @@
 
     <!-- タブ -->
     <div class="mypage-tabs">
-      <button class="mypage-tab active" id="mptab-posts"    onclick="switchMypageTab('posts')">📖 自分の投稿</button>
-      <button class="mypage-tab"        id="mptab-friends"  onclick="switchMypageTab('friends')">⭐ 友達</button>
-      <button class="mypage-tab"        id="mptab-settings" onclick="switchMypageTab('settings')">⚙️ 設定</button>
+      <button class="mypage-tab active" id="mptab-posts"       onclick="switchMypageTab('posts')">📖 自分の投稿</button>
+      <button class="mypage-tab"        id="mptab-scrapbooks"  onclick="switchMypageTab('scrapbooks')">🔖 スクラップ</button>
+      <button class="mypage-tab"        id="mptab-friends"     onclick="switchMypageTab('friends')">⭐ 友達</button>
+      <button class="mypage-tab"        id="mptab-settings"    onclick="switchMypageTab('settings')">⚙️ 設定</button>
     </div>
 
     <!-- タブコンテンツ -->
@@ -1910,6 +2026,42 @@
         <div class="mypage-diary-list" id="mypage-diary-list">
           <p style="font-family:'Yomogi',cursive;font-size:13px;color:#aaa;text-align:center;padding:20px 0;">
             投稿がありません
+          </p>
+        </div>
+      </div>
+
+      <!-- スクラップブックタブ -->
+      <div class="mypage-tab-panel" id="mppanel-scrapbooks">
+        <!-- 作成フォーム -->
+        <div class="scrapbook-create-form">
+          <h4>✨ 新しいスクラップブックを作る</h4>
+          <input class="mypage-input" type="text" id="scrapbook-title-input"
+                 placeholder="タイトル（例：夏の海の思い出）" maxlength="30"
+                 style="margin-bottom:10px;">
+          <p class="mypage-section-title" style="margin-bottom:6px;">🎨 デザインテーマを選ぶ</p>
+          <div class="scrapbook-theme-selector">
+            <input type="radio" name="sb-theme" id="sbt1" value="summer"  class="scrapbook-theme-option" checked>
+            <label for="sbt1" class="scrapbook-theme-label" title="夏・ひまわり">🌻</label>
+            <input type="radio" name="sb-theme" id="sbt2" value="ocean"   class="scrapbook-theme-option">
+            <label for="sbt2" class="scrapbook-theme-label" title="海・波">🌊</label>
+            <input type="radio" name="sb-theme" id="sbt3" value="star"    class="scrapbook-theme-option">
+            <label for="sbt3" class="scrapbook-theme-label" title="星・夜空">⭐</label>
+            <input type="radio" name="sb-theme" id="sbt4" value="flower"  class="scrapbook-theme-option">
+            <label for="sbt4" class="scrapbook-theme-label" title="花・春">🌸</label>
+            <input type="radio" name="sb-theme" id="sbt5" value="retro"   class="scrapbook-theme-option">
+            <label for="sbt5" class="scrapbook-theme-label" title="レトロ・クラフト">📜</label>
+            <input type="radio" name="sb-theme" id="sbt6" value="rainbow" class="scrapbook-theme-option">
+            <label for="sbt6" class="scrapbook-theme-label" title="カラフル">🌈</label>
+          </div>
+          <button class="scrapbook-create-btn" id="scrapbook-create-btn" onclick="createScrapbook()">
+            🔖 スクラップブックを作成
+          </button>
+          <div id="scrapbook-create-msg" style="font-family:'Yomogi',cursive;font-size:12px;text-align:center;margin-top:6px;min-height:16px;"></div>
+        </div>
+        <!-- 一覧 -->
+        <div class="scrapbook-list" id="scrapbook-list">
+          <p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">
+            スクラップブックがまだありません
           </p>
         </div>
       </div>
@@ -1977,6 +2129,15 @@
       </div>
 
     </div><!-- /mypage-tab-content -->
+  </div>
+</div>
+
+<!-- スクラップブック選択ポップアップ -->
+<div class="scrapbook-picker-overlay" id="scrapbook-picker-overlay" onclick="closeScrapbookPicker()">
+  <div class="scrapbook-picker" onclick="event.stopPropagation()">
+    <span class="scrapbook-picker-close" onclick="closeScrapbookPicker()">✕</span>
+    <h4>🔖 スクラップブックに追加</h4>
+    <div class="scrapbook-picker-list" id="scrapbook-picker-list"></div>
   </div>
 </div>
 
@@ -2122,6 +2283,9 @@
       // friendsList を LocalStorage から復元
       const saved = localStorage.getItem('friends_' + user.uid);
       friendsList = saved ? JSON.parse(saved) : [];
+
+      // スクラップブック監視を開始
+      setupScrapbookListener();
 
       // Firebase /users/{uid} からプロフィールを読み込む
       onValue(ref(db, `users/${user.uid}`), (snap) => {
@@ -2550,10 +2714,13 @@
       document.getElementById('mypage-friends-count').textContent  = theirDiaries.filter(d => d.visibility === 'friends').length;
 
       // 自分の投稿タブに対象ユーザーの投稿を表示
-      ['posts','friends','settings'].forEach(t => {
-        document.getElementById('mptab-'   + t).classList.toggle('active', t === 'posts');
-        document.getElementById('mppanel-' + t).classList.toggle('active', t === 'posts');
+      ['posts','scrapbooks','friends','settings'].forEach(t => {
+        document.getElementById('mptab-'   + t)?.classList.toggle('active', t === 'posts');
+        document.getElementById('mppanel-' + t)?.classList.toggle('active', t === 'posts');
       });
+      // タブ見出しを「◯◯の投稿」に変更
+      const postsTab = document.getElementById('mptab-posts');
+      if (postsTab) postsTab.textContent = `📖 ${dispName}の投稿`;
       renderOtherUserPosts(uid, theirDiaries);
 
     } catch (err) {
@@ -2603,6 +2770,9 @@
     const overlay = document.getElementById('mypage-overlay');
     overlay.classList.remove('viewing-other');
     document.getElementById('mypage-viewer-banner').classList.remove('visible');
+    // タブ見出しを「自分の投稿」に戻す
+    const postsTab = document.getElementById('mptab-posts');
+    if (postsTab) postsTab.textContent = '📖 自分の投稿';
     if (!currentUser) { closeMypage(); return; }
     updateMypageHeader();
     switchMypageTab('posts');
@@ -2645,11 +2815,12 @@
   }
 
   window.switchMypageTab = function(tab) {
-    ['posts','friends','settings'].forEach(t => {
-      document.getElementById('mptab-'   + t).classList.toggle('active', t === tab);
-      document.getElementById('mppanel-' + t).classList.toggle('active', t === tab);
+    ['posts','scrapbooks','friends','settings'].forEach(t => {
+      document.getElementById('mptab-'   + t)?.classList.toggle('active', t === tab);
+      document.getElementById('mppanel-' + t)?.classList.toggle('active', t === tab);
     });
-    if (tab === 'posts')    renderMypagePosts();
+    if (tab === 'posts')       renderMypagePosts();
+    if (tab === 'scrapbooks')  renderScrapbooks();
     if (tab === 'friends')  {
       renderFriendsList();
       // 検索欄・結果をリセット
@@ -2690,6 +2861,133 @@
       `;
       listEl.appendChild(item);
     });
+  }
+
+  // ===== スクラップブック ===== //
+  // デザインテーマ定義
+  const SB_THEMES = {
+    summer:  { emoji: '🌻', label: '夏・ひまわり',   border: 'rgba(255,200,0,0.6)',   bg: 'rgba(255,250,220,0.5)'  },
+    ocean:   { emoji: '🌊', label: '海・波',         border: 'rgba(30,150,220,0.5)',  bg: 'rgba(210,240,255,0.5)'  },
+    star:    { emoji: '⭐', label: '星・夜空',        border: 'rgba(120,80,200,0.5)',  bg: 'rgba(230,220,255,0.5)'  },
+    flower:  { emoji: '🌸', label: '花・春',          border: 'rgba(240,100,160,0.5)', bg: 'rgba(255,220,235,0.5)'  },
+    retro:   { emoji: '📜', label: 'レトロ・クラフト', border: 'rgba(160,100,30,0.5)',  bg: 'rgba(245,235,210,0.5)'  },
+    rainbow: { emoji: '🌈', label: 'カラフル',        border: 'rgba(80,180,80,0.5)',   bg: 'rgba(220,255,220,0.5)'  },
+  };
+
+  let myScrapbooks    = {}; // { sbId: { title, theme, createdAt } }
+  let pickerTargetKey = null; // スクラップ追加対象の fbKey
+
+  // 自分のスクラップブック一覧をリアルタイム監視
+  function setupScrapbookListener() {
+    if (!currentUser) return;
+    onValue(ref(db, `scrapbooks/${currentUser.uid}`), (snap) => {
+      myScrapbooks = snap.val() || {};
+      // スクラップブックタブが開いていれば再描画
+      if (document.getElementById('mppanel-scrapbooks')?.classList.contains('active')) {
+        renderScrapbooks();
+      }
+    });
+  }
+
+  // スクラップブック一覧を描画
+  function renderScrapbooks() {
+    const listEl = document.getElementById('scrapbook-list');
+    if (!listEl || !currentUser) return;
+    const entries = Object.entries(myScrapbooks);
+    if (entries.length === 0) {
+      listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">スクラップブックがまだありません</p>`;
+      return;
+    }
+    listEl.innerHTML = '';
+    entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0)).forEach(([sbId, sb]) => {
+      const theme = SB_THEMES[sb.theme] || SB_THEMES.summer;
+      const item = document.createElement('div');
+      item.className = 'scrapbook-item';
+      item.style.borderColor = theme.border;
+      item.style.background  = theme.bg;
+      item.innerHTML = `
+        <div class="scrapbook-theme-badge">${theme.emoji}</div>
+        <div class="scrapbook-info">
+          <div class="scrapbook-title">${sb.title || '無題'}</div>
+          <div class="scrapbook-meta">${theme.label}</div>
+        </div>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+
+  // スクラップブック作成
+  window.createScrapbook = async function() {
+    if (!requireAuth()) return;
+    const title = document.getElementById('scrapbook-title-input').value.trim();
+    const theme = document.querySelector('input[name="sb-theme"]:checked')?.value || 'summer';
+    const msgEl = document.getElementById('scrapbook-create-msg');
+    const btn   = document.getElementById('scrapbook-create-btn');
+    if (!title) { msgEl.textContent = 'タイトルを入力してください'; msgEl.style.color = '#c00'; return; }
+    btn.disabled = true;
+    try {
+      await push(ref(db, `scrapbooks/${currentUser.uid}`), {
+        title, theme, createdAt: Date.now()
+      });
+      msgEl.textContent = '✅ 作成しました！';
+      msgEl.style.color = '#2a8a2a';
+      document.getElementById('scrapbook-title-input').value = '';
+    } catch (e) {
+      msgEl.textContent = '作成に失敗しました: ' + e.message;
+      msgEl.style.color = '#c00';
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  // スクラップブック選択ポップアップを開く
+  window.openScrapbookPicker = function(fbKey) {
+    if (!requireAuth()) return;
+    pickerTargetKey = fbKey;
+    const pickerList = document.getElementById('scrapbook-picker-list');
+    const entries = Object.entries(myScrapbooks);
+    if (entries.length === 0) {
+      pickerList.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:12px 0;">スクラップブックがありません。<br>マイページから作成してください。</p>`;
+    } else {
+      pickerList.innerHTML = '';
+      entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0)).forEach(([sbId, sb]) => {
+        const theme = SB_THEMES[sb.theme] || SB_THEMES.summer;
+        const item = document.createElement('div');
+        item.className = 'scrapbook-picker-item';
+        item.innerHTML = `
+          <span style="font-size:18px;">${theme.emoji}</span>
+          <span>${sb.title || '無題'}</span>
+          <span class="scrapbook-picker-add">追加 ➕</span>
+        `;
+        item.onclick = () => addToScrapbook(sbId, fbKey);
+        pickerList.appendChild(item);
+      });
+    }
+    document.getElementById('scrapbook-picker-overlay').classList.add('open');
+  };
+
+  window.closeScrapbookPicker = function() {
+    document.getElementById('scrapbook-picker-overlay').classList.remove('open');
+    pickerTargetKey = null;
+  };
+
+  // 投稿をスクラップブックに追加
+  async function addToScrapbook(sbId, postKey) {
+    try {
+      await set(ref(db, `scrapbookItems/${sbId}/${postKey}`), {
+        addedAt: Date.now(),
+        addedBy: currentUser.uid
+      });
+      closeScrapbookPicker();
+      // 一時的なフィードバック表示
+      const fb = document.createElement('div');
+      fb.textContent = '🔖 スクラップブックに追加しました！';
+      fb.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(50,130,50,0.9);color:#fff;padding:8px 20px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(fb);
+      setTimeout(() => fb.remove(), 2500);
+    } catch (e) {
+      alert('追加に失敗しました: ' + e.message);
+    }
   }
 
   // ===== プロフィール設定フォーム補助 =====
@@ -3022,6 +3320,15 @@
     shareBtn.innerHTML = '📸 シェア／保存';
     shareBtn.onclick = () => shareCard(card, diary.date, shareBtn);
     actions.appendChild(shareBtn);
+
+    // 🔖 スクラップブックに追加ボタン（ログイン時のみ）
+    if (currentUser) {
+      const sbBtn = document.createElement('button');
+      sbBtn.className = 'scrapbook-add-btn';
+      sbBtn.textContent = '🔖 スクラップ';
+      sbBtn.onclick = () => openScrapbookPicker(diary.fbKey);
+      actions.appendChild(sbBtn);
+    }
 
     // 右側：編集＋消すを縦並びラッパーにまとめる
     const actionsRight = document.createElement('div');

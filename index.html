@@ -5011,18 +5011,24 @@
       dragTargetPostId = postId;
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', postId);
-      setTimeout(() => el.classList.add('dragging'), 0);
+      el.style.opacity = '0.5';
     });
     el.addEventListener('dragend', () => {
-      el.classList.remove('dragging');
-      document.getElementById('board-trash-zone').classList.remove('drag-over');
+      el.style.opacity = '';
+      // ゴミ箱ボタンのハイライトを解除
+      const trashBtn = document.getElementById('trashBinBtn');
+      if (trashBtn) trashBtn.classList.remove('active');
     });
   }
 
   window.onDropToTrash = function(e) {
     e.preventDefault();
-    document.getElementById('board-trash-zone').classList.remove('drag-over');
-    const postId = e.dataTransfer.getData('text/plain') || dragTargetPostId;
+    e.stopPropagation();
+    // ゴミ箱ボタンのハイライトを解除
+    const trashBtn = document.getElementById('trashBinBtn');
+    if (trashBtn) trashBtn.classList.remove('active');
+    // dataTransfer または状態変数からpostIdを取得
+    const postId = (e.dataTransfer && e.dataTransfer.getData('text/plain')) || dragTargetPostId;
     if (!postId) return;
     dragTargetPostId = postId;
     openTrashWithPw('delete', postId);

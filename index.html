@@ -1155,6 +1155,180 @@
       font-weight: 700;
     }
 
+    /* ゴミ箱ボタン（SVGアイコン使用・文字化け回避） */
+    .trash-bin-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      border: 1.5px solid rgba(200,200,200,0.7);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(8px);
+      padding: 0;
+    }
+    .trash-bin-btn:hover {
+      transform: scale(1.1);
+      background: #ffebee;
+      border-color: #ef5350;
+    }
+    .trash-bin-btn.active {
+      background: #ffebee;
+      border-color: #ef5350;
+    }
+    .trash-bin-btn svg { width: 22px; height: 22px; }
+    /* まとめモード中は非表示 */
+    .board-actions.summary-active .trash-bin-btn { display: none; }
+
+    /* コルクボード内ゴミ箱ドロップゾーン */
+    .board-trash-zone {
+      position: sticky;
+      bottom: 16px;
+      float: right;
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(255,230,230,0.85);
+      border: 2.5px dashed #ef9a9a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 3px 12px rgba(200,0,0,0.15);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+      margin-right: 8px;
+      margin-top: -72px; /* コルク内下部に浮かせる */
+    }
+    .board-trash-zone svg { width: 28px; height: 28px; }
+    .board-trash-zone span {
+      font-family: 'Yomogi', cursive; font-size: 9px; color: #c62828;
+    }
+    .board-trash-zone.drag-over {
+      background: #ffcdd2;
+      border-color: #ef5350;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 6px rgba(239,83,80,0.25);
+    }
+
+    /* パスワードダイアログ */
+    .board-pw-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.6); z-index: 900;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .board-pw-overlay.open { display: flex; }
+    .board-pw-modal {
+      background: rgba(255,253,248,0.97);
+      border-radius: 18px; padding: 28px 24px 22px;
+      width: min(340px, 88vw);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+      position: relative;
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .board-pw-modal h3 {
+      font-family: 'Yomogi', cursive; font-size: 1rem;
+      color: #c62828; margin-bottom: 14px; text-align: center;
+    }
+    .board-pw-modal input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid rgba(239,83,80,0.4);
+      border-radius: 10px;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: 15px;
+      color: #2a1a1a; background: rgba(255,248,248,0.9);
+      margin-bottom: 12px; letter-spacing: 0.15em;
+    }
+    .board-pw-modal input:focus {
+      outline: none; border-color: #ef5350;
+      box-shadow: 0 0 0 3px rgba(239,83,80,0.15);
+    }
+    .board-pw-submit {
+      width: 100%; padding: 10px;
+      background: linear-gradient(135deg, #ef5350, #c62828);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .board-pw-submit:hover { opacity: 0.88; }
+    .board-pw-error {
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: #c62828; text-align: center; margin-top: 6px; min-height: 14px;
+    }
+    .board-pw-close {
+      position: absolute; top: 12px; right: 14px;
+      font-size: 18px; cursor: pointer; color: #aaa;
+      transition: color 0.15s;
+    }
+    .board-pw-close:hover { color: #ef5350; }
+
+    /* ゴミ箱閲覧モーダル */
+    .board-trash-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.6); z-index: 900;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .board-trash-overlay.open { display: flex; }
+    .board-trash-modal {
+      background: rgba(255,250,250,0.97);
+      border-radius: 20px; padding: 0;
+      width: min(520px, 92vw); max-height: 80vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .board-trash-header {
+      padding: 16px 20px 14px;
+      background: linear-gradient(135deg, #ef5350, #c62828);
+      display: flex; align-items: center; gap: 10px;
+      position: relative; flex-shrink: 0;
+    }
+    .board-trash-header h3 {
+      font-family: 'Yomogi', cursive; font-size: 1rem;
+      color: #fff; flex: 1;
+    }
+    .board-trash-header-close {
+      color: rgba(255,255,255,0.85); font-size: 20px;
+      cursor: pointer; transition: transform 0.15s;
+    }
+    .board-trash-header-close:hover { transform: scale(1.2) rotate(90deg); }
+    .board-trash-list {
+      overflow-y: auto; flex: 1; padding: 14px 16px 20px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .board-trash-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px;
+      background: rgba(255,235,235,0.4);
+      border: 1.5px solid rgba(239,83,80,0.2);
+      border-radius: 12px;
+    }
+    .board-trash-item-text {
+      flex: 1; font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #3a2a2a; line-height: 1.5;
+      white-space: pre-wrap; word-break: break-all;
+    }
+    .board-trash-item-meta {
+      font-size: 9px; color: #aaa; margin-top: 4px;
+    }
+    .board-trash-restore-btn {
+      padding: 4px 12px; flex-shrink: 0;
+      background: rgba(200,220,255,0.7);
+      border: 1.5px solid rgba(85,136,221,0.4);
+      border-radius: 16px;
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: #2c4a7c; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .board-trash-restore-btn:hover { background: rgba(180,210,255,0.9); }
+    .board-trash-empty {
+      text-align: center; font-family: 'Yomogi', cursive;
+      font-size: 13px; color: #aaa; padding: 32px 0;
+    }
+
     /* 書き込みモーダル */
     .board-post-overlay {
       display: none; position: fixed; inset: 0;
@@ -2532,6 +2706,19 @@
   <div class="board-frame">
     <div class="board-cork" id="board-cork">
       <div class="board-grid" id="board-grid"></div>
+      <!-- コルク内ゴミ箱ドロップゾーン -->
+      <div class="board-trash-zone" id="board-trash-zone"
+           ondragover="event.preventDefault(); this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="onDropToTrash(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+        </svg>
+        <span>ゴミ箱</span>
+      </div>
     </div>
   </div>
 </div>
@@ -2541,6 +2728,33 @@
   <span class="board-select-count" id="board-select-count">0件を選択中</span>
   <button class="board-select-cancel" onclick="cancelSummaryMode()">✕ キャンセル</button>
   <button class="board-select-confirm" onclick="confirmSummarySelection()">📂 まとめる</button>
+</div>
+
+<!-- 掲示板：管理者パスワードダイアログ -->
+<div class="board-pw-overlay" id="board-pw-overlay" onclick="closeBoardPw()">
+  <div class="board-pw-modal" onclick="event.stopPropagation()">
+    <span class="board-pw-close" onclick="closeBoardPw()">✕</span>
+    <h3>🔐 管理者パスワードを入力</h3>
+    <input type="password" id="board-pw-input" placeholder="パスワード"
+           onkeydown="if(event.key==='Enter') submitBoardPw()">
+    <button class="board-pw-submit" onclick="submitBoardPw()">確認</button>
+    <div class="board-pw-error" id="board-pw-error"></div>
+  </div>
+</div>
+
+<!-- 掲示板：ゴミ箱モーダル -->
+<div class="board-trash-overlay" id="board-trash-overlay" onclick="closeBoardTrashModal()">
+  <div class="board-trash-modal" onclick="event.stopPropagation()">
+    <div class="board-trash-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+      </svg>
+      <h3>ゴミ箱（削除済みメモ）</h3>
+      <span class="board-trash-header-close" onclick="closeBoardTrashModal()">✕</span>
+    </div>
+    <div class="board-trash-list" id="board-trash-list"></div>
+  </div>
 </div>
 
 <!-- 掲示板：書き込みモーダル -->
@@ -2577,7 +2791,15 @@
 
 <!-- 掲示板：固定ボタン群 -->
 <div class="board-actions" id="board-actions">
-  <button class="board-summary-btn" id="board-summary-btn" onclick="toggleSummaryMode()">📂 まとめる</button>
+  <button class="board-summary-btn" id="board-summary-btn">📂 まとめる</button>
+  <button class="trash-bin-btn" id="trashBinBtn" title="ゴミ箱を開く" onclick="openTrashWithPw('view')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#c62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+    </svg>
+  </button>
   <button class="board-write-btn" onclick="openBoardPost()">✏️ 書き込む</button>
 </div>
 
@@ -4656,7 +4878,9 @@
     // 作成日時の古い順に並べる
     const entries = Object.entries(data).sort((a, b) => (a[1].createdAt||0) - (b[1].createdAt||0));
     entries.forEach(([postId, post]) => {
-      grid.appendChild(createMemoEl(postId, post));
+      const el = createMemoEl(postId, post);
+      enableMemoDrag(el, postId); // ドラッグ有効化を統合
+      grid.appendChild(el);
     });
   }
 
@@ -4673,7 +4897,7 @@
       : '';
     el.innerHTML = `${escapeHtml(post.content||'')}<span class="board-memo-date">${date}</span>`;
     el.addEventListener('click', () => {
-      if (!summaryMode) return;
+      if (!summaryMode && !trashMode) return;
       if (selectedMemos.has(postId)) {
         selectedMemos.delete(postId);
         el.classList.remove('selected');
@@ -4681,7 +4905,11 @@
         selectedMemos.add(postId);
         el.classList.add('selected');
       }
-      updateSelectCount();
+      if (summaryMode) updateSelectCount();
+      if (trashMode) {
+        const countEl = document.getElementById('board-select-count');
+        if (countEl) countEl.textContent = `${selectedMemos.size}件を削除予定`;
+      }
     });
     return el;
   }
@@ -4719,6 +4947,7 @@
 
   // ===== まとめモード =====
   window.toggleSummaryMode = function() {
+    if (trashMode) cancelTrashMode();
     summaryMode = true;
     selectedMemos.clear();
     document.querySelectorAll('.board-memo').forEach(el => el.classList.remove('selected'));
@@ -4737,6 +4966,164 @@
     document.getElementById('board-summary-btn').textContent = '📂 まとめる';
     document.getElementById('board-select-bar').classList.remove('visible');
     document.getElementById('board-actions').style.bottom = '24px';
+    document.getElementById('board-actions').classList.remove('summary-active');
+  };
+
+  // ===== ゴミ箱機能（管理者パスワード付き） =====
+  // ★ パスワードをここに設定してください（平文注意：簡易認証）
+  const TRASH_PASSWORD = 'admin2026';
+
+  const DELETED_REF    = ref(db, 'guestBoard/deleted');
+  let trashMode        = false;
+  let trashPwCallback  = null; // パスワード確認後に実行するコールバック
+  let dragTargetPostId = null; // D&D中のpostId
+
+  // ----- パスワードダイアログ -----
+  function openTrashWithPw(mode, postId) {
+    trashPwCallback = () => {
+      closeBoardPw();
+      if (mode === 'view') openBoardTrashModal();
+      else if (mode === 'delete' && postId) softDeletePost(postId);
+    };
+    document.getElementById('board-pw-input').value = '';
+    document.getElementById('board-pw-error').textContent = '';
+    document.getElementById('board-pw-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('board-pw-input').focus(), 100);
+  }
+  window.openTrashWithPw = openTrashWithPw;
+
+  window.closeBoardPw = function() {
+    document.getElementById('board-pw-overlay').classList.remove('open');
+    trashPwCallback = null;
+    dragTargetPostId = null;
+  };
+
+  window.submitBoardPw = function() {
+    const pw = document.getElementById('board-pw-input').value;
+    if (pw === TRASH_PASSWORD) {
+      if (trashPwCallback) trashPwCallback();
+    } else {
+      document.getElementById('board-pw-error').textContent = 'パスワードが違います';
+      document.getElementById('board-pw-input').value = '';
+      document.getElementById('board-pw-input').focus();
+    }
+  };
+
+  // ----- ドラッグ&ドロップ -----
+  // createMemoEl でドラッグ属性を付ける（renderBoardGrid呼び出し後に適用）
+  function enableMemoDrag(el, postId) {
+    el.setAttribute('draggable', 'true');
+    el.addEventListener('dragstart', (e) => {
+      dragTargetPostId = postId;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', postId);
+      setTimeout(() => el.classList.add('dragging'), 0);
+    });
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      document.getElementById('board-trash-zone').classList.remove('drag-over');
+    });
+  }
+
+  window.onDropToTrash = function(e) {
+    e.preventDefault();
+    document.getElementById('board-trash-zone').classList.remove('drag-over');
+    const postId = e.dataTransfer.getData('text/plain') || dragTargetPostId;
+    if (!postId) return;
+    dragTargetPostId = postId;
+    openTrashWithPw('delete', postId);
+  };
+
+  // ----- 論理削除（isDeleted: true）-----
+  async function softDeletePost(postId) {
+    try {
+      // 元のデータを取得
+      const snap = await new Promise((res, rej) =>
+        onValue(ref(db, `guestBoard/posts/${postId}`), res, rej, { onlyOnce: true })
+      );
+      const data = snap.val();
+      if (!data) return;
+
+      // deleted コレクションにコピー（30日後の期限付き）
+      const deletedAt = Date.now();
+      const expireAt  = deletedAt + 30 * 24 * 60 * 60 * 1000; // 30日
+      await set(ref(db, `guestBoard/deleted/${postId}`), {
+        ...data, isDeleted: true, deletedAt, expireAt
+      });
+      // 元の投稿を削除
+      await remove(ref(db, `guestBoard/posts/${postId}`));
+
+      // 成功フィードバック
+      const fb = document.createElement('div');
+      fb.textContent = 'メモをゴミ箱に移動しました';
+      fb.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(200,50,50,0.88);color:#fff;padding:8px 20px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(fb);
+      setTimeout(() => fb.remove(), 2200);
+    } catch(e) {
+      alert('削除に失敗しました: ' + e.message);
+    } finally {
+      dragTargetPostId = null;
+    }
+  }
+
+  // ----- ゴミ箱モーダル（一覧・復元）-----
+  window.openBoardTrashModal = function() {
+    const listEl = document.getElementById('board-trash-list');
+    listEl.innerHTML = '<p class="board-trash-empty">読み込み中…</p>';
+    document.getElementById('board-trash-overlay').classList.add('open');
+
+    onValue(DELETED_REF, (snap) => {
+      const data = snap.val() || {};
+      listEl.innerHTML = '';
+      const entries = Object.entries(data)
+        .filter(([, d]) => d.isDeleted)
+        .sort((a, b) => (b[1].deletedAt || 0) - (a[1].deletedAt || 0));
+
+      if (entries.length === 0) {
+        listEl.innerHTML = '<p class="board-trash-empty">ゴミ箱は空です 🗑</p>';
+        return;
+      }
+      entries.forEach(([postId, post]) => {
+        const item = document.createElement('div');
+        item.className = 'board-trash-item';
+        const del = post.deletedAt ? new Date(post.deletedAt).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        item.innerHTML = `
+          <div style="flex:1;min-width:0;">
+            <div class="board-trash-item-text">${escapeHtml(post.content || '')}</div>
+            <div class="board-trash-item-meta">削除日時: ${del}</div>
+          </div>
+          <button class="board-trash-restore-btn" onclick="restorePost('${postId}')">↩ 元に戻す</button>
+        `;
+        listEl.appendChild(item);
+      });
+    }, { onlyOnce: true });
+  };
+
+  window.closeBoardTrashModal = function() {
+    document.getElementById('board-trash-overlay').classList.remove('open');
+  };
+
+  window.restorePost = async function(postId) {
+    try {
+      const snap = await new Promise((res, rej) =>
+        onValue(ref(db, `guestBoard/deleted/${postId}`), res, rej, { onlyOnce: true })
+      );
+      const data = snap.val();
+      if (!data) return;
+      // isDeleted フラグを除いて posts に戻す
+      const { isDeleted, deletedAt, expireAt, ...original } = data;
+      await set(ref(db, `guestBoard/posts/${postId}`), original);
+      await remove(ref(db, `guestBoard/deleted/${postId}`));
+      // モーダル再描画
+      openBoardTrashModal();
+      const fb = document.createElement('div');
+      fb.textContent = 'メモを掲示板に復元しました';
+      fb.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(50,100,200,0.9);color:#fff;padding:8px 20px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(fb);
+      setTimeout(() => fb.remove(), 2200);
+    } catch(e) {
+      alert('復元に失敗しました: ' + e.message);
+    }
   };
 
   window.confirmSummarySelection = function() {
@@ -4785,7 +5172,7 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); }
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); closeBoardPw(); closeBoardTrashModal(); }
   });
 </script>
 </body>

@@ -2384,6 +2384,47 @@
     .deco-canvas-overlay.readonly .deco-topbar-btn.deco-save-btn { display: none; }
     .deco-canvas-overlay.readonly .deco-stage { cursor: default; }
     .deco-canvas-overlay.readonly .deco-element { cursor: default; pointer-events: none; }
+    .deco-canvas-overlay.readonly .deco-page-nav { pointer-events: none; }
+    .deco-canvas-overlay.readonly .deco-page-add-btn,
+    .deco-canvas-overlay.readonly .deco-page-del-btn { display: none; }
+
+    /* ===== ページナビゲーター ===== */
+    .deco-page-nav {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; flex-shrink: 0;
+      padding: 7px 12px;
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .deco-page-nav-btn {
+      width: 30px; height: 30px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.12); color: #ccc;
+      font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .deco-page-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.28); color: #fff; }
+    .deco-page-nav-btn:disabled { opacity: 0.3; cursor: default; }
+    .deco-page-indicator {
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: rgba(255,255,255,0.7); min-width: 60px; text-align: center;
+    }
+    .deco-page-add-btn {
+      width: 30px; height: 30px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg,#ff6b9d,#c44dff);
+      color: #fff; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s; flex-shrink: 0;
+    }
+    .deco-page-add-btn:hover { transform: scale(1.12); }
+    .deco-page-del-btn {
+      width: 26px; height: 26px; border-radius: 50%; border: none;
+      background: rgba(255,60,60,0.2); color: #ff8888;
+      font-size: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .deco-page-del-btn:hover { background: rgba(255,60,60,0.45); color: #ffaaaa; }
 
     /* sb-detail-overlay は廃止（後方互換のため定義のみ残す） */
     .sb-detail-overlay { display: none !important; }
@@ -3323,6 +3364,15 @@
     </div>
 
   </div><!-- /main -->
+
+  <!-- ページナビゲーター -->
+  <div class="deco-page-nav" id="deco-page-nav">
+    <button class="deco-page-nav-btn" id="deco-page-prev" onclick="decoGoPage(decoCurrentPage - 1)" title="前のページ">‹</button>
+    <span class="deco-page-indicator" id="deco-page-indicator">1 / 1</span>
+    <button class="deco-page-nav-btn" id="deco-page-next" onclick="decoGoPage(decoCurrentPage + 1)" title="次のページ">›</button>
+    <button class="deco-page-add-btn" onclick="decoAddPage()" title="ページを追加">＋</button>
+    <button class="deco-page-del-btn" id="deco-page-del" onclick="decoDeletePage()" title="このページを削除">🗑</button>
+  </div>
 </div><!-- /deco-canvas-overlay -->
 
 <!-- スクラップブック選択ポップアップ -->
@@ -4202,19 +4252,23 @@
   // ===================================================================
 
   // ── 状態変数 ──
-  let decoSbId      = null;   // 現在開いているスクラップブックID
-  let decoOwnerUid  = null;   // スクラップブックオーナーUID
-  let decoReadOnly  = false;  // 閲覧専用モード
-  let decoElements  = [];     // 配置要素リスト [{id,type,x,y,rot,scale,...}]
+  let decoSbId      = null;
+  let decoOwnerUid  = null;
+  let decoReadOnly  = false;
+  let decoElements  = [];     // 現在ページの配置要素
   let decoNextId    = 1;
-  let decoSelected  = null;   // 選択中要素ID
-  let decoDrawing   = false;  // 描画モード中フラグ
-  let decoErasing   = false;  // 消しゴムモード
+  let decoSelected  = null;
+  let decoDrawing   = false;
+  let decoErasing   = false;
   let decoLastPos   = null;
   let penColor      = '#ff6b9d';
   let penSize       = 4;
-  let penType       = 'normal'; // normal / marker / neon / dotted / sparkle
-  let decoCustomStickers = []; // Base64配列
+  let penType       = 'normal';
+  let decoCustomStickers = [];
+
+  // ── マルチページ ──
+  let decoPages       = [];  // [{elements:[], drawing:''}] — 全ページデータ
+  let decoCurrentPage = 0;   // 0-indexed
 
   // ── ビルトインステッカー ──
   const BUILTIN_STICKERS = [
@@ -4313,62 +4367,154 @@
   };
 
   // ─────────────────────────────────────────
-  // データ保存・読み込み
+  // データ保存・読み込み（マルチページ）
   // ─────────────────────────────────────────
-  async function loadDecoData(sbId) {
-    // ステージをクリア（canvas以外）
-    const stage = document.getElementById('deco-stage');
+
+  // 現在ページの編集内容を decoPages に書き戻す
+  function commitCurrentPage() {
+    const canvas = document.getElementById('deco-draw-canvas');
+    const isBlank = !canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data.some(ch=>ch!==0);
+    decoPages[decoCurrentPage] = {
+      elements: JSON.parse(JSON.stringify(decoElements)),
+      drawing:  isBlank ? '' : canvas.toDataURL('image/png'),
+    };
+  }
+
+  // ステージを decoPages[pageIdx] の内容でリフレッシュ
+  function renderPage(pageIdx) {
+    const stage  = document.getElementById('deco-stage');
+    const canvas = document.getElementById('deco-draw-canvas');
+
+    // 既存要素を除去
     Array.from(stage.querySelectorAll('.deco-element')).forEach(el => el.remove());
-    decoElements = [];
-    decoNextId   = 1;
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     decoSelected = null;
 
-    // 手描きcanvasクリア
-    const canvas = document.getElementById('deco-draw-canvas');
-    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    const page = decoPages[pageIdx] || { elements: [], drawing: '' };
+    decoElements = JSON.parse(JSON.stringify(page.elements || []));
+
+    // nextId を要素IDの最大値+1 に合わせる
+    decoNextId = decoElements.reduce((m, e) => Math.max(m, (e.id||0)+1), 1);
+
+    // 要素を描画
+    decoElements.forEach(el => renderDecoElement(el));
+
+    // 手描きを復元
+    if (page.drawing) {
+      const img = new Image();
+      img.onload = () => canvas.getContext('2d').drawImage(img, 0, 0);
+      img.src = page.drawing;
+    }
+  }
+
+  // ページインジケーター＋ボタン状態を更新
+  function updatePageNav() {
+    const total = decoPages.length;
+    document.getElementById('deco-page-indicator').textContent = `${decoCurrentPage + 1} / ${total}`;
+    const prevBtn = document.getElementById('deco-page-prev');
+    const nextBtn = document.getElementById('deco-page-next');
+    const delBtn  = document.getElementById('deco-page-del');
+    if (prevBtn) prevBtn.disabled = decoCurrentPage === 0;
+    if (nextBtn) nextBtn.disabled = decoCurrentPage === total - 1;
+    if (delBtn)  delBtn.disabled  = total <= 1; // 1ページのみは削除不可
+  }
+
+  async function loadDecoData(sbId) {
+    decoPages = [];
+    decoCurrentPage = 0;
 
     try {
-      const snap = await new Promise(res => onValue(ref(db, `scrapbooks/${decoOwnerUid}/${sbId}/canvas`), res, { onlyOnce: true }));
+      const snap = await new Promise(res =>
+        onValue(ref(db, `scrapbooks/${decoOwnerUid}/${sbId}/canvas`), res, { onlyOnce: true })
+      );
       const data = snap.val();
-      if (!data) return;
 
-      // 要素を復元
-      if (data.elements) {
-        data.elements.forEach(el => {
-          decoNextId = Math.max(decoNextId, (el.id||0)+1);
-          decoElements.push(el);
-          renderDecoElement(el);
-        });
+      if (data) {
+        if (Array.isArray(data.pages) && data.pages.length > 0) {
+          // 新フォーマット（マルチページ）
+          decoPages = data.pages;
+        } else if (data.elements || data.drawing) {
+          // 旧フォーマット → 1ページ目として移行
+          decoPages = [{ elements: data.elements || [], drawing: data.drawing || '' }];
+        }
       }
 
-      // 手描きを復元
-      if (data.drawing) {
-        const img = new Image();
-        img.onload = () => canvas.getContext('2d').drawImage(img, 0, 0);
-        img.src = data.drawing;
-      }
+      // ページが空なら空の1ページ目を作成
+      if (decoPages.length === 0) decoPages = [{ elements: [], drawing: '' }];
+
+      // 保存済みページインデックスを復元（オプション）
+      decoCurrentPage = Math.min(data?.currentPage || 0, decoPages.length - 1);
+
     } catch(e) { console.error('deco load error:', e); }
+
+    // ページがなければ最低1ページ保証
+    if (decoPages.length === 0) decoPages = [{ elements: [], drawing: '' }];
+
+    renderPage(decoCurrentPage);
+    updatePageNav();
   }
 
   window.saveDecoCanvas = async function() {
     if (decoReadOnly || !currentUser) return;
-    const canvas = document.getElementById('deco-draw-canvas');
-    const drawing = canvas.toDataURL('image/png');
-    // 手描きが空かチェック（無駄な保存を避ける）
-    const isBlank = !canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height)
-                           .data.some(ch => ch !== 0);
+    // 現在ページを書き戻してから全ページ保存
+    commitCurrentPage();
     try {
       await set(ref(db, `scrapbooks/${decoOwnerUid}/${decoSbId}/canvas`), {
-        elements: decoElements,
-        drawing:  isBlank ? '' : drawing,
-        savedAt:  Date.now(),
+        pages:       decoPages,
+        currentPage: decoCurrentPage,
+        savedAt:     Date.now(),
       });
       const toast = document.createElement('div');
       toast.textContent = '💾 保存しました！';
-      toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(196,77,255,0.9);color:#fff;padding:8px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);'
+        + 'background:rgba(196,77,255,0.9);color:#fff;padding:8px 22px;border-radius:20px;'
+        + 'font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2200);
     } catch(e) { alert('保存に失敗しました: ' + e.message); }
+  };
+
+  // ─────────────────────────────────────────
+  // ページ操作
+  // ─────────────────────────────────────────
+  window.decoGoPage = function(idx) {
+    if (idx < 0 || idx >= decoPages.length) return;
+    commitCurrentPage();          // 現在ページを保存
+    decoCurrentPage = idx;
+    renderPage(idx);              // 次ページを描画
+    updatePageNav();
+    setDrawMode(false);           // 描画モードをリセット
+  };
+
+  window.decoAddPage = function() {
+    if (decoReadOnly) return;
+    commitCurrentPage();          // 現在ページを保存してから
+    decoPages.push({ elements: [], drawing: '' });
+    decoCurrentPage = decoPages.length - 1;
+    renderPage(decoCurrentPage);
+    updatePageNav();
+    // トースト
+    const t = document.createElement('div');
+    t.textContent = `� ページ ${decoCurrentPage + 1} を追加しました`;
+    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);'
+      + 'background:rgba(80,150,220,0.9);color:#fff;padding:7px 20px;border-radius:20px;'
+      + 'font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  };
+
+  window.decoDeletePage = function() {
+    if (decoReadOnly) return;
+    if (decoPages.length <= 1) {
+      alert('最後の1ページは削除できません。');
+      return;
+    }
+    const confirmed = confirm(`ページ ${decoCurrentPage + 1} を削除しますか？\n（この操作は保存するまで元に戻せません）`);
+    if (!confirmed) return;
+    decoPages.splice(decoCurrentPage, 1);
+    decoCurrentPage = Math.min(decoCurrentPage, decoPages.length - 1);
+    renderPage(decoCurrentPage);
+    updatePageNav();
   };
 
   // ─────────────────────────────────────────

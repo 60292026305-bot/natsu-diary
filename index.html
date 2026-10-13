@@ -4381,9 +4381,19 @@
   }
 
   // ステージを decoPages[pageIdx] の内容でリフレッシュ
-  function renderPage(pageIdx) {
+  function renderDecoPage(pageIdx) {
+    // 安全チェック：pageIdx が不正な場合は 0 にフォールバック
+    if (typeof pageIdx !== 'number' || isNaN(pageIdx) || pageIdx < 0 || pageIdx >= decoPages.length) {
+      pageIdx = 0;
+    }
+    if (!Array.isArray(decoPages) || decoPages.length === 0) {
+      decoPages = [{ elements: [], drawing: '' }];
+      pageIdx = 0;
+    }
+
     const stage  = document.getElementById('deco-stage');
     const canvas = document.getElementById('deco-draw-canvas');
+    if (!stage || !canvas) return;
 
     // 既存要素を除去
     Array.from(stage.querySelectorAll('.deco-element')).forEach(el => el.remove());
@@ -4391,7 +4401,7 @@
     decoSelected = null;
 
     const page = decoPages[pageIdx] || { elements: [], drawing: '' };
-    decoElements = JSON.parse(JSON.stringify(page.elements || []));
+    decoElements = JSON.parse(JSON.stringify(Array.isArray(page.elements) ? page.elements : []));
 
     // nextId を要素IDの最大値+1 に合わせる
     decoNextId = decoElements.reduce((m, e) => Math.max(m, (e.id||0)+1), 1);
@@ -4400,7 +4410,7 @@
     decoElements.forEach(el => renderDecoElement(el));
 
     // 手描きを復元
-    if (page.drawing) {
+    if (page.drawing && typeof page.drawing === 'string' && page.drawing.startsWith('data:')) {
       const img = new Image();
       img.onload = () => canvas.getContext('2d').drawImage(img, 0, 0);
       img.src = page.drawing;
@@ -4429,28 +4439,33 @@
       );
       const data = snap.val();
 
-      if (data) {
+      if (data && typeof data === 'object') {
         if (Array.isArray(data.pages) && data.pages.length > 0) {
-          // 新フォーマット（マルチページ）
-          decoPages = data.pages;
+          // 新フォーマット（マルチページ）— 各ページを安全に正規化
+          decoPages = data.pages.map(p => ({
+            elements: Array.isArray(p?.elements) ? p.elements : [],
+            drawing:  (typeof p?.drawing === 'string') ? p.drawing : '',
+          }));
         } else if (data.elements || data.drawing) {
-          // 旧フォーマット → 1ページ目として移行
-          decoPages = [{ elements: data.elements || [], drawing: data.drawing || '' }];
+          // 旧フォーマット → 1ページ目として自動移行
+          decoPages = [{
+            elements: Array.isArray(data.elements) ? data.elements : [],
+            drawing:  (typeof data.drawing === 'string') ? data.drawing : '',
+          }];
         }
+        // 最終ページインデックスを復元（範囲外は 0 に補正）
+        const savedPage = typeof data.currentPage === 'number' ? data.currentPage : 0;
+        decoCurrentPage = Math.max(0, Math.min(savedPage, decoPages.length - 1));
       }
-
-      // ページが空なら空の1ページ目を作成
-      if (decoPages.length === 0) decoPages = [{ elements: [], drawing: '' }];
-
-      // 保存済みページインデックスを復元（オプション）
-      decoCurrentPage = Math.min(data?.currentPage || 0, decoPages.length - 1);
-
     } catch(e) { console.error('deco load error:', e); }
 
-    // ページがなければ最低1ページ保証
-    if (decoPages.length === 0) decoPages = [{ elements: [], drawing: '' }];
+    // 何があっても最低1ページ保証
+    if (!Array.isArray(decoPages) || decoPages.length === 0) {
+      decoPages = [{ elements: [], drawing: '' }];
+      decoCurrentPage = 0;
+    }
 
-    renderPage(decoCurrentPage);
+    renderDecoPage(decoCurrentPage);
     updatePageNav();
   }
 
@@ -4478,10 +4493,10 @@
   // ページ操作
   // ─────────────────────────────────────────
   window.decoGoPage = function(idx) {
-    if (idx < 0 || idx >= decoPages.length) return;
+    const safeIdx = parseInt(idx, 10); if (isNaN(safeIdx) || safeIdx < 0 || safeIdx >= decoPages.length) return; idx = safeIdx;
     commitCurrentPage();          // 現在ページを保存
     decoCurrentPage = idx;
-    renderPage(idx);              // 次ページを描画
+    renderDecoPage(idx);              // 次ページを描画
     updatePageNav();
     setDrawMode(false);           // 描画モードをリセット
   };
@@ -4491,7 +4506,7 @@
     commitCurrentPage();          // 現在ページを保存してから
     decoPages.push({ elements: [], drawing: '' });
     decoCurrentPage = decoPages.length - 1;
-    renderPage(decoCurrentPage);
+    renderDecoPage(decoCurrentPage);
     updatePageNav();
     // トースト
     const t = document.createElement('div');
@@ -4505,15 +4520,15 @@
 
   window.decoDeletePage = function() {
     if (decoReadOnly) return;
-    if (decoPages.length <= 1) {
+    if (!Array.isArray(decoPages) || decoPages.length <= 1) {
       alert('最後の1ページは削除できません。');
       return;
     }
     const confirmed = confirm(`ページ ${decoCurrentPage + 1} を削除しますか？\n（この操作は保存するまで元に戻せません）`);
     if (!confirmed) return;
     decoPages.splice(decoCurrentPage, 1);
-    decoCurrentPage = Math.min(decoCurrentPage, decoPages.length - 1);
-    renderPage(decoCurrentPage);
+    decoCurrentPage = Math.max(0, Math.min(decoCurrentPage, decoPages.length - 1));
+    renderDecoPage(decoCurrentPage);
     updatePageNav();
   };
 

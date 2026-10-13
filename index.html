@@ -1534,31 +1534,29 @@
       .settings-btn  { right: 10px; }
       .mypage-fixed-btn { top: 54px; right: 10px; }
 
-      /* タイトル：1行に収まるフォントサイズ、右余白は固定ボタン分だけ */
+      /* タイトル：1行に収まるフォントサイズ */
       .app-title {
         margin-top: 6px;
-        font-size: 1.3rem;          /* 固定値で確実に1行に収める */
-        letter-spacing: 0.03em;     /* 少し詰めて幅を節約 */
+        font-size: 1.3rem;
+        letter-spacing: 0.03em;
         padding: 0 44px 0 4px;
-        order: 1;
-        white-space: nowrap;        /* 絶対に折り返さない */
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
       .app-subtitle {
         font-size: 0.72rem;
         margin-bottom: 8px;
-        order: 2;
         padding: 0 4px;
       }
 
       /* タブ：横スクロール1行表示 */
       .view-tabs {
-        flex-wrap: nowrap;          /* 折り返し禁止 */
+        flex-wrap: nowrap;
         overflow-x: auto;
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;      /* Firefox */
+        scrollbar-width: none;
         gap: 6px;
         padding: 4px 2px 8px;
         margin-bottom: 16px;
@@ -1566,11 +1564,11 @@
         box-sizing: border-box;
         justify-content: flex-start;
       }
-      .view-tabs::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+      .view-tabs::-webkit-scrollbar { display: none; }
       .tab-btn {
         padding: 7px 14px;
         font-size: 12px;
-        flex-shrink: 0;             /* スクロール時に縮まない */
+        flex-shrink: 0;
         white-space: nowrap;
       }
 
@@ -1612,8 +1610,8 @@
         justify-content: center;
         flex-wrap: wrap;
         gap: 6px;
-        order: 0; /* タイトル（order:1）より前 = 最上部 */
-        width: calc(100% - 56px); /* 右の固定ボタン分除く */
+        /* order不要 — HTMLでタイトルより前に配置済み */
+        width: calc(100% - 56px);
         max-width: calc(100vw - 68px);
         margin: 0 0 8px 0;
         padding: 7px 12px;
@@ -1627,7 +1625,7 @@
         font-size: 12px;
         color: #2c4a7c;
         box-sizing: border-box;
-        align-self: flex-start; /* 左寄せ */
+        align-self: flex-start;
       }
       .auth-bar-mobile img {
         width: 22px; height: 22px; border-radius: 50%;
@@ -2888,10 +2886,7 @@
   </div>
 </div>
 
-<h1 class="app-title" id="app-title-text">🌻 夏休みの思い出アルバム</h1>
-<p class="app-subtitle">みんなで作るデジタルスクラップブック ✂️📷</p>
-
-<!-- スマホ専用ログインバー（480px以下のみ表示） -->
+<!-- スマホ専用ログインバー（480px以下のみ表示）→ タイトルより先に書くことで上に表示 -->
 <div class="auth-bar-mobile" id="auth-bar-mobile">
   <!-- ゲスト -->
   <span id="mob-guest" style="display:flex;align-items:center;gap:6px;">
@@ -2905,6 +2900,9 @@
     <button class="mob-logout-btn" onclick="doLogout()">ログアウト</button>
   </span>
 </div>
+
+<h1 class="app-title" id="app-title-text">🌻 夏休みの思い出アルバム</h1>
+<p class="app-subtitle">みんなで作るデジタルスクラップブック ✂️📷</p>
 
 <!-- モード切り替え -->
 <div class="view-tabs">

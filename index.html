@@ -1539,8 +1539,13 @@
         margin-top: 10px;
         font-size: clamp(1.1rem, 6vw, 1.5rem);
         padding: 0 48px 0 8px; /* 右側に固定ボタン分の余白 */
+        order: 1; /* スマホではauth-bar-mobileの後 */
       }
-      .app-subtitle { font-size: 0.78rem; margin-bottom: 10px; }
+      .app-subtitle {
+        font-size: 0.78rem;
+        margin-bottom: 10px;
+        order: 2;
+      }
 
       /* タブ */
       .view-tabs { gap: 5px; flex-wrap: wrap; justify-content: center; }
@@ -1565,9 +1570,10 @@
         justify-content: center;
         flex-wrap: wrap;
         gap: 6px;
+        order: 0; /* タイトル（order:1）より前 = 最上部 */
         width: calc(100% - 56px); /* 右の固定ボタン分除く */
         max-width: calc(100vw - 68px);
-        margin: 0 0 12px 0;
+        margin: 0 0 8px 0;
         padding: 7px 12px;
         background: rgba(255,255,255,0.72);
         backdrop-filter: blur(10px);

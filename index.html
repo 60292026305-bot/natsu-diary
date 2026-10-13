@@ -1534,22 +1534,45 @@
       .settings-btn  { right: 10px; }
       .mypage-fixed-btn { top: 54px; right: 10px; }
 
-      /* タイトル：固定ボタンに重なるよう上部に余白、右側に余白 */
+      /* タイトル：1行に収まるフォントサイズ、右余白は固定ボタン分だけ */
       .app-title {
-        margin-top: 10px;
-        font-size: clamp(1.1rem, 6vw, 1.5rem);
-        padding: 0 48px 0 8px; /* 右側に固定ボタン分の余白 */
-        order: 1; /* スマホではauth-bar-mobileの後 */
+        margin-top: 6px;
+        font-size: 1.3rem;          /* 固定値で確実に1行に収める */
+        letter-spacing: 0.03em;     /* 少し詰めて幅を節約 */
+        padding: 0 44px 0 4px;
+        order: 1;
+        white-space: nowrap;        /* 絶対に折り返さない */
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .app-subtitle {
-        font-size: 0.78rem;
-        margin-bottom: 10px;
+        font-size: 0.72rem;
+        margin-bottom: 8px;
         order: 2;
+        padding: 0 4px;
       }
 
-      /* タブ */
-      .view-tabs { gap: 5px; flex-wrap: wrap; justify-content: center; }
-      .tab-btn { padding: 7px 12px; font-size: 12px; }
+      /* タブ：横スクロール1行表示 */
+      .view-tabs {
+        flex-wrap: nowrap;          /* 折り返し禁止 */
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;      /* Firefox */
+        gap: 6px;
+        padding: 4px 2px 8px;
+        margin-bottom: 16px;
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: flex-start;
+      }
+      .view-tabs::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+      .tab-btn {
+        padding: 7px 14px;
+        font-size: 12px;
+        flex-shrink: 0;             /* スクロール時に縮まない */
+        white-space: nowrap;
+      }
 
       /* 日記写真 */
       .diary-photo-item img { width: 75px; height: 75px; }
@@ -1557,6 +1580,25 @@
       /* カレンダー */
       .cal-day { min-height: 36px; }
       .cal-day-num { font-size: 10px; }
+    }
+
+    /* タブレット帯（481px〜768px）でもタブが溢れないよう横スクロール対応 */
+    @media (max-width: 768px) and (min-width: 481px) {
+      .view-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 6px;
+      }
+      .view-tabs::-webkit-scrollbar { display: none; }
+      .tab-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+        padding: 8px 18px;
+        font-size: 13px;
+      }
     }
 
     /* ===== スマホ専用インラインログインバー ===== */

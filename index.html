@@ -4165,11 +4165,13 @@
 
     // プロフィール読み込み
     try {
-      const snap = await new Promise((resolve, reject) =>
-        onValue(ref(db, `users/${uid}`), resolve, reject, { onlyOnce: true })
-      );
+      const snap = await new Promise((resolve, reject) => {
+        onValue(ref(db, `users/${uid}`), resolve, (err) => reject(err), { onlyOnce: true });
+      });
       const profile = snap.val() || {};
-      const dispName = profile.displayName || uid.slice(0, 8) + '…';
+      const dispName = profile.displayName
+        || (profile.email ? profile.email.split('@')[0] : '')
+        || `ユーザー(${uid.slice(0, 6)})`;
       const avatarUrl = profile.avatarUrl || '';
 
       // ヘッダー更新
@@ -4191,15 +4193,41 @@
         document.getElementById('mptab-'   + t)?.classList.toggle('active', t === 'posts');
         document.getElementById('mppanel-' + t)?.classList.toggle('active', t === 'posts');
       });
-      // タブ見出しを「◯◯の投稿」に変更
       const postsTab = document.getElementById('mptab-posts');
       if (postsTab) postsTab.textContent = `📖 ${dispName}の投稿`;
       renderOtherUserPosts(uid, theirDiaries);
 
     } catch (err) {
       console.error('他ユーザープロフィール取得エラー:', err);
+
+      // PERMISSION_DENIED の場合は分かりやすいメッセージで案内
+      const isPermission = err?.code === 'PERMISSION_DENIED'
+        || String(err?.message).includes('PERMISSION_DENIED');
+
+      // フォールバック表示（「取得失敗」ではなく匿名ユーザーとして扱う）
       inner.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
-      document.getElementById('mypage-displayname').textContent = '取得失敗';
+      document.getElementById('mypage-displayname').textContent = '匿名ユーザー';
+      document.getElementById('mypage-email').textContent = '';
+      label.textContent = `👁 他のユーザーのページを表示中`;
+
+      // 投稿データは allDiaries から UID で拾えるので統計・投稿一覧はそのまま表示
+      const theirDiaries = allDiaries.filter(d => d.uid === uid);
+      document.getElementById('mypage-total').textContent         = theirDiaries.length;
+      document.getElementById('mypage-public-count').textContent  = theirDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
+      document.getElementById('mypage-friends-count').textContent = theirDiaries.filter(d => d.visibility === 'friends').length;
+      ['posts','scrapbooks','friends','settings'].forEach(t => {
+        document.getElementById('mptab-'   + t)?.classList.toggle('active', t === 'posts');
+        document.getElementById('mppanel-' + t)?.classList.toggle('active', t === 'posts');
+      });
+      renderOtherUserPosts(uid, theirDiaries);
+
+      if (isPermission) {
+        console.warn(
+          '[Firebase] users/$uid の read が拒否されています。\n' +
+          'Firebaseコンソール → Realtime Database → ルール で\n' +
+          '"users": { ".read": "auth != null" } を追加してください。'
+        );
+      }
     }
   };
 
@@ -4379,11 +4407,13 @@
     if (!listEl) return;
     const uid = targetUid || (currentUser ? currentUser.uid : null);
     if (!uid) return;
-    const isOwner = !targetUid && !!currentUser; // 自分のページを見ているか
+    // 正しい本人判定：表示対象UIDとログイン中UIDが完全一致するかを確認
+    // targetUid の有無ではなく、実際のUID比較で確定させる
+    const isOwner = !!(currentUser && currentUser.uid === uid);
     listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">読み込み中…</p>`;
     onValue(ref(db, `scrapbooks/${uid}`), (snap) => {
       const data = snap.val() || {};
-      if (!targetUid && currentUser && uid === currentUser.uid) myScrapbooks = data;
+      if (currentUser && uid === currentUser.uid) myScrapbooks = data;
       const entries = Object.entries(data);
       if (entries.length === 0) {
         listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:12px;color:#aaa;text-align:center;padding:10px 0;">スクラップブックがまだありません</p>`;
@@ -4397,7 +4427,6 @@
         item.style.borderColor = theme.border;
         item.style.background  = theme.bg;
 
-        // バッジ＋情報
         const badge = document.createElement('div');
         badge.className = 'scrapbook-theme-badge';
         badge.textContent = theme.emoji;
@@ -4415,15 +4444,15 @@
         item.appendChild(info);
         item.appendChild(openLabel);
 
-        // 本人のみ削除ボタンを表示
+        // UID完全一致の本人のみ削除ボタンをDOMに追加（他人・未ログインは追加しない）
         if (isOwner) {
           const delBtn = document.createElement('button');
           delBtn.className = 'scrapbook-delete-btn';
           delBtn.title = 'このスクラップブックを削除';
           delBtn.textContent = '🗑️';
           delBtn.onclick = (e) => {
-            e.stopPropagation(); // カード自体のクリック（=開く）を伝播させない
-            deleteScrapbook(sbId, sb.title || '無題');
+            e.stopPropagation();
+            deleteScrapbook(sbId, sb.title || '無題', uid);
           };
           item.appendChild(delBtn);
         }
@@ -4437,21 +4466,28 @@
   // ──────────────────────────────────────────
   // スクラップブック削除
   // ──────────────────────────────────────────
-  window.deleteScrapbook = async function(sbId, title) {
+  window.deleteScrapbook = async function(sbId, title, ownerUid) {
+    // 実行時ガード：未ログイン または 本人以外は拒否
+    if (!currentUser) {
+      alert('削除にはログインが必要です。');
+      return;
+    }
+    // ownerUid が渡された場合はUID一致を検証、渡されない場合は自分のIDと比較
+    const targetOwner = ownerUid || currentUser.uid;
+    if (currentUser.uid !== targetOwner) {
+      alert('このスクラップブックを削除する権限がありません。');
+      return;
+    }
     const confirmed = confirm(
       `「${title}」を削除してもよろしいですか？\n\n` +
       `・スクラップブックのデータ（キャンバス・配置・手描き）が完全に削除されます\n` +
       `・この操作は元に戻せません`
     );
     if (!confirmed) return;
-    if (!currentUser) return;
     try {
-      // scrapbooks/$uid/$sbId を丸ごと削除（canvas含む）
       await remove(ref(db, `scrapbooks/${currentUser.uid}/${sbId}`));
-      // scrapbookItems/$sbId も削除（紐付き投稿リスト）
       await remove(ref(db, `scrapbookItems/${sbId}`));
 
-      // トースト
       const toast = document.createElement('div');
       toast.textContent = '🗑️ スクラップブックを削除しました';
       toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);'
@@ -4460,7 +4496,6 @@
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2400);
 
-      // 一覧を再描画
       renderScrapbooks();
     } catch(e) {
       alert('削除に失敗しました: ' + e.message);
@@ -5537,9 +5572,9 @@
     resultsEl.innerHTML = `<div class="friend-search-empty">🔍 検索中…</div>`;
 
     try {
-      // Firebase /users を取得（エラーコールバック付きで Promise 化）
+      // Firebase /users を取得
       const snap = await new Promise((resolve, reject) => {
-        onValue(ref(db, 'users'), resolve, reject, { onlyOnce: true });
+        onValue(ref(db, 'users'), resolve, (err) => reject(err), { onlyOnce: true });
       });
 
       const data = snap.val();
@@ -5574,9 +5609,18 @@
 
     } catch (error) {
       console.error('検索エラー:', error);
-      const msg = error.code === 'PERMISSION_DENIED'
-        ? '検索権限がありません。Firebaseルールを確認してください。'
+      const isPermission = error?.code === 'PERMISSION_DENIED'
+        || String(error?.message).includes('PERMISSION_DENIED');
+      const msg = isPermission
+        ? '検索権限がありません。Firebaseのルールで users の read を許可してください。'
         : `検索に失敗しました: ${error.message || error}`;
+      if (isPermission) {
+        console.warn(
+          '[Firebase] users の read が拒否されています。\n' +
+          'Firebaseコンソール → Realtime Database → ルールで\n' +
+          '"users": { ".read": "auth != null" } を設定してください。'
+        );
+      }
       resultsEl.innerHTML = `<div class="friend-search-empty">${msg}</div>`;
       lastSearchResults = [];
     }

@@ -4868,12 +4868,28 @@
       const count = Object.keys(sb.items || {}).length;
       const el = document.createElement('div');
       el.className = 'board-binder';
+      el.setAttribute('draggable', 'true');
+      el.dataset.sbId = sbId;
       el.innerHTML = `
         <div class="board-binder-icon">📂</div>
         <div class="board-binder-title">${escapeHtml(sb.title||'まとめ')}</div>
         <div class="board-binder-count">${count}件</div>
       `;
       el.onclick = () => openBoardBinder(sbId, sb);
+      // ドラッグ開始
+      el.addEventListener('dragstart', (e) => {
+        dragTargetSbId   = sbId;
+        dragTargetType   = 'binder';
+        dragTargetPostId = null;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', `binder:${sbId}`);
+        el.style.opacity = '0.5';
+      });
+      el.addEventListener('dragend', () => {
+        el.style.opacity = '';
+        const trashBtn = document.getElementById('trashBinBtn');
+        if (trashBtn) trashBtn.classList.remove('active');
+      });
       grid.appendChild(el);
     });
   }
@@ -4969,15 +4985,18 @@
 
   const DELETED_REF    = ref(db, 'guestBoard/deleted');
   let trashMode        = false;
-  let trashPwCallback  = null; // パスワード確認後に実行するコールバック
-  let dragTargetPostId = null; // D&D中のpostId
+  let trashPwCallback  = null;
+  let dragTargetPostId = null; // D&D中のpostId（メモ用）
+  let dragTargetSbId   = null; // D&D中のsbId（バインダー用）
+  let dragTargetType   = null; // 'memo' or 'binder'
 
   // ----- パスワードダイアログ -----
-  function openTrashWithPw(mode, postId) {
+  function openTrashWithPw(mode, id) {
     trashPwCallback = () => {
       closeBoardPw();
-      if (mode === 'view') openBoardTrashModal();
-      else if (mode === 'delete' && postId) softDeletePost(postId);
+      if (mode === 'view')          openBoardTrashModal();
+      else if (mode === 'delete')   softDeletePost(id);
+      else if (mode === 'delete-binder') softDeleteBinder(id);
     };
     document.getElementById('board-pw-input').value = '';
     document.getElementById('board-pw-error').textContent = '';
@@ -5009,13 +5028,14 @@
     el.setAttribute('draggable', 'true');
     el.addEventListener('dragstart', (e) => {
       dragTargetPostId = postId;
+      dragTargetSbId   = null;
+      dragTargetType   = 'memo';
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', postId);
+      e.dataTransfer.setData('text/plain', `memo:${postId}`);
       el.style.opacity = '0.5';
     });
     el.addEventListener('dragend', () => {
       el.style.opacity = '';
-      // ゴミ箱ボタンのハイライトを解除
       const trashBtn = document.getElementById('trashBinBtn');
       if (trashBtn) trashBtn.classList.remove('active');
     });
@@ -5024,14 +5044,26 @@
   window.onDropToTrash = function(e) {
     e.preventDefault();
     e.stopPropagation();
-    // ゴミ箱ボタンのハイライトを解除
     const trashBtn = document.getElementById('trashBinBtn');
     if (trashBtn) trashBtn.classList.remove('active');
-    // dataTransfer または状態変数からpostIdを取得
-    const postId = (e.dataTransfer && e.dataTransfer.getData('text/plain')) || dragTargetPostId;
-    if (!postId) return;
-    dragTargetPostId = postId;
-    openTrashWithPw('delete', postId);
+
+    // dataTransfer からtype:id形式で取得
+    const raw = (e.dataTransfer && e.dataTransfer.getData('text/plain')) || '';
+    if (raw.startsWith('binder:')) {
+      // バインダーをゴミ箱へ
+      const sbId = raw.slice('binder:'.length) || dragTargetSbId;
+      if (!sbId) return;
+      dragTargetSbId = sbId;
+      dragTargetType = 'binder';
+      openTrashWithPw('delete-binder', sbId);
+    } else {
+      // メモをゴミ箱へ
+      const postId = raw.startsWith('memo:') ? raw.slice('memo:'.length) : (raw || dragTargetPostId);
+      if (!postId) return;
+      dragTargetPostId = postId;
+      dragTargetType   = 'memo';
+      openTrashWithPw('delete', postId);
+    }
   };
 
   // ----- 論理削除（isDeleted: true）-----
@@ -5063,6 +5095,28 @@
       alert('削除に失敗しました: ' + e.message);
     } finally {
       dragTargetPostId = null;
+    }
+  }
+
+  // ----- バインダーごと削除 -----
+  async function softDeleteBinder(sbId) {
+    try {
+      // guestBoard/summaries/$sbId を削除
+      await remove(ref(db, `guestBoard/summaries/${sbId}`));
+      // ボード上のバインダー要素を即時消す
+      const el = document.querySelector(`.board-binder[data-sb-id="${sbId}"]`);
+      if (el) el.remove();
+      // フィードバック
+      const fb = document.createElement('div');
+      fb.textContent = 'まとめをゴミ箱に移動しました';
+      fb.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(200,50,50,0.88);color:#fff;padding:8px 20px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(fb);
+      setTimeout(() => fb.remove(), 2200);
+    } catch(e) {
+      alert('まとめの削除に失敗しました: ' + e.message);
+    } finally {
+      dragTargetSbId = null;
+      dragTargetType = null;
     }
   }
 

@@ -2714,6 +2714,10 @@
         <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
       </svg>
       <h3>ゴミ箱（削除済みメモ）</h3>
+      <button id="board-trash-empty-btn" onclick="emptyTrashWithPw()"
+              style="padding:4px 12px;background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.5);border-radius:16px;font-family:'Yomogi',cursive;font-size:11px;cursor:pointer;white-space:nowrap;transition:background 0.2s;"
+              onmouseover="this.style.background='rgba(255,255,255,0.4)'"
+              onmouseout="this.style.background='rgba(255,255,255,0.2)'">🗑 完全削除</button>
       <span class="board-trash-header-close" onclick="closeBoardTrashModal()">✕</span>
     </div>
     <div class="board-trash-list" id="board-trash-list"></div>
@@ -5047,22 +5051,15 @@
     const trashBtn = document.getElementById('trashBinBtn');
     if (trashBtn) trashBtn.classList.remove('active');
 
-    // dataTransfer からtype:id形式で取得
     const raw = (e.dataTransfer && e.dataTransfer.getData('text/plain')) || '';
     if (raw.startsWith('binder:')) {
-      // バインダーをゴミ箱へ
       const sbId = raw.slice('binder:'.length) || dragTargetSbId;
       if (!sbId) return;
-      dragTargetSbId = sbId;
-      dragTargetType = 'binder';
-      openTrashWithPw('delete-binder', sbId);
+      softDeleteBinder(sbId); // パスワードなしで即ゴミ箱へ
     } else {
-      // メモをゴミ箱へ
       const postId = raw.startsWith('memo:') ? raw.slice('memo:'.length) : (raw || dragTargetPostId);
       if (!postId) return;
-      dragTargetPostId = postId;
-      dragTargetType   = 'memo';
-      openTrashWithPw('delete', postId);
+      softDeletePost(postId); // パスワードなしで即ゴミ箱へ
     }
   };
 
@@ -5156,6 +5153,42 @@
   window.closeBoardTrashModal = function() {
     document.getElementById('board-trash-overlay').classList.remove('open');
   };
+
+  // ゴミ箱を空にする（パスワード保護）
+  window.emptyTrashWithPw = function() {
+    trashPwCallback = async () => {
+      closeBoardPw();
+      await permanentlyEmptyTrash();
+    };
+    document.getElementById('board-pw-input').value = '';
+    document.getElementById('board-pw-error').textContent = '';
+    document.getElementById('board-pw-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('board-pw-input').focus(), 100);
+  };
+
+  async function permanentlyEmptyTrash() {
+    try {
+      const snap = await new Promise((res, rej) =>
+        onValue(DELETED_REF, res, rej, { onlyOnce: true })
+      );
+      const data = snap.val() || {};
+      const keys = Object.keys(data);
+      if (keys.length === 0) {
+        alert('ゴミ箱はすでに空です');
+        return;
+      }
+      // 全件削除
+      await Promise.all(keys.map(k => remove(ref(db, `guestBoard/deleted/${k}`))));
+      openBoardTrashModal(); // 一覧を再描画
+      const fb = document.createElement('div');
+      fb.textContent = `🗑 ゴミ箱を空にしました（${keys.length}件削除）`;
+      fb.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(200,50,50,0.9);color:#fff;padding:9px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(fb);
+      setTimeout(() => fb.remove(), 2500);
+    } catch(e) {
+      alert('完全削除に失敗しました: ' + e.message);
+    }
+  }
 
   window.restorePost = async function(postId) {
     try {

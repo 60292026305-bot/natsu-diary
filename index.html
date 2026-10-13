@@ -859,7 +859,7 @@
       outline-offset: 3px;
       box-shadow: 0 0 0 6px rgba(85,136,221,0.3), 3px 4px 10px rgba(0,0,0,0.18);
     }
-    /* 通常メモの画鋲（ホバー時に薄く表示、固定済みは非表示） */
+    /* 通常メモの画鋲：常に opacity:1 でハッキリ表示 */
     .board-memo::before {
       content: '📌';
       position: absolute;
@@ -867,18 +867,14 @@
       transform: translateX(-50%);
       font-size: 20px;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
-      opacity: 0.35;
-      transition: opacity 0.15s;
-    }
-    .board-memo:hover::before {
-      opacity: 0.85;
+      opacity: 1;
     }
     /* 固定済みメモは画鋲非表示 */
     .board-memo.pinned::before {
       display: none;
     }
 
-    /* ピン留めボタン（ホバー時に右上に出現） */
+    /* ピン留めボタン：通常は非表示、ホバー時のみ opacity:1 でハッキリ表示 */
     .board-memo .pin-btn {
       position: absolute;
       top: 5px; right: 6px;
@@ -889,20 +885,17 @@
       line-height: 1;
       z-index: 5;
       user-select: none;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.7);
       border-radius: 50%;
       padding: 2px 3px;
     }
-    .board-memo:hover .pin-btn {
+    .board-memo:hover .pin-btn,
+    .board-memo.selected .pin-btn {
       opacity: 1;
-    }
-    .board-memo.pinned .pin-btn {
-      opacity: 0.75; /* 固定済みは常時うっすら表示 */
     }
     .board-memo .pin-btn:hover {
       transform: scale(1.2);
-      opacity: 1 !important;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.95);
     }
 
     /* ===== 固定メモ：マスキングテープ4角デザイン ===== */

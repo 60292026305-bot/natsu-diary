@@ -955,6 +955,13 @@
       padding: 14px 16px 20px;
       display: flex; flex-wrap: wrap; gap: 14px; align-content: flex-start;
     }
+    .board-binder-modal-footer {
+      padding: 10px 16px 14px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
     .board-binder-memo-card {
       width: 140px; min-height: 120px;
       padding: 10px 10px 22px;
@@ -2683,6 +2690,7 @@
       <span class="board-binder-modal-close" onclick="closeBoardBinder()">✕</span>
     </div>
     <div class="board-binder-modal-body" id="board-binder-modal-body"></div>
+    <div class="board-binder-modal-footer" id="board-binder-modal-footer"></div>
   </div>
 </div>
 
@@ -4831,31 +4839,43 @@
   let boardInitialized = false;
   let summaryMode      = false;
   let selectedMemos    = new Set();
+  let groupedPostIds   = new Set(); // どのバインダーにも属しているpostId一覧
+  let allSummariesData = {};        // summariesの全データキャッシュ
 
   function initBoard() {
     if (boardInitialized) return;
     boardInitialized = true;
+
+    // まとめ（バインダー）を先に監視 → groupedPostIds を確定させてからメモを描画
+    onValue(ref(db, 'guestBoard/summaries'), (snap) => {
+      allSummariesData = snap.val() || {};
+      // グループ済みpostIdを再計算
+      groupedPostIds = new Set();
+      Object.values(allSummariesData).forEach(sb => {
+        Object.keys(sb.items || {}).forEach(pid => groupedPostIds.add(pid));
+      });
+      renderBinders(allSummariesData);
+      // メモの描画も更新（フィルタリングのため）
+      onValue(BOARD_REF, (snap2) => {
+        renderBoardGrid(snap2.val() || {});
+      }, { onlyOnce: true });
+    });
+
     // 投稿のリアルタイム監視
     onValue(BOARD_REF, (snap) => {
-      const data = snap.val() || {};
-      renderBoardGrid(data);
-    });
-    // まとめ（バインダー）のリアルタイム監視
-    onValue(ref(db, 'guestBoard/summaries'), (snap) => {
-      const data = snap.val() || {};
-      renderBinders(data);
+      renderBoardGrid(snap.val() || {});
     });
   }
 
   function renderBoardGrid(data) {
     const grid = document.getElementById('board-grid');
     if (!grid) return;
-    // メモ（.board-memo）だけを再描画（バインダーは残す）
     grid.querySelectorAll('.board-memo').forEach(el => el.remove());
     const entries = Object.entries(data).sort((a, b) => (a[1].createdAt||0) - (b[1].createdAt||0));
-    // バインダーの前にメモを挿入（バインダーは末尾）
     const firstBinder = grid.querySelector('.board-binder');
     entries.forEach(([postId, post]) => {
+      // バインダーに属しているメモはボード上に表示しない
+      if (groupedPostIds.has(postId)) return;
       const el = createMemoEl(postId, post);
       enableMemoDrag(el, postId);
       if (firstBinder) grid.insertBefore(el, firstBinder);
@@ -5253,7 +5273,11 @@
   };
 
   // ===== バインダー詳細 =====
+  // 現在開いているバインダーのIDを保持（解除ボタン用）
+  let currentOpenBinderId = null;
+
   window.openBoardBinder = function(sbId, sb) {
+    currentOpenBinderId = sbId;
     document.getElementById('board-binder-modal-title').textContent = sb.title || 'まとめ';
     const body = document.getElementById('board-binder-modal-body');
     body.innerHTML = '';
@@ -5261,7 +5285,6 @@
     if (postIds.length === 0) {
       body.innerHTML = '<p style="font-family:Yomogi,cursive;color:#aaa;padding:20px;text-align:center;">メモがありません</p>';
     } else {
-      // allDiaries風にFirebaseから取得するか、BOARD_REFから拾う
       onValue(BOARD_REF, (snap) => {
         const allPosts = snap.val() || {};
         body.innerHTML = '';
@@ -5281,11 +5304,45 @@
         });
       }, { onlyOnce: true });
     }
+
+    // 「まとめを解除」ボタンをフッターに設置
+    const footer = document.getElementById('board-binder-modal-footer');
+    if (footer) {
+      footer.innerHTML = `
+        <button onclick="dissolveBinderGroup('${sbId}')"
+          style="font-family:Yomogi,cursive;font-size:13px;padding:6px 16px;
+                 background:rgba(239,83,80,0.15);color:#e53935;border:1.5px solid #e53935;
+                 border-radius:20px;cursor:pointer;margin-right:8px;">
+          📂 まとめを解除
+        </button>`;
+    }
+
     document.getElementById('board-binder-overlay').classList.add('open');
   };
 
   window.closeBoardBinder = function() {
     document.getElementById('board-binder-overlay').classList.remove('open');
+    currentOpenBinderId = null;
+  };
+
+  // まとめを解除 — バインダー定義だけ削除、メモ本体はそのまま残す
+  window.dissolveBinderGroup = async function(sbId) {
+    if (!sbId) return;
+    if (!confirm('このまとめを解除しますか？\nメモは掲示板に戻ります（削除されません）。')) return;
+    try {
+      await remove(ref(db, `guestBoard/summaries/${sbId}`));
+      closeBoardBinder();
+      // groupedPostIds は onValue リスナーが自動更新 → renderBoardGrid が再実行される
+      const toast = document.createElement('div');
+      toast.textContent = 'まとめを解除しました 📂';
+      toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);'
+        + 'background:rgba(0,140,160,0.88);color:#fff;padding:8px 22px;border-radius:20px;'
+        + 'font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2400);
+    } catch(e) {
+      alert('解除に失敗しました: ' + e.message);
+    }
   };
 
   // まとめるボタン（通常モード → 選択モード / 選択モード → 確定）

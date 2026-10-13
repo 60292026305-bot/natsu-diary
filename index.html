@@ -859,6 +859,7 @@
       outline-offset: 3px;
       box-shadow: 0 0 0 6px rgba(85,136,221,0.3), 3px 4px 10px rgba(0,0,0,0.18);
     }
+    /* 通常メモの画鋲（ホバー時に薄く表示、固定済みは非表示） */
     .board-memo::before {
       content: '📌';
       position: absolute;
@@ -866,6 +867,109 @@
       transform: translateX(-50%);
       font-size: 20px;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+      opacity: 0.35;
+      transition: opacity 0.15s;
+    }
+    .board-memo:hover::before {
+      opacity: 0.85;
+    }
+    /* 固定済みメモは画鋲非表示 */
+    .board-memo.pinned::before {
+      display: none;
+    }
+
+    /* ピン留めボタン（ホバー時に右上に出現） */
+    .board-memo .pin-btn {
+      position: absolute;
+      top: 5px; right: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.15s;
+      line-height: 1;
+      z-index: 5;
+      user-select: none;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      padding: 2px 3px;
+    }
+    .board-memo:hover .pin-btn {
+      opacity: 1;
+    }
+    .board-memo.pinned .pin-btn {
+      opacity: 0.75; /* 固定済みは常時うっすら表示 */
+    }
+    .board-memo .pin-btn:hover {
+      transform: scale(1.2);
+      opacity: 1 !important;
+      background: rgba(255,255,255,0.9);
+    }
+
+    /* ===== 固定メモ：マスキングテープ4角デザイン ===== */
+    .board-memo.pinned {
+      z-index: 3;
+      box-shadow: 4px 5px 14px rgba(0,0,0,0.28), 0 0 0 2px rgba(255,200,50,0.25);
+    }
+    /* 共通テープ疑似要素の基底（::before は上書き済みなので ::after を流用） */
+    .board-memo.pinned::after {
+      content: none; /* 疑似要素は使わずspan要素でテープを生成 */
+    }
+    /* テープ span 共通 */
+    .board-memo .tape {
+      position: absolute;
+      width: 48px; height: 16px;
+      opacity: 0.82;
+      border-radius: 2px;
+      z-index: 4;
+      pointer-events: none;
+    }
+    /* 左上 */
+    .board-memo .tape-tl {
+      top: -5px; left: -8px;
+      transform: rotate(-38deg);
+      transform-origin: center center;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,200,120,0.6) 0px, rgba(255,220,160,0.85) 6px,
+        rgba(255,240,190,0.55) 6px, rgba(255,220,160,0.85) 12px
+      );
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    /* 右上 */
+    .board-memo .tape-tr {
+      top: -5px; right: -8px;
+      transform: rotate(38deg);
+      transform-origin: center center;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(180,230,200,0.6) 0px, rgba(160,220,185,0.85) 6px,
+        rgba(200,240,215,0.55) 6px, rgba(160,220,185,0.85) 12px
+      );
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    /* 左下 */
+    .board-memo .tape-bl {
+      bottom: -5px; left: -8px;
+      transform: rotate(38deg);
+      transform-origin: center center;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(200,185,240,0.6) 0px, rgba(185,170,235,0.85) 6px,
+        rgba(220,210,245,0.55) 6px, rgba(185,170,235,0.85) 12px
+      );
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    /* 右下 */
+    .board-memo .tape-br {
+      bottom: -5px; right: -8px;
+      transform: rotate(-38deg);
+      transform-origin: center center;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,185,195,0.6) 0px, rgba(250,170,185,0.85) 6px,
+        rgba(255,210,215,0.55) 6px, rgba(250,170,185,0.85) 12px
+      );
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
     .board-memo-date {
       position: absolute;
@@ -2979,7 +3083,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getDatabase, ref, push, remove, set, onValue, query, orderByChild }
+  import { getDatabase, ref, push, remove, set, update, onValue, query, orderByChild }
     from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
   import {
     getAuth, onAuthStateChanged,
@@ -4871,10 +4975,17 @@
     const grid = document.getElementById('board-grid');
     if (!grid) return;
     grid.querySelectorAll('.board-memo').forEach(el => el.remove());
-    const entries = Object.entries(data).sort((a, b) => (a[1].createdAt||0) - (b[1].createdAt||0));
+
+    // pinned を先頭、その中でも createdAt 昇順。通常メモも createdAt 昇順
+    const entries = Object.entries(data).sort((a, b) => {
+      const pa = a[1].pinned ? 1 : 0;
+      const pb = b[1].pinned ? 1 : 0;
+      if (pb !== pa) return pb - pa; // pinned 優先
+      return (a[1].createdAt||0) - (b[1].createdAt||0);
+    });
+
     const firstBinder = grid.querySelector('.board-binder');
     entries.forEach(([postId, post]) => {
-      // バインダーに属しているメモはボード上に表示しない
       if (groupedPostIds.has(postId)) return;
       const el = createMemoEl(postId, post);
       enableMemoDrag(el, postId);
@@ -4918,18 +5029,55 @@
     });
   }
 
+  // ===== ピン留めトグル =====
+  window.togglePin = async function(postId, currentlyPinned, event) {
+    event.stopPropagation();
+    const newVal = !currentlyPinned;
+    try {
+      await update(ref(db, `guestBoard/posts/${postId}`), { pinned: newVal });
+      const toast = document.createElement('div');
+      toast.textContent = newVal ? '📌 固定しました' : '固定を解除しました';
+      toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);'
+        + 'background:rgba(30,50,80,0.85);color:#fff;padding:7px 20px;border-radius:20px;'
+        + 'font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    } catch(e) {
+      alert('固定の更新に失敗しました: ' + e.message);
+    }
+  };
+
   function createMemoEl(postId, post) {
     const el = document.createElement('div');
     const colorClass = MEMO_COLORS[post.color] || 'memo-yellow';
-    el.className = `board-memo ${colorClass}`;
+    const isPinned = !!post.pinned;
+    el.className = `board-memo ${colorClass}${isPinned ? ' pinned' : ''}`;
     el.dataset.postId = postId;
-    // 投稿ごとに固定の微小角度
-    const angle = parseFloat(stableAngle(postId));
+    el.dataset.pinned = isPinned ? '1' : '0';
+    // 投稿ごとに固定の微小角度（ピン留め中は傾けない）
+    const angle = isPinned ? 0 : parseFloat(stableAngle(postId));
     el.style.transform = `rotate(${angle}deg)`;
     const date = post.createdAt
       ? new Date(post.createdAt).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
       : '';
-    el.innerHTML = `${escapeHtml(post.content||'')}<span class="board-memo-date">${date}</span>`;
+
+    // マスキングテープ（固定時のみ）
+    const tapes = isPinned
+      ? `<span class="tape tape-tl"></span>
+         <span class="tape tape-tr"></span>
+         <span class="tape tape-bl"></span>
+         <span class="tape tape-br"></span>`
+      : '';
+
+    // ピンボタン（固定済みなら「解除」アイコン、通常なら「固定」アイコン）
+    const pinIcon = isPinned ? '📍' : '📌';
+    const pinTitle = isPinned ? '固定を解除' : 'このメモを固定';
+
+    el.innerHTML = `${tapes}${escapeHtml(post.content||'')}
+      <span class="board-memo-date">${date}</span>
+      <span class="pin-btn" title="${pinTitle}"
+        onclick="togglePin('${postId}', ${isPinned}, event)">${pinIcon}</span>`;
+
     el.addEventListener('click', () => {
       if (!summaryMode && !trashMode) return;
       if (selectedMemos.has(postId)) {

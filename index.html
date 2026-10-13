@@ -2419,14 +2419,162 @@
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
 
-    /* 読み取り専用モード（他ユーザー閲覧時） */
-    .deco-canvas-overlay.readonly .deco-sidebar { display: none; }
-    .deco-canvas-overlay.readonly .deco-topbar-btn.deco-save-btn { display: none; }
-    .deco-canvas-overlay.readonly .deco-stage { cursor: default; }
-    .deco-canvas-overlay.readonly .deco-element { cursor: default; pointer-events: none; }
-    .deco-canvas-overlay.readonly .deco-page-nav { pointer-events: none; }
-    .deco-canvas-overlay.readonly .deco-page-add-btn,
-    .deco-canvas-overlay.readonly .deco-page-del-btn { display: none; }
+    /* ===== 閲覧モード（viewing） / 編集モード（editing）===== */
+    /* デフォルトは viewing（サイドバー非表示・操作不可） */
+    .deco-canvas-overlay:not(.editing) .deco-sidebar { display: none; }
+    .deco-canvas-overlay:not(.editing) .deco-topbar-btn.deco-save-btn { display: none; }
+    .deco-canvas-overlay:not(.editing) .deco-stage { cursor: default; }
+    .deco-canvas-overlay:not(.editing) .deco-element { cursor: default; pointer-events: none; }
+    .deco-canvas-overlay:not(.editing) .deco-page-nav { pointer-events: none; }
+    .deco-canvas-overlay:not(.editing) .deco-page-add-btn,
+    .deco-canvas-overlay:not(.editing) .deco-page-del-btn { display: none; }
+    .deco-canvas-overlay:not(.editing) .deco-sidebar-toggle-btn { display: none; }
+    /* 閲覧時：編集ボタンを表示（本人のみJS側でrendering） */
+    .deco-edit-mode-btn {
+      padding: 5px 14px; border-radius: 16px; border: none;
+      font-family: 'Yomogi', cursive; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+      background: linear-gradient(135deg,#ffd43b,#ff9f43);
+      color: #3a2000;
+    }
+    .deco-edit-mode-btn:hover { opacity: 0.88; transform: scale(1.04); }
+
+    /* 後方互換: readonly クラスも同様に扱う */
+    .deco-canvas-overlay.readonly .deco-edit-mode-btn { display: none; }
+
+    /* ===== スマホ：ドロワー型サイドバー ===== */
+    @media (max-width: 700px) {
+      /* サイドバーをフルスクリーン底面からスライドアップするドロワーに */
+      .deco-main { position: relative; }
+      .deco-sidebar {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        width: 100% !important;
+        max-height: 55vh;
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.15);
+        border-radius: 18px 18px 0 0;
+        z-index: 20;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        overflow-y: auto;
+      }
+      .deco-sidebar.open {
+        transform: translateY(0);
+      }
+      /* ドロワーハンドル（引き出しつまみ） */
+      .deco-sidebar::before {
+        content: '';
+        display: block;
+        width: 40px; height: 4px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 2px;
+        margin: 8px auto 4px;
+      }
+      /* キャンバスエリアは常にフル幅 */
+      .deco-canvas-area {
+        padding: 10px 4px;
+      }
+      /* ドロワー開閉ボタン（キャンバス右下に固定） */
+      .deco-sidebar-toggle-btn {
+        display: flex !important;
+        position: absolute;
+        bottom: 12px; right: 12px;
+        width: 44px; height: 44px;
+        border-radius: 50%; border: none;
+        background: linear-gradient(135deg,#ff6b9d,#c44dff);
+        color: #fff; font-size: 20px;
+        align-items: center; justify-content: center;
+        cursor: pointer; z-index: 25;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        transition: all 0.2s;
+      }
+      .deco-sidebar-toggle-btn:hover { transform: scale(1.1); }
+      /* ステージの下にドロワーが重ならないよう余白 */
+      .deco-stage { margin-bottom: 60px; }
+      /* トップバーをコンパクトに */
+      .deco-topbar { padding: 6px 8px; gap: 5px; }
+      .deco-topbar-title { font-size: 12px; }
+      .deco-topbar-btn { padding: 4px 9px; font-size: 11px; }
+    }
+
+    /* ===== 思い出選択モーダル ===== */
+    .deco-diary-picker-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 900;
+      align-items: flex-end; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .deco-diary-picker-overlay.open { display: flex; }
+    .deco-diary-picker {
+      background: #1e1e30;
+      border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 600px;
+      max-height: 80vh;
+      display: flex; flex-direction: column;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      animation: slideUp 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .deco-diary-picker-header {
+      display: flex; align-items: center; padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+    }
+    .deco-diary-picker-title {
+      font-family: 'Yomogi', cursive; font-size: 14px;
+      color: #fff; flex: 1;
+    }
+    .deco-diary-picker-close {
+      width: 28px; height: 28px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.1); color: #ccc;
+      font-size: 14px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .deco-diary-picker-body {
+      flex: 1; overflow-y: auto; padding: 10px 12px 20px;
+    }
+    .deco-diary-picker-item {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 10px 12px;
+      margin-bottom: 8px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .deco-diary-picker-item:hover { background: rgba(255,255,255,0.12); }
+    .deco-diary-picker-item-date {
+      font-family: 'Yomogi', cursive; font-size: 10px;
+      color: rgba(255,255,255,0.45); margin-bottom: 4px;
+    }
+    .deco-diary-picker-item-text {
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: rgba(255,255,255,0.8); line-height: 1.5;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 6px;
+    }
+    .deco-diary-picker-photos {
+      display: flex; gap: 5px; flex-wrap: wrap;
+    }
+    .deco-diary-picker-photos img {
+      width: 50px; height: 50px; object-fit: cover;
+      border-radius: 6px; cursor: pointer;
+      border: 1.5px solid transparent; transition: all 0.15s;
+    }
+    .deco-diary-picker-photos img:hover { border-color: #ffd4a0; transform: scale(1.06); }
+    .deco-diary-picker-add-text {
+      padding: 3px 9px; border-radius: 10px; border: none;
+      font-family: 'Yomogi', cursive; font-size: 10px;
+      background: rgba(100,180,255,0.25); color: #aadcff;
+      border: 1px solid rgba(100,180,255,0.4);
+      cursor: pointer; margin-bottom: 5px; transition: all 0.15s;
+    }
+    .deco-diary-picker-add-text:hover { background: rgba(100,180,255,0.45); }
+    .deco-diary-picker-empty {
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: rgba(255,255,255,0.3); text-align: center; padding: 30px 0;
+    }
 
     /* ===== ページナビゲーター ===== */
     .deco-page-nav {
@@ -3315,6 +3463,8 @@
   <!-- トップバー -->
   <div class="deco-topbar">
     <span class="deco-topbar-title" id="deco-sb-title">スクラップブック</span>
+    <!-- 閲覧時のみ表示（JS側でオーナーのみ挿入） -->
+    <button class="deco-edit-mode-btn" id="deco-edit-mode-btn" onclick="enterDecoEditMode()" style="display:none;">✂️ 編集する</button>
     <button class="deco-topbar-btn deco-save-btn" onclick="saveDecoCanvas()">💾 保存</button>
     <button class="deco-topbar-btn deco-close-btn" onclick="closeDecoCanvas()">✕ 閉じる</button>
   </div>
@@ -3323,10 +3473,14 @@
   <div class="deco-main">
 
     <!-- ===== サイドバー ===== -->
-    <div class="deco-sidebar">
+    <div class="deco-sidebar" id="deco-sidebar">
+      <!-- スマホ用ドロワー：サイドバー内閉じるボタン -->
+      <button class="deco-sidebar-close-inner" onclick="toggleDecoSidebar(false)"
+        style="display:none;position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:18px;cursor:pointer;z-index:30;">✕</button>
+
       <!-- タブ -->
       <div class="deco-sidebar-tabs">
-        <button class="deco-sidebar-tab active" id="deco-tab-materials" onclick="switchDecoTab('materials')">🖼️<br>素材</button>
+        <button class="deco-sidebar-tab active" id="deco-tab-materials" onclick="switchDecoTab('materials')">🖼️<br>思い出</button>
         <button class="deco-sidebar-tab"        id="deco-tab-stickers"  onclick="switchDecoTab('stickers')" >✨<br>スタンプ</button>
         <button class="deco-sidebar-tab"        id="deco-tab-pen"       onclick="switchDecoTab('pen')"       >✏️<br>お絵かき</button>
       </div>
@@ -3334,7 +3488,15 @@
       <!-- 素材パネル -->
       <div class="deco-sidebar-panel active" id="deco-panel-materials">
         <div class="deco-material-section">
-          <div class="deco-material-section-title">スクラップした投稿</div>
+          <div class="deco-material-section-title">思い出を追加</div>
+          <!-- 「思い出を選ぶ」ボタン → モーダルを開く -->
+          <button onclick="openDecoDiaryPicker()"
+            style="width:100%;padding:8px;border-radius:10px;border:1.5px dashed rgba(255,180,100,0.5);
+                   background:rgba(255,180,100,0.1);color:#ffd4a0;font-family:'Yomogi',cursive;
+                   font-size:11px;cursor:pointer;margin-bottom:10px;transition:background 0.15s;">
+            📖 思い出を選んで貼る
+          </button>
+          <div class="deco-material-section-title" style="margin-top:8px;">最近追加したもの</div>
           <div id="deco-post-list">
             <p style="font-family:'Yomogi',cursive;font-size:11px;color:rgba(255,255,255,0.35);text-align:center;padding:12px 0;">投稿を読み込み中…</p>
           </div>
@@ -3356,7 +3518,6 @@
 
       <!-- ペンパネル -->
       <div class="deco-sidebar-panel" id="deco-panel-pen">
-        <!-- 描画モード切替 -->
         <button class="deco-draw-toggle off" id="deco-draw-toggle" onclick="toggleDrawMode()">✏️ お絵かきモード OFF</button>
 
         <div class="deco-pen-section">
@@ -3395,11 +3556,13 @@
     </div><!-- /sidebar -->
 
     <!-- ===== キャンバスエリア ===== -->
-    <div class="deco-canvas-area" id="deco-canvas-area">
+    <div class="deco-canvas-area" id="deco-canvas-area" style="position:relative;">
+      <!-- スマホ：ドロワー開閉ボタン（編集モード時のみJS側で表示） -->
+      <button class="deco-sidebar-toggle-btn" id="deco-sidebar-toggle-btn"
+              onclick="toggleDecoSidebar()" title="ツールを開く" style="display:none;">🎨</button>
+
       <div class="deco-stage" id="deco-stage">
-        <!-- 手描きレイヤー（最前面） -->
         <canvas class="deco-draw-canvas" id="deco-draw-canvas" width="700" height="500"></canvas>
-        <!-- 配置要素はJSで動的に挿入 -->
       </div>
     </div>
 
@@ -3414,6 +3577,19 @@
     <button class="deco-page-del-btn" id="deco-page-del" onclick="decoDeletePage()" title="このページを削除">🗑</button>
   </div>
 </div><!-- /deco-canvas-overlay -->
+
+<!-- ===== 思い出選択モーダル ===== -->
+<div class="deco-diary-picker-overlay" id="deco-diary-picker-overlay" onclick="closeDecoDiaryPicker()">
+  <div class="deco-diary-picker" onclick="event.stopPropagation()">
+    <div class="deco-diary-picker-header">
+      <span class="deco-diary-picker-title">📖 思い出を選んで台紙に貼る</span>
+      <button class="deco-diary-picker-close" onclick="closeDecoDiaryPicker()">✕</button>
+    </div>
+    <div class="deco-diary-picker-body" id="deco-diary-picker-body">
+      <p class="deco-diary-picker-empty">読み込み中…</p>
+    </div>
+  </div>
+</div>
 
 <!-- スクラップブック選択ポップアップ -->
 <div class="scrapbook-picker-overlay" id="scrapbook-picker-overlay" onclick="closeScrapbookPicker()">
@@ -4326,7 +4502,7 @@
   ];
 
   // ─────────────────────────────────────────
-  // キャンバスを開く
+  // キャンバスを開く（閲覧モード優先）
   // ─────────────────────────────────────────
   async function openDecoCanvas(sbId, sb, ownerUid) {
     decoSbId     = sbId;
@@ -4335,10 +4511,14 @@
 
     const overlay = document.getElementById('deco-canvas-overlay');
     overlay.classList.add('open');
-    if (decoReadOnly) overlay.classList.add('readonly');
-    else              overlay.classList.remove('readonly');
+    // 常に閲覧モードで起動（editingクラスなし）
+    overlay.classList.remove('editing', 'readonly');
 
-    document.getElementById('deco-sb-title').textContent = (sb.title || '無題') + (decoReadOnly ? '（閲覧）' : '');
+    document.getElementById('deco-sb-title').textContent = sb.title || '無題';
+
+    // 本人のみ「編集する」ボタンを表示
+    const editBtn = document.getElementById('deco-edit-mode-btn');
+    if (editBtn) editBtn.style.display = decoReadOnly ? 'none' : '';
 
     // UI初期化
     initDecoUI();
@@ -4346,15 +4526,64 @@
     // データ読み込み
     await loadDecoData(sbId);
 
-    // 素材パネルに投稿を表示
+    // 素材パネルを最近スクラップした投稿でプリロード
     await loadDecoPostPanel(sbId);
   }
 
   window.closeDecoCanvas = function() {
-    document.getElementById('deco-canvas-overlay').classList.remove('open');
+    document.getElementById('deco-canvas-overlay').classList.remove('open', 'editing');
     decoSbId = null;
-    // 描画モード解除
     setDrawMode(false);
+    toggleDecoSidebar(false); // ドロワーも閉じる
+  };
+
+  // ─────────────────────────────────────────
+  // 編集モード切替
+  // ─────────────────────────────────────────
+  window.enterDecoEditMode = function() {
+    if (decoReadOnly) return;
+    const overlay = document.getElementById('deco-canvas-overlay');
+    overlay.classList.add('editing');
+    // 編集ボタンを非表示
+    const editBtn = document.getElementById('deco-edit-mode-btn');
+    if (editBtn) editBtn.style.display = 'none';
+    // スマホならドロワーボタンを表示
+    const toggleBtn = document.getElementById('deco-sidebar-toggle-btn');
+    if (toggleBtn) {
+      const isMobile = window.innerWidth <= 700;
+      toggleBtn.style.display = isMobile ? 'flex' : 'none';
+    }
+    // スマホ以外ではサイドバーを自動展開
+    if (window.innerWidth > 700) {
+      const sb = document.getElementById('deco-sidebar');
+      if (sb) sb.classList.add('open');
+    }
+  };
+
+  window.exitDecoEditMode = function() {
+    const overlay = document.getElementById('deco-canvas-overlay');
+    overlay.classList.remove('editing');
+    const editBtn = document.getElementById('deco-edit-mode-btn');
+    if (editBtn && !decoReadOnly) editBtn.style.display = '';
+    toggleDecoSidebar(false);
+    setDrawMode(false);
+  };
+
+  // ─────────────────────────────────────────
+  // ドロワー開閉（スマホ専用）
+  // ─────────────────────────────────────────
+  window.toggleDecoSidebar = function(forceOpen) {
+    const sb = document.getElementById('deco-sidebar');
+    const closeInner = sb?.querySelector('.deco-sidebar-close-inner');
+    if (!sb) return;
+    const isMobile = window.innerWidth <= 700;
+    if (!isMobile) { sb.classList.add('open'); return; }
+    const shouldOpen = (forceOpen === true) ? true : (forceOpen === false) ? false : !sb.classList.contains('open');
+    sb.classList.toggle('open', shouldOpen);
+    if (closeInner) closeInner.style.display = shouldOpen ? 'block' : 'none';
+    // トグルボタンのアイコンを更新
+    const btn = document.getElementById('deco-sidebar-toggle-btn');
+    if (btn) btn.textContent = shouldOpen ? '✕' : '🎨';
   };
 
   // ─────────────────────────────────────────
@@ -4573,16 +4802,19 @@
   };
 
   // ─────────────────────────────────────────
-  // 素材パネル（投稿リスト）
+  // 素材パネル（最近スクラップした投稿をプリロード）
   // ─────────────────────────────────────────
   async function loadDecoPostPanel(sbId) {
     const listEl = document.getElementById('deco-post-list');
-    listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:11px;color:rgba(255,255,255,0.35);text-align:center;padding:12px 0;">読み込み中…</p>`;
+    listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:11px;color:rgba(255,255,255,0.35);text-align:center;padding:8px 0;">読み込み中…</p>`;
     try {
+      // scrapbookItemsから紐付き投稿を取得
       const itemsSnap = await new Promise(res => onValue(ref(db, `scrapbookItems/${sbId}`), res, { onlyOnce: true }));
       const itemsData = itemsSnap.val();
-      if (!itemsData) { listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:11px;color:rgba(255,255,255,0.35);text-align:center;padding:12px 0;">まだ投稿がありません</p>`; return; }
-
+      if (!itemsData) {
+        listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:11px;color:rgba(255,255,255,0.35);text-align:center;padding:8px 0;">まだありません<br><span style="font-size:9px;opacity:0.6;">「📖 思い出を選んで貼る」から追加できます</span></p>`;
+        return;
+      }
       const postKeys = Object.keys(itemsData);
       const found = [];
       postKeys.forEach(key => { const d = allDiaries.find(d => d.fbKey === key); if (d) found.push(d); });
@@ -4592,39 +4824,102 @@
         const d = snap.val();
         if (d) found.push({ ...d, fbKey: key });
       }
-
       listEl.innerHTML = '';
-      found.forEach(diary => {
-        const photos = JSON.parse(diary.photos || '[]');
-        const thumb = document.createElement('div');
-        thumb.className = 'deco-post-thumb';
-        thumb.innerHTML = `<div class="deco-post-thumb-date">📅 ${diary.date||''} ${diary.name ? '/ '+diary.name : ''}</div>`;
-
-        if (diary.text) {
-          const tBtn = document.createElement('button');
-          tBtn.className = 'deco-add-text-btn';
-          tBtn.textContent = '📝 テキストを追加';
-          tBtn.onclick = () => addDecoText(diary.text);
-          thumb.appendChild(tBtn);
-        }
-
-        if (photos.length > 0) {
-          const row = document.createElement('div');
-          row.className = 'deco-post-photos-row';
-          photos.forEach((src, i) => {
-            const img = document.createElement('img');
-            img.src = src; img.alt = `写真${i+1}`;
-            img.title = 'クリックで台紙に追加';
-            img.onclick = () => addDecoImage(src);
-            row.appendChild(img);
-          });
-          thumb.appendChild(row);
-        }
-
-        listEl.appendChild(thumb);
-      });
+      found.slice(0, 5).forEach(diary => renderDecoPostThumb(listEl, diary)); // 最新5件のみ
+      if (found.length > 5) {
+        const more = document.createElement('p');
+        more.style.cssText = 'font-family:Yomogi,cursive;font-size:10px;color:rgba(255,255,255,0.35);text-align:center;margin-top:4px;';
+        more.textContent = `他${found.length - 5}件は「思い出を選んで貼る」から`;
+        listEl.appendChild(more);
+      }
     } catch(e) { console.error('post panel error:', e); }
   }
+
+  // サムネイルカード描画（共通）
+  function renderDecoPostThumb(container, diary) {
+    const photos = JSON.parse(diary.photos || '[]');
+    const thumb = document.createElement('div');
+    thumb.className = 'deco-post-thumb';
+    thumb.innerHTML = `<div class="deco-post-thumb-date">📅 ${diary.date||''} ${diary.name ? '/ '+diary.name : ''}</div>`;
+    if (diary.text) {
+      const tBtn = document.createElement('button');
+      tBtn.className = 'deco-add-text-btn';
+      tBtn.textContent = '📝 テキストを追加';
+      tBtn.onclick = () => { addDecoText(diary.text); closeDecoDiaryPicker(); };
+      thumb.appendChild(tBtn);
+    }
+    if (photos.length > 0) {
+      const row = document.createElement('div');
+      row.className = 'deco-post-photos-row';
+      photos.forEach((src, i) => {
+        const img = document.createElement('img');
+        img.src = src; img.alt = `写真${i+1}`;
+        img.title = 'クリックで台紙に追加';
+        img.onclick = () => { addDecoImage(src); closeDecoDiaryPicker(); };
+        row.appendChild(img);
+      });
+      thumb.appendChild(row);
+    }
+    container.appendChild(thumb);
+  }
+
+  // ─────────────────────────────────────────
+  // 思い出選択モーダル（全投稿から選択）
+  // ─────────────────────────────────────────
+  window.openDecoDiaryPicker = function() {
+    const body = document.getElementById('deco-diary-picker-body');
+    document.getElementById('deco-diary-picker-overlay').classList.add('open');
+    body.innerHTML = '';
+
+    const diaries = [...allDiaries].sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
+    if (diaries.length === 0) {
+      body.innerHTML = '<p class="deco-diary-picker-empty">思い出がまだありません</p>';
+      return;
+    }
+
+    diaries.forEach(diary => {
+      const photos = JSON.parse(diary.photos || '[]');
+      const item = document.createElement('div');
+      item.className = 'deco-diary-picker-item';
+
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'deco-diary-picker-item-date';
+      dateDiv.textContent = `📅 ${diary.date || ''} ${diary.name ? '/ ' + diary.name : ''}`;
+      item.appendChild(dateDiv);
+
+      if (diary.text) {
+        const textDiv = document.createElement('div');
+        textDiv.className = 'deco-diary-picker-item-text';
+        textDiv.textContent = diary.text;
+        item.appendChild(textDiv);
+
+        const tBtn = document.createElement('button');
+        tBtn.className = 'deco-diary-picker-add-text';
+        tBtn.textContent = '📝 文字を貼る';
+        tBtn.onclick = (e) => { e.stopPropagation(); addDecoText(diary.text); closeDecoDiaryPicker(); };
+        item.appendChild(tBtn);
+      }
+
+      if (photos.length > 0) {
+        const photoRow = document.createElement('div');
+        photoRow.className = 'deco-diary-picker-photos';
+        photos.forEach(src => {
+          const img = document.createElement('img');
+          img.src = src;
+          img.title = 'クリックで台紙に追加';
+          img.onclick = (e) => { e.stopPropagation(); addDecoImage(src); closeDecoDiaryPicker(); };
+          photoRow.appendChild(img);
+        });
+        item.appendChild(photoRow);
+      }
+
+      body.appendChild(item);
+    });
+  };
+
+  window.closeDecoDiaryPicker = function() {
+    document.getElementById('deco-diary-picker-overlay').classList.remove('open');
+  };
 
   // ─────────────────────────────────────────
   // 要素追加
@@ -6462,7 +6757,7 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); closeBoardPw(); closeBoardTrashModal(); closeBoardBinder(); closeDecoCanvas(); }
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); closeBoardPw(); closeBoardTrashModal(); closeBoardBinder(); closeDecoCanvas(); closeDecoDiaryPicker(); }
   });
 </script>
 </body>

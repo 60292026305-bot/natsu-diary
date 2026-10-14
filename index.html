@@ -4124,7 +4124,7 @@
         userIconCache[uid] = '';
         delete userIconPending[uid];
         resolve('');
-      }, 3000);
+      }, 2000); // 2秒（ルール拒否・遅延時の待ち時間を短縮）
       onValue(ref(db, `users/${uid}/avatarUrl`), (snap) => {
         clearTimeout(timer);
         const url = snap.val() || '';
@@ -4204,72 +4204,68 @@
     banner.classList.add('visible');
     label.textContent = '👁 他のユーザーのページを表示中';
 
-    // プロフィール読み込み
+    // 即座にスケルトン表示（プロフィール取得中でも画面が空にならない）
+    inner.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
+    document.getElementById('mypage-displayname').textContent = '読み込み中…';
+    document.getElementById('mypage-email').textContent = '';
+
+    // プロフィール読み込み（タイムアウト付き）
+    let profile = {};
     try {
-      const snap = await new Promise((resolve, reject) => {
-        onValue(ref(db, `users/${uid}`), resolve, (err) => reject(err), { onlyOnce: true });
-      });
-      const profile = snap.val() || {};
-      const dispName = profile.displayName
-        || (profile.email ? profile.email.split('@')[0] : '')
-        || `ユーザー(${uid.slice(0, 6)})`;
-      const avatarUrl = profile.avatarUrl || '';
-
-      // ヘッダー更新
-      inner.innerHTML = avatarUrl
-        ? `<img class="mypage-avatar" src="${avatarUrl}" alt="">`
-        : `<div class="mypage-avatar-placeholder">👤</div>`;
-      document.getElementById('mypage-displayname').textContent = dispName;
-      document.getElementById('mypage-email').textContent = '';
-      label.textContent = `👁 ${dispName} のページを表示中`;
-
-      // 統計：対象ユーザーの公開投稿だけカウント
-      const theirDiaries = allDiaries.filter(d => d.uid === uid);
-      document.getElementById('mypage-total').textContent          = theirDiaries.length;
-      document.getElementById('mypage-public-count').textContent   = theirDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
-      document.getElementById('mypage-friends-count').textContent  = theirDiaries.filter(d => d.visibility === 'friends').length;
-
-      // 自分の投稿タブに対象ユーザーの投稿を表示
-      ['posts','scrapbooks','friends','settings'].forEach(t => {
-        document.getElementById('mptab-'   + t)?.classList.toggle('active', t === 'posts');
-        document.getElementById('mppanel-' + t)?.classList.toggle('active', t === 'posts');
-      });
-      const postsTab = document.getElementById('mptab-posts');
-      if (postsTab) postsTab.textContent = `📖 ${dispName}の投稿`;
-      renderOtherUserPosts(uid, theirDiaries);
-
+      profile = await Promise.race([
+        // Firebase RTDB から users/$uid を取得
+        new Promise((resolve, reject) => {
+          onValue(
+            ref(db, `users/${uid}`),
+            (snap) => resolve(snap.val() || {}),
+            (err)  => reject(err),
+            { onlyOnce: true }
+          );
+        }),
+        // 5秒でタイムアウト（ルール拒否・ネット遅延対策）
+        new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 5000)),
+      ]);
     } catch (err) {
-      console.error('他ユーザープロフィール取得エラー:', err);
-
-      // PERMISSION_DENIED の場合は分かりやすいメッセージで案内
-      const isPermission = err?.code === 'PERMISSION_DENIED'
-        || String(err?.message).includes('PERMISSION_DENIED');
-
-      // フォールバック表示（「取得失敗」ではなく匿名ユーザーとして扱う）
-      inner.innerHTML = `<div class="mypage-avatar-placeholder">👤</div>`;
-      document.getElementById('mypage-displayname').textContent = '匿名ユーザー';
-      document.getElementById('mypage-email').textContent = '';
-      label.textContent = `👁 他のユーザーのページを表示中`;
-
-      // 投稿データは allDiaries から UID で拾えるので統計・投稿一覧はそのまま表示
-      const theirDiaries = allDiaries.filter(d => d.uid === uid);
-      document.getElementById('mypage-total').textContent         = theirDiaries.length;
-      document.getElementById('mypage-public-count').textContent  = theirDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
-      document.getElementById('mypage-friends-count').textContent = theirDiaries.filter(d => d.visibility === 'friends').length;
-      ['posts','scrapbooks','friends','settings'].forEach(t => {
-        document.getElementById('mptab-'   + t)?.classList.toggle('active', t === 'posts');
-        document.getElementById('mppanel-' + t)?.classList.toggle('active', t === 'posts');
-      });
-      renderOtherUserPosts(uid, theirDiaries);
-
-      if (isPermission) {
-        console.warn(
-          '[Firebase] users/$uid の read が拒否されています。\n' +
-          'Firebaseコンソール → Realtime Database → ルール で\n' +
-          '"users": { ".read": "auth != null" } を追加してください。'
-        );
-      }
+      const msg = err?.message || String(err);
+      const isPermission = msg.includes('PERMISSION_DENIED') || err?.code === 'PERMISSION_DENIED';
+      const isTimeout    = msg === 'TIMEOUT';
+      console.error(
+        '[openOtherMypage] プロフィール取得失敗 uid=' + uid,
+        isPermission ? '→ Firebaseルールで users の read を許可してください' :
+        isTimeout    ? '→ タイムアウト（5秒）: ルール拒否またはネット遅延の可能性' :
+        err
+      );
+      // profile は空オブジェクトのままフォールバックへ進む
     }
+
+    // displayName / avatarUrl を決定（取得できなければフォールバック）
+    const dispName  = profile.displayName
+      || (profile.email ? profile.email.split('@')[0] : '')
+      || `ユーザー(${uid.slice(0, 6)})`;
+    const avatarUrl = profile.avatarUrl || '';
+
+    // ヘッダー更新
+    inner.innerHTML = avatarUrl
+      ? `<img class="mypage-avatar" src="${avatarUrl}" alt="" onerror="this.parentNode.innerHTML='<div class=\\'mypage-avatar-placeholder\\'>👤</div>'">`
+      : `<div class="mypage-avatar-placeholder">👤</div>`;
+    document.getElementById('mypage-displayname').textContent = dispName;
+    document.getElementById('mypage-email').textContent = '';
+    label.textContent = `👁 ${dispName} のページを表示中`;
+
+    // 統計：allDiaries から対象 UID の投稿を集計
+    const theirDiaries = allDiaries.filter(d => d.uid === uid);
+    document.getElementById('mypage-total').textContent          = theirDiaries.length;
+    document.getElementById('mypage-public-count').textContent   = theirDiaries.filter(d => !d.visibility || d.visibility === 'public').length;
+    document.getElementById('mypage-friends-count').textContent  = theirDiaries.filter(d => d.visibility === 'friends').length;
+
+    // タブを「投稿」に切り替えて描画
+    ['posts','scrapbooks','friends','settings'].forEach(t => {
+      document.getElementById('mptab-'   + t)?.classList.toggle('active', t === 'posts');
+      document.getElementById('mppanel-' + t)?.classList.toggle('active', t === 'posts');
+    });
+    const postsTab = document.getElementById('mptab-posts');
+    if (postsTab) postsTab.textContent = `📖 ${dispName}の投稿`;
+    renderOtherUserPosts(uid, theirDiaries);
   };
 
   // 他ユーザーの投稿を自分の投稿タブに描画

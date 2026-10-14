@@ -915,54 +915,38 @@
       border-radius: 2px;
       z-index: 4;
       pointer-events: none;
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
     /* 左上 */
     .board-memo .tape-tl {
       top: -5px; left: -8px;
       transform: rotate(-38deg);
       transform-origin: center center;
-      background: repeating-linear-gradient(
-        90deg,
-        rgba(255,200,120,0.6) 0px, rgba(255,220,160,0.85) 6px,
-        rgba(255,240,190,0.55) 6px, rgba(255,220,160,0.85) 12px
-      );
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      /* フォールバック: Canvas生成前 or 失敗時 */
+      background-color: rgba(255,220,160,0.75);
     }
     /* 右上 */
     .board-memo .tape-tr {
       top: -5px; right: -8px;
       transform: rotate(38deg);
       transform-origin: center center;
-      background: repeating-linear-gradient(
-        90deg,
-        rgba(180,230,200,0.6) 0px, rgba(160,220,185,0.85) 6px,
-        rgba(200,240,215,0.55) 6px, rgba(160,220,185,0.85) 12px
-      );
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      background-color: rgba(160,220,185,0.75);
     }
     /* 左下 */
     .board-memo .tape-bl {
       bottom: -5px; left: -8px;
       transform: rotate(38deg);
       transform-origin: center center;
-      background: repeating-linear-gradient(
-        90deg,
-        rgba(200,185,240,0.6) 0px, rgba(185,170,235,0.85) 6px,
-        rgba(220,210,245,0.55) 6px, rgba(185,170,235,0.85) 12px
-      );
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      background-color: rgba(185,170,235,0.75);
     }
     /* 右下 */
     .board-memo .tape-br {
       bottom: -5px; right: -8px;
       transform: rotate(-38deg);
       transform-origin: center center;
-      background: repeating-linear-gradient(
-        90deg,
-        rgba(255,185,195,0.6) 0px, rgba(250,170,185,0.85) 6px,
-        rgba(255,210,215,0.55) 6px, rgba(250,170,185,0.85) 12px
-      );
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      background-color: rgba(250,170,185,0.75);
     }
     .board-memo-date {
       position: absolute;
@@ -5132,6 +5116,32 @@
     }
     wrap.appendChild(inner);
 
+    // テキスト・画像要素にはマスキングテープ装飾を追加
+    if (elData.type === 'text' || elData.type === 'image') {
+      // 要素IDと種別をシードにしてテープ柄を生成（日付・天気情報がない場合は夏・dotをデフォルト）
+      const seed   = strHash(String(elData.id) + elData.type);
+      const rng    = SeededRng(seed);
+      // 季節はキャンバスオープン時の月から推定
+      const nowM   = new Date().getMonth() + 1;
+      const season = seasonFromMonth(nowM);
+      const motifs = ['sun','rain','cloud','snow','cherry','wave','dot'];
+      const motif  = motifs[Math.floor(rng() * motifs.length)];
+      const tapeUrl = generateTapeDataURL(seed, season, motif);
+
+      const corners = [
+        { cls:'deco-el-tape tl', style:`top:-7px;left:-8px;transform:rotate(-35deg)` },
+        { cls:'deco-el-tape tr', style:`top:-7px;right:-8px;transform:rotate(35deg)` },
+        { cls:'deco-el-tape bl', style:`bottom:-7px;left:-8px;transform:rotate(35deg)` },
+        { cls:'deco-el-tape br', style:`bottom:-7px;right:-8px;transform:rotate(-35deg)` },
+      ];
+      corners.forEach(({ cls, style }) => {
+        const t = document.createElement('span');
+        t.className = cls;
+        t.style.cssText = `position:absolute;width:36px;height:12px;opacity:0.85;border-radius:2px;z-index:6;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.18);background-image:url('${tapeUrl}');background-size:cover;background-position:center;${style}`;
+        wrap.appendChild(t);
+      });
+    }
+
     // ハンドル（読み取り専用でなければ）
     if (!decoReadOnly) {
       const handles = document.createElement('div');
@@ -6380,7 +6390,187 @@
     return ((h % 600) / 100).toFixed(2); // -3.00 〜 +2.99
   }
 
-  let boardInitialized = false;
+  // ================================================================
+  // ===== マスキングテープ Canvas 生成エンジン =====
+  // ================================================================
+
+  // ── シードベースの決定論的乱数（LCG）──
+  function SeededRng(seed) {
+    let s = (seed | 0) >>> 0;
+    return function() {
+      s = (Math.imul(1664525, s) + 1013904223) >>> 0;
+      return s / 0xFFFFFFFF;
+    };
+  }
+
+  // ── 文字列 → 数値ハッシュ ──
+  function strHash(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i++) h = (Math.imul(33, h) ^ str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  // ── 日付文字列（YYYY-MM-DD or M/D など）から month を取得 ──
+  function monthFromDate(dateStr) {
+    if (!dateStr) return new Date().getMonth() + 1;
+    const m = dateStr.match(/(\d{1,2})[\/\-月](\d{1,2})/);
+    if (m) return parseInt(m[1]);
+    const d = new Date(dateStr);
+    return isNaN(d) ? new Date().getMonth() + 1 : d.getMonth() + 1;
+  }
+
+  // ── 月からパレットキーを決定 ──
+  function seasonFromMonth(m) {
+    if (m >= 3 && m <= 5)  return 'spring';
+    if (m >= 6 && m <= 8)  return 'summer';
+    if (m >= 9 && m <= 11) return 'autumn';
+    return 'winter';
+  }
+
+  // ── パレット定義（季節別パステルカラー）──
+  const TAPE_PALETTES = {
+    spring: { bg: ['#ffd6e7','#ffb3c8','#ffc8dd'], stripe: ['#ff85a8','#ff6b9d','#ff99bb'], motifColor: '#ff6b9d' },
+    summer: { bg: ['#fffde7','#e3f6ff','#e0f7fa'], stripe: ['#ffd43b','#74d7f7','#a8e6f0'], motifColor: '#ffd43b' },
+    autumn: { bg: ['#fff3e0','#fbe9d0','#ffe0b2'], stripe: ['#ff9f43','#e67e22','#ffb347'], motifColor: '#ff9f43' },
+    winter: { bg: ['#e8eaf6','#e3f2fd','#f3e5f5'], stripe: ['#7986cb','#64b5f6','#ba68c8'], motifColor: '#7986cb' },
+  };
+
+  // ── 天気からモチーフ種別を決定 ──
+  function motifFromWeather(w) {
+    if (!w) return 'dot';
+    const s = String(w);
+    if (/☀|晴|sun/i.test(s))   return 'sun';
+    if (/🌧|雨|rain|☂/i.test(s)) return 'rain';
+    if (/⛅|曇|cloud/i.test(s))  return 'cloud';
+    if (/❄|雪|snow/i.test(s))   return 'snow';
+    if (/🌸|桜/i.test(s))        return 'cherry';
+    if (/🌊|波/i.test(s))        return 'wave';
+    return 'dot';
+  }
+
+  // ── テープ画像キャッシュ（同一パラメータなら再生成しない）──
+  const _tapeCache = new Map();
+
+  /**
+   * Canvas でマスキングテープ柄を生成して DataURL を返す
+   * @param {number} seed    決定論的乱数シード
+   * @param {string} season  'spring'|'summer'|'autumn'|'winter'
+   * @param {string} motif   'sun'|'rain'|'cloud'|'snow'|'cherry'|'wave'|'dot'
+   * @returns {string}       canvas.toDataURL('image/png')
+   */
+  function generateTapeDataURL(seed, season, motif) {
+    const key = `${seed}_${season}_${motif}`;
+    if (_tapeCache.has(key)) return _tapeCache.get(key);
+
+    const W = 192, H = 40;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    const rng  = SeededRng(seed);
+    const pal  = TAPE_PALETTES[season] || TAPE_PALETTES.summer;
+
+    // ① 背景グラデーション
+    const bgIdx = Math.floor(rng() * pal.bg.length);
+    const grad = ctx.createLinearGradient(0, 0, W, 0);
+    grad.addColorStop(0,    pal.bg[bgIdx]);
+    grad.addColorStop(0.5,  pal.bg[(bgIdx + 1) % pal.bg.length]);
+    grad.addColorStop(1,    pal.bg[bgIdx]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // ② 縞（ストライプ）
+    ctx.globalAlpha = 0.25;
+    const stripeW = 8 + Math.floor(rng() * 8);
+    for (let x = 0; x < W; x += stripeW * 2) {
+      ctx.fillStyle = pal.stripe[Math.floor(rng() * pal.stripe.length)];
+      ctx.fillRect(x, 0, stripeW, H);
+    }
+    ctx.globalAlpha = 1;
+
+    // ③ モチーフ描画（天気から）
+    const mc = pal.motifColor;
+    const motifCount = 4 + Math.floor(rng() * 3);
+    for (let i = 0; i < motifCount; i++) {
+      const mx = 12 + Math.floor(rng() * (W - 24));
+      const my = 6  + Math.floor(rng() * (H - 12));
+      const ms = 5  + Math.floor(rng() * 5);
+      ctx.globalAlpha = 0.55 + rng() * 0.3;
+      ctx.strokeStyle = mc;
+      ctx.fillStyle   = mc;
+      ctx.lineWidth   = 1.5;
+
+      if (motif === 'sun') {
+        // ☀ 太陽：丸＋放射線
+        ctx.beginPath(); ctx.arc(mx, my, ms * 0.5, 0, Math.PI * 2); ctx.fill();
+        for (let a = 0; a < 8; a++) {
+          const ax = Math.cos(a * Math.PI / 4), ay = Math.sin(a * Math.PI / 4);
+          ctx.beginPath(); ctx.moveTo(mx + ax*(ms*0.6), my + ay*(ms*0.6));
+          ctx.lineTo(mx + ax*ms, my + ay*ms); ctx.stroke();
+        }
+      } else if (motif === 'rain') {
+        // 🌧 水滴
+        ctx.beginPath();
+        ctx.moveTo(mx, my - ms); ctx.bezierCurveTo(mx+ms,my-ms*0.3, mx+ms,my+ms*0.5, mx,my+ms);
+        ctx.bezierCurveTo(mx-ms,my+ms*0.5, mx-ms,my-ms*0.3, mx,my-ms);
+        ctx.fill();
+      } else if (motif === 'cloud') {
+        // ⛅ 雲
+        ctx.beginPath(); ctx.arc(mx,my,ms*0.5,0,Math.PI*2);
+        ctx.arc(mx+ms*0.6,my-ms*0.2,ms*0.4,0,Math.PI*2);
+        ctx.arc(mx-ms*0.6,my-ms*0.1,ms*0.35,0,Math.PI*2); ctx.fill();
+      } else if (motif === 'snow') {
+        // ❄ 雪の結晶（6方向）
+        for (let a = 0; a < 6; a++) {
+          const ax = Math.cos(a * Math.PI / 3), ay = Math.sin(a * Math.PI / 3);
+          ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(mx+ax*ms, my+ay*ms); ctx.stroke();
+        }
+      } else if (motif === 'cherry') {
+        // 🌸 花（5弁）
+        for (let p = 0; p < 5; p++) {
+          const px = mx + Math.cos(p*Math.PI*2/5)*ms*0.7;
+          const py = my + Math.sin(p*Math.PI*2/5)*ms*0.7;
+          ctx.beginPath(); ctx.arc(px,py,ms*0.35,0,Math.PI*2); ctx.fill();
+        }
+        ctx.fillStyle = '#fff8e1';
+        ctx.beginPath(); ctx.arc(mx,my,ms*0.25,0,Math.PI*2); ctx.fill();
+      } else if (motif === 'wave') {
+        // 🌊 波線
+        ctx.beginPath(); ctx.moveTo(mx-ms,my);
+        for (let wx = -ms; wx <= ms; wx += 2) {
+          ctx.lineTo(mx+wx, my + Math.sin(wx*0.6)*ms*0.4);
+        }
+        ctx.stroke();
+      } else {
+        // デフォルト：ドット
+        ctx.beginPath(); ctx.arc(mx, my, ms * 0.4, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    // ④ 上下にやや透明なエッジライン（テープっぽさ）
+    ctx.globalAlpha = 0.18;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, W, 3);
+    ctx.fillRect(0, H-3, W, 3);
+    ctx.globalAlpha = 1;
+
+    const url = cv.toDataURL('image/png');
+    _tapeCache.set(key, url);
+    return url;
+  }
+
+  /**
+   * 投稿の date・weather・id から tapeDataURL を生成して返す
+   */
+  function getTapeForPost(dateStr, weatherStr, postId) {
+    const month  = monthFromDate(dateStr);
+    const season = seasonFromMonth(month);
+    const motif  = motifFromWeather(weatherStr);
+    const seed   = strHash((dateStr || '') + (weatherStr || '') + (postId || ''));
+    return generateTapeDataURL(seed, season, motif);
+  }
+
+  // ================================================================
   let summaryMode      = false;
   let selectedMemos    = new Set();
   let groupedPostIds   = new Set(); // どのバインダーにも属しているpostId一覧
@@ -6501,13 +6691,21 @@
       ? new Date(post.createdAt).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
       : '';
 
-    // マスキングテープ（固定時のみ）
-    const tapes = isPinned
-      ? `<span class="tape tape-tl"></span>
-         <span class="tape tape-tr"></span>
-         <span class="tape tape-bl"></span>
-         <span class="tape tape-br"></span>`
-      : '';
+    // マスキングテープ（固定時のみ）— Canvas生成柄を適用
+    let tapes = '';
+    if (isPinned) {
+      // 投稿の日付・天気からテープ柄を生成（postIdをシードに含めて各コーナーを少しずらす）
+      const postDate    = post.date    || '';
+      const postWeather = post.weather || '';
+      const tl = getTapeForPost(postDate, postWeather, postId + 'tl');
+      const tr = getTapeForPost(postDate, postWeather, postId + 'tr');
+      const bl = getTapeForPost(postDate, postWeather, postId + 'bl');
+      const br = getTapeForPost(postDate, postWeather, postId + 'br');
+      tapes = `<span class="tape tape-tl" style="background-image:url('${tl}');background-size:cover;background-position:center;background-color:transparent;"></span>
+               <span class="tape tape-tr" style="background-image:url('${tr}');background-size:cover;background-position:center;background-color:transparent;"></span>
+               <span class="tape tape-bl" style="background-image:url('${bl}');background-size:cover;background-position:center;background-color:transparent;"></span>
+               <span class="tape tape-br" style="background-image:url('${br}');background-size:cover;background-position:center;background-color:transparent;"></span>`;
+    }
 
     // ピンボタン（固定済みなら「解除」アイコン、通常なら「固定」アイコン）
     const pinIcon = isPinned ? '📍' : '📌';

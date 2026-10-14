@@ -5118,26 +5118,28 @@
 
     // テキスト・画像要素にはマスキングテープ装飾を追加
     if (elData.type === 'text' || elData.type === 'image') {
-      // 要素IDと種別をシードにしてテープ柄を生成（日付・天気情報がない場合は夏・dotをデフォルト）
       const seed   = strHash(String(elData.id) + elData.type);
       const rng    = SeededRng(seed);
-      // 季節はキャンバスオープン時の月から推定
       const nowM   = new Date().getMonth() + 1;
       const season = seasonFromMonth(nowM);
       const motifs = ['sun','rain','cloud','snow','cherry','wave','dot'];
       const motif  = motifs[Math.floor(rng() * motifs.length)];
       const tapeUrl = generateTapeDataURL(seed, season, motif);
 
-      const corners = [
-        { cls:'deco-el-tape tl', style:`top:-7px;left:-8px;transform:rotate(-35deg)` },
-        { cls:'deco-el-tape tr', style:`top:-7px;right:-8px;transform:rotate(35deg)` },
-        { cls:'deco-el-tape bl', style:`bottom:-7px;left:-8px;transform:rotate(35deg)` },
-        { cls:'deco-el-tape br', style:`bottom:-7px;right:-8px;transform:rotate(-35deg)` },
+      const cornerDefs = [
+        { cls:'tl', style:'top:-7px;left:-8px;transform:rotate(-35deg)' },
+        { cls:'tr', style:'top:-7px;right:-8px;transform:rotate(35deg)' },
+        { cls:'bl', style:'bottom:-7px;left:-8px;transform:rotate(35deg)' },
+        { cls:'br', style:'bottom:-7px;right:-8px;transform:rotate(-35deg)' },
       ];
-      corners.forEach(({ cls, style }) => {
+      cornerDefs.forEach(({ cls, style }) => {
         const t = document.createElement('span');
-        t.className = cls;
-        t.style.cssText = `position:absolute;width:36px;height:12px;opacity:0.85;border-radius:2px;z-index:6;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.18);background-image:url('${tapeUrl}');background-size:cover;background-position:center;${style}`;
+        t.className = `deco-el-tape ${cls}`;
+        // DataURL は style 属性文字列に含めず JS で直接設定
+        t.style.cssText = `position:absolute;width:36px;height:12px;opacity:0.85;border-radius:2px;z-index:6;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.18);${style}`;
+        t.style.backgroundImage    = `url('${tapeUrl}')`;
+        t.style.backgroundSize     = 'cover';
+        t.style.backgroundPosition = 'center';
         wrap.appendChild(t);
       });
     }
@@ -5809,6 +5811,26 @@
       caption.appendChild(playBtn);
     }
     card.appendChild(caption);
+
+    // ===== 思い出カードのマスキングテープ装飾（4角） =====
+    // diary の日付・天気・fbKey をシードに Canvas 生成柄を適用
+    {
+      const cornerDefs = [
+        { cls:'card-tape-tl', rot:'-40deg', t:'-7px',  l:'-10px', r:'auto',  b:'auto'  },
+        { cls:'card-tape-tr', rot: '40deg', t:'-7px',  l:'auto',  r:'-10px', b:'auto'  },
+        { cls:'card-tape-bl', rot: '40deg', t:'auto',  l:'-10px', r:'auto',  b:'-7px'  },
+        { cls:'card-tape-br', rot:'-40deg', t:'auto',  l:'auto',  r:'-10px', b:'-7px'  },
+      ];
+      cornerDefs.forEach(({ cls, rot, t, l, r, b }) => {
+        const span = document.createElement('span');
+        span.setAttribute('data-html2canvas-ignore', 'true');
+        span.style.cssText = `position:absolute;width:44px;height:14px;opacity:0.8;border-radius:2px;z-index:4;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.12);top:${t};left:${l};right:${r};bottom:${b};transform:rotate(${rot});transform-origin:center center;background-size:cover;background-position:center;`;
+        // DataURL は JS プロパティで設定（innerHTML に混ぜない）
+        const url = getTapeForPost(diary.date || '', diary.weather || '', (diary.fbKey || '') + cls);
+        span.style.backgroundImage = `url('${url}')`;
+        card.appendChild(span);
+      });
+    }
 
     // ===== ② 本文・写真エリア =====
     const body = document.createElement('div');
@@ -6691,30 +6713,35 @@
       ? new Date(post.createdAt).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
       : '';
 
-    // マスキングテープ（固定時のみ）— Canvas生成柄を適用
-    let tapes = '';
-    if (isPinned) {
-      // 投稿の日付・天気からテープ柄を生成（postIdをシードに含めて各コーナーを少しずらす）
-      const postDate    = post.date    || '';
-      const postWeather = post.weather || '';
-      const tl = getTapeForPost(postDate, postWeather, postId + 'tl');
-      const tr = getTapeForPost(postDate, postWeather, postId + 'tr');
-      const bl = getTapeForPost(postDate, postWeather, postId + 'bl');
-      const br = getTapeForPost(postDate, postWeather, postId + 'br');
-      tapes = `<span class="tape tape-tl" style="background-image:url('${tl}');background-size:cover;background-position:center;background-color:transparent;"></span>
-               <span class="tape tape-tr" style="background-image:url('${tr}');background-size:cover;background-position:center;background-color:transparent;"></span>
-               <span class="tape tape-bl" style="background-image:url('${bl}');background-size:cover;background-position:center;background-color:transparent;"></span>
-               <span class="tape tape-br" style="background-image:url('${br}');background-size:cover;background-position:center;background-color:transparent;"></span>`;
-    }
+    // マスキングテープ（固定時のみ）— HTMLはプレースホルダーのみ、DataURLはDOM設定
+    const tapesHtml = isPinned
+      ? `<span class="tape tape-tl"></span><span class="tape tape-tr"></span><span class="tape tape-bl"></span><span class="tape tape-br"></span>`
+      : '';
 
     // ピンボタン（固定済みなら「解除」アイコン、通常なら「固定」アイコン）
     const pinIcon = isPinned ? '📍' : '📌';
     const pinTitle = isPinned ? '固定を解除' : 'このメモを固定';
 
-    el.innerHTML = `${tapes}${escapeHtml(post.content||'')}
+    el.innerHTML = `${tapesHtml}${escapeHtml(post.content||'')}
       <span class="board-memo-date">${date}</span>
       <span class="pin-btn" title="${pinTitle}"
         onclick="togglePin('${postId}', ${isPinned}, event)">${pinIcon}</span>`;
+
+    // マステ柄を DOM 設定（innerHTML 後に実行して Base64 を HTML 文字列に混ぜない）
+    if (isPinned) {
+      const postDate    = post.date    || '';
+      const postWeather = post.weather || '';
+      const corners = ['tl','tr','bl','br'];
+      corners.forEach(c => {
+        const span = el.querySelector(`.tape-${c}`);
+        if (!span) return;
+        const url = getTapeForPost(postDate, postWeather, postId + c);
+        span.style.backgroundImage    = `url('${url}')`;
+        span.style.backgroundSize     = 'cover';
+        span.style.backgroundPosition = 'center';
+        span.style.backgroundColor    = 'transparent';
+      });
+    }
 
     el.addEventListener('click', () => {
       if (!summaryMode && !trashMode) return;

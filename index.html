@@ -3693,8 +3693,8 @@
     });
 
     currentPage = 0;
-    renderPage();
-    renderCalendar();
+    scheduleRenderPage();
+    scheduleRenderCalendar();
     // 接続成功インジケーター更新
     setConnectionStatus(true);
   }, (error) => {
@@ -3786,9 +3786,9 @@
         const nameInput = document.getElementById('diary-name');
         if (!nameInput.value) nameInput.value = userProfile.displayName || user.displayName || '';
 
-        // 表示が変わるのでアルバムも再描画
-        renderPage();
-        renderCalendar();
+        // 表示が変わるのでアルバムも再描画（デバウンス）
+        scheduleRenderPage();
+        scheduleRenderCalendar();
       }, { onlyOnce: false });
 
     } else {
@@ -3803,8 +3803,8 @@
       document.getElementById('mob-guest').style.display = 'flex';
       document.getElementById('mob-user').style.display  = 'none';
     }
-    renderPage();
-    renderCalendar();
+    scheduleRenderPage();
+    scheduleRenderCalendar();
   });
 
   // ===== ログインモーダル 開閉 =====
@@ -4100,27 +4100,68 @@
 
   // ===== マイページ =====
   // ユーザーアイコンのキャッシュ（uid → avatarUrl）
-  const userIconCache = {};
+  const userIconCache = {};        // メモリキャッシュ（セッション中）
+  const userIconPending = {};      // 重複リクエスト排除用（同一UIDのfetch中に別リクエストが来たとき同じPromiseを返す）
+  const ICON_CACHE_KEY = 'uic_';   // localStorage キーのプレフィックス
 
-  // 他ユーザーのプロフィールを取得してキャッシュ
+  // セッションをまたいだキャッシュ読み込み（容量過多防止のため最大100件）
+  (function initIconCache() {
+    try {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(ICON_CACHE_KEY));
+      keys.forEach(k => { userIconCache[k.slice(ICON_CACHE_KEY.length)] = localStorage.getItem(k) || ''; });
+    } catch(_) {}
+  })();
+
   function fetchUserIcon(uid) {
+    if (!uid) return Promise.resolve('');
+    // 1. メモリキャッシュ（最速）
     if (userIconCache[uid] !== undefined) return Promise.resolve(userIconCache[uid]);
-    return new Promise(resolve => {
+    // 2. 重複リクエスト排除（同じUIDを複数箇所から同時にfetchしても1回のみ通信）
+    if (userIconPending[uid]) return userIconPending[uid];
+
+    userIconPending[uid] = new Promise(resolve => {
+      const timer = setTimeout(() => {
+        userIconCache[uid] = '';
+        delete userIconPending[uid];
+        resolve('');
+      }, 3000);
       onValue(ref(db, `users/${uid}/avatarUrl`), (snap) => {
+        clearTimeout(timer);
         const url = snap.val() || '';
         userIconCache[uid] = url;
+        // localStorageに保存（上限100件で古いものを削除）
+        try {
+          const cacheKeys = Object.keys(localStorage).filter(k => k.startsWith(ICON_CACHE_KEY));
+          if (cacheKeys.length >= 100) localStorage.removeItem(cacheKeys[0]);
+          if (url) localStorage.setItem(ICON_CACHE_KEY + uid, url);
+        } catch(_) {}
+        delete userIconPending[uid];
         resolve(url);
+      }, (err) => {
+        clearTimeout(timer);
+        userIconCache[uid] = '';
+        delete userIconPending[uid];
+        resolve('');
       }, { onlyOnce: true });
     });
+    return userIconPending[uid];
   }
 
-  // カード内の投稿者アイコン要素を生成
+  // カード内の投稿者アイコン要素を生成（uid・photoURL どちらもなくてもプレースホルダーを返す）
   async function buildUserIconEl(uid, photoURL) {
-    const url = await fetchUserIcon(uid) || photoURL || '';
+    const url = (uid ? await fetchUserIcon(uid) : '') || photoURL || '';
     if (url) {
       const img = document.createElement('img');
       img.className = 'diary-card-user-icon';
-      img.src = url; img.alt = '';
+      img.src = url;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.onerror = () => {
+        const ph = document.createElement('span');
+        ph.className = 'diary-card-user-icon-placeholder';
+        ph.textContent = '👤';
+        img.replaceWith(ph);
+      };
       return img;
     }
     const el = document.createElement('span');
@@ -4911,7 +4952,6 @@
     const listEl = document.getElementById('deco-post-list');
     listEl.innerHTML = `<p style="font-family:'Yomogi',cursive;font-size:11px;color:rgba(255,255,255,0.35);text-align:center;padding:8px 0;">読み込み中…</p>`;
     try {
-      // scrapbookItemsから紐付き投稿を取得
       const itemsSnap = await new Promise(res => onValue(ref(db, `scrapbookItems/${sbId}`), res, { onlyOnce: true }));
       const itemsData = itemsSnap.val();
       if (!itemsData) {
@@ -4922,13 +4962,22 @@
       const found = [];
       postKeys.forEach(key => { const d = allDiaries.find(d => d.fbKey === key); if (d) found.push(d); });
       const missing = postKeys.filter(k => !allDiaries.find(d => d.fbKey === k));
-      for (const key of missing) {
-        const snap = await new Promise(res => onValue(ref(db, `diaries/${key}`), res, { onlyOnce: true }));
-        const d = snap.val();
-        if (d) found.push({ ...d, fbKey: key });
+
+      // N+1修正: for-of+await → Promise.all で全件並列取得
+      if (missing.length > 0) {
+        const snaps = await Promise.all(
+          missing.map(key => new Promise(res =>
+            onValue(ref(db, `diaries/${key}`), res, { onlyOnce: true })
+          ))
+        );
+        snaps.forEach((snap, i) => {
+          const d = snap.val();
+          if (d) found.push({ ...d, fbKey: missing[i] });
+        });
       }
+
       listEl.innerHTML = '';
-      found.slice(0, 5).forEach(diary => renderDecoPostThumb(listEl, diary)); // 最新5件のみ
+      found.slice(0, 5).forEach(diary => renderDecoPostThumb(listEl, diary));
       if (found.length > 5) {
         const more = document.createElement('p');
         more.style.cssText = 'font-family:Yomogi,cursive;font-size:10px;color:rgba(255,255,255,0.35);text-align:center;margin-top:4px;';
@@ -5663,7 +5712,18 @@
     renderFriendSearchResults(lastSearchResults); // ボタンを「追加済み」に更新
   };
 
-  // ===== アルバム描画 =====
+  // ===== アルバム描画（デバウンス付き：50ms以内の連続呼び出しは1回に集約） =====
+  let _renderPageTimer = null;
+  let _renderCalTimer  = null;
+  function scheduleRenderPage() {
+    clearTimeout(_renderPageTimer);
+    _renderPageTimer = setTimeout(renderPage, 50);
+  }
+  function scheduleRenderCalendar() {
+    clearTimeout(_renderCalTimer);
+    _renderCalTimer = setTimeout(renderCalendar, 50);
+  }
+
   function renderPage() {
     const book = document.getElementById('book');
     book.innerHTML = '';
@@ -5709,13 +5769,27 @@
           ${diary.weather ? `<span class="diary-card-weather">${diary.weather}</span>` : ''}
         </span>` : ''}
     `;
-    // 投稿者アイコンを非同期で追加（uidがある場合）
+    // 投稿者アイコン：プレースホルダーを即座に挿入し、非同期で画像に差し替え
+    const iconPh = document.createElement('span');
+    iconPh.className = 'diary-card-user-icon-placeholder';
+    iconPh.textContent = '👤';
+    iconPh.setAttribute('data-html2canvas-ignore', 'true');
+    if (diary.uid) iconPh.onclick = () => navigateToUserMypage(diary.uid);
+    caption.insertBefore(iconPh, caption.firstChild);
+
+    // uid がある場合は非同期でアイコン画像を取得して差し替え
     if (diary.uid) {
-      buildUserIconEl(diary.uid, '').then(iconEl => {
-        iconEl.setAttribute('data-html2canvas-ignore', 'true');
-        iconEl.title = `${diary.name || '投稿者'}のページへ`;
-        iconEl.onclick = () => navigateToUserMypage(diary.uid);
-        caption.insertBefore(iconEl, caption.firstChild);
+      fetchUserIcon(diary.uid).then(url => {
+        if (!url) return; // プレースホルダーのまま
+        const img = document.createElement('img');
+        img.className = 'diary-card-user-icon';
+        img.src = url; img.alt = '';
+        img.loading = 'lazy';
+        img.setAttribute('data-html2canvas-ignore', 'true');
+        img.title = `${diary.name || '投稿者'}のページへ`;
+        img.onclick = () => navigateToUserMypage(diary.uid);
+        img.onerror = () => {}; // 失敗時はプレースホルダーのまま
+        iconPh.replaceWith(img);
       });
     }
     // BGM再生ボタン（bgmIdがある場合のみ）
@@ -5747,6 +5821,7 @@
         item.className = 'diary-photo-item';
         const img = document.createElement('img');
         img.src = src; img.alt = '思い出';
+        img.loading = 'lazy';
         img.onclick = () => openLightbox(src);
         item.appendChild(img);
         grid.appendChild(item);

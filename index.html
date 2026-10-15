@@ -5087,8 +5087,8 @@
     }
     wrap.appendChild(inner);
 
-    // テキスト・画像要素にはマスキングテープ装飾を追加
-    if (elData.type === 'text' || elData.type === 'image') {
+    // 画像要素にのみマスキングテープ装飾を追加（テキスト・ステッカーには付けない）
+    if (elData.type === 'image') {
       const seed   = strHash(String(elData.id) + elData.type);
       const rng    = SeededRng(seed);
       const nowM   = new Date().getMonth() + 1;

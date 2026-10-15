@@ -411,6 +411,79 @@
     }
     .diary-edit-btn:hover { background: linear-gradient(135deg, #f57f17, #e65100); transform: scale(1.05); }
 
+    /* ===== リアクションスタンプ ===== */
+    .reaction-bar {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 5px; padding: 6px 10px 4px;
+      border-top: 1px dashed rgba(100,150,220,0.2);
+      position: relative;
+    }
+    /* 各スタンプの集計チップ */
+    .reaction-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 8px; border-radius: 20px;
+      background: rgba(240,245,255,0.8);
+      border: 1.5px solid rgba(100,150,220,0.2);
+      font-size: 14px; cursor: pointer;
+      transition: all 0.18s; user-select: none;
+      font-family: 'Zen Maru Gothic', sans-serif;
+    }
+    .reaction-chip:hover { background: rgba(220,235,255,0.9); transform: scale(1.08); }
+    .reaction-chip.mine {
+      background: rgba(255,245,200,0.95);
+      border-color: rgba(255,180,0,0.5);
+      box-shadow: 0 2px 6px rgba(255,180,0,0.25);
+    }
+    .reaction-chip-count {
+      font-size: 11px; color: #5577aa;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      min-width: 10px;
+    }
+    /* ＋ボタン */
+    .reaction-add-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(220,235,255,0.7);
+      border: 1.5px dashed rgba(100,150,220,0.35);
+      font-size: 14px; cursor: pointer;
+      transition: all 0.18s; color: #7a9ac8;
+    }
+    .reaction-add-btn:hover { background: rgba(200,220,255,0.9); transform: scale(1.12); }
+    /* 絵文字ピッカー */
+    .reaction-picker {
+      position: absolute; bottom: calc(100% + 6px); left: 8px;
+      display: flex; gap: 4px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(100,150,220,0.2);
+      border-radius: 30px; padding: 6px 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 200;
+      animation: pickerPop 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes pickerPop {
+      from { transform: scale(0.7) translateY(8px); opacity: 0; }
+      to   { transform: scale(1) translateY(0);     opacity: 1; }
+    }
+    .reaction-picker-btn {
+      font-size: 22px; cursor: pointer; padding: 2px 4px;
+      border-radius: 50%; border: none; background: transparent;
+      transition: transform 0.15s;
+      line-height: 1;
+    }
+    .reaction-picker-btn:hover { transform: scale(1.3); background: rgba(240,245,255,0.9); }
+    /* パーティクル */
+    .reaction-particle {
+      position: fixed; pointer-events: none; z-index: 9999;
+      font-size: 22px; line-height: 1;
+      animation: particleFly 0.9s ease-out forwards;
+    }
+    @keyframes particleFly {
+      0%   { transform: translateY(0) scale(1);    opacity: 1; }
+      60%  { transform: translateY(-80px) scale(1.3); opacity: 0.9; }
+      100% { transform: translateY(-140px) scale(0.5); opacity: 0; }
+    }
+
     /* ===== 編集中バナー ===== */
     .edit-mode-banner {
       display: none;
@@ -5894,7 +5967,145 @@
 
     card.appendChild(actions);
 
+    // ===== リアクションスタンプバー =====
+    const reactionBar = createReactionBar(`diaries/${diary.fbKey}`, diary.fbKey);
+    card.appendChild(reactionBar);
+
     return card;
+  }
+
+  // ===================================================================
+  // ===== リアクションスタンプ 共通エンジン =====
+  // ===================================================================
+
+  const REACTION_EMOJIS = ['🌻','🥹','🤣','🍧','👏'];
+
+  /**
+   * リアクションバーを生成して返す（日記カード・掲示板メモ共通）
+   * @param {string} dbPath  例: 'diaries/-NXXX' or 'guestBoard/posts/-NYYY'
+   * @param {string} key     fbKey / postId（パーティクル位置特定用）
+   */
+  function createReactionBar(dbPath, key) {
+    const bar = document.createElement('div');
+    bar.className = 'reaction-bar';
+    bar.setAttribute('data-html2canvas-ignore', 'true');
+
+    let pickerEl = null; // 現在開いているピッカー
+
+    // ── ＋ボタン ──
+    const addBtn = document.createElement('button');
+    addBtn.className = 'reaction-add-btn';
+    addBtn.title = 'リアクションを追加';
+    addBtn.textContent = '＋';
+    addBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (pickerEl) { pickerEl.remove(); pickerEl = null; return; }
+      pickerEl = document.createElement('div');
+      pickerEl.className = 'reaction-picker';
+      REACTION_EMOJIS.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.className = 'reaction-picker-btn';
+        btn.textContent = emoji;
+        btn.title = emoji;
+        btn.onclick = (ev) => {
+          ev.stopPropagation();
+          fireReaction(dbPath, emoji, btn);
+          pickerEl?.remove(); pickerEl = null;
+        };
+        pickerEl.appendChild(btn);
+      });
+      bar.appendChild(pickerEl);
+      // 外クリックで閉じる
+      setTimeout(() => {
+        const close = () => { pickerEl?.remove(); pickerEl = null; document.removeEventListener('click', close); };
+        document.addEventListener('click', close, { once: true });
+      }, 0);
+    };
+    bar.appendChild(addBtn);
+
+    // ── カウント表示（リアルタイム監視）──
+    const chipsWrap = document.createElement('div');
+    chipsWrap.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:5px;flex:1;';
+    bar.appendChild(chipsWrap);
+
+    onValue(ref(db, `${dbPath}/reactions`), (snap) => {
+      const data = snap.val() || {};
+      chipsWrap.innerHTML = '';
+      const myUid = currentUser?.uid || null;
+
+      // 集計
+      const counts = {};
+      const mine   = new Set();
+      REACTION_EMOJIS.forEach(e => { counts[e] = 0; });
+      Object.entries(data).forEach(([emoji, users]) => {
+        counts[emoji] = Object.keys(users || {}).length;
+        if (myUid && users[myUid]) mine.add(emoji);
+      });
+
+      // チップ描画（0件でも mine のものは表示）
+      REACTION_EMOJIS.forEach(emoji => {
+        const count = counts[emoji] || 0;
+        if (count === 0 && !mine.has(emoji)) return;
+        const chip = document.createElement('button');
+        chip.className = 'reaction-chip' + (mine.has(emoji) ? ' mine' : '');
+        chip.innerHTML = `${emoji}<span class="reaction-chip-count">${count}</span>`;
+        chip.title = `${emoji} ${count}件`;
+        chip.onclick = (e) => { e.stopPropagation(); fireReaction(dbPath, emoji, chip); };
+        chipsWrap.appendChild(chip);
+      });
+    });
+
+    return bar;
+  }
+
+  /**
+   * リアクションのトグル（押す / 取り消し）＋パーティクル演出
+   */
+  async function fireReaction(dbPath, emoji, triggerEl) {
+    if (!currentUser) {
+      // 未ログイン → ログイン促す
+      const t = document.createElement('div');
+      t.textContent = 'ログインするとリアクションできます！';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(50,50,50,0.88);color:#fff;padding:7px 18px;border-radius:20px;font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2000);
+      return;
+    }
+    const uid     = currentUser.uid;
+    const emojiRef = ref(db, `${dbPath}/reactions/${emoji}/${uid}`);
+
+    // 現在の状態を確認してトグル
+    const snap = await new Promise(res => onValue(emojiRef, res, { onlyOnce: true }));
+    if (snap.val()) {
+      await remove(emojiRef); // 取り消し
+    } else {
+      await set(emojiRef, true); // 押す
+      // パーティクル演出（押したときのみ）
+      spawnReactionParticles(emoji, triggerEl);
+    }
+  }
+
+  /**
+   * 絵文字パーティクルアニメーション
+   */
+  function spawnReactionParticles(emoji, el) {
+    const rect = el?.getBoundingClientRect?.() || { left: window.innerWidth/2, top: window.innerHeight/2, width: 0, height: 0 };
+    const originX = rect.left + rect.width  / 2;
+    const originY = rect.top  + rect.height / 2;
+    const count = 4 + Math.floor(Math.random() * 3); // 4〜6個
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'reaction-particle';
+      p.textContent = emoji;
+      const spreadX = (Math.random() - 0.5) * 60;
+      const delay   = Math.random() * 120;
+      p.style.left  = (originX + spreadX) + 'px';
+      p.style.top   = originY + 'px';
+      p.style.animationDelay = delay + 'ms';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1100 + delay);
+    }
   }
 
   // ===== ページめくり =====
@@ -6744,6 +6955,12 @@
         if (countEl) countEl.textContent = `${selectedMemos.size}件を削除予定`;
       }
     });
+
+    // リアクションバー（掲示板メモ用）
+    const memoReactionBar = createReactionBar(`guestBoard/posts/${postId}`, postId);
+    memoReactionBar.style.cssText += 'background:rgba(255,255,255,0.15);border-top:1px dashed rgba(255,255,255,0.2);border-radius:0 0 4px 4px;';
+    el.appendChild(memoReactionBar);
+
     return el;
   }
 

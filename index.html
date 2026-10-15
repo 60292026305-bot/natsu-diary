@@ -284,43 +284,14 @@
       box-shadow: 0 16px 40px rgba(0,0,0,0.22);
       z-index: 20;
     }
-    /* マスキングテープ：基準は上部中央 */
+    /* マスキングテープ：Canvas生成版をJSで適用するため::beforeは非表示 */
     .diary-card::before {
-      content: '';
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-1.5deg) translateY(0px);
-      width: 68px;
-      height: 20px;
-      background: rgba(255,210,100,0.65);  /* 黄色 */
-      border-radius: 2px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.1);
+      display: none;
     }
-    /* 偶数カード：水色・ほんのわずかに右へ */
-    .diary-card:nth-child(even)::before {
-      transform: translateX(-50%) rotate(1.2deg) translateX(3px) translateY(1px);
-      background: rgba(160,210,255,0.6);
-      width: 66px;
-    }
-    /* 3の倍数カード：緑・ほんのわずかに左へ */
-    .diary-card:nth-child(3n)::before {
-      transform: translateX(-50%) rotate(-0.8deg) translateX(-2px) translateY(-1px);
-      background: rgba(200,240,160,0.65);
-      width: 70px;
-    }
-    /* 4の倍数カード：黄色・ほぼ真っ直ぐ */
-    .diary-card:nth-child(4n)::before {
-      transform: translateX(-50%) rotate(0.5deg) translateX(1px) translateY(0px);
-      background: rgba(255,210,100,0.6);
-      width: 65px;
-    }
-    /* 5の倍数カード：水色・ごく小さい傾き */
-    .diary-card:nth-child(5n)::before {
-      transform: translateX(-50%) rotate(-1.8deg) translateX(-1px) translateY(1px);
-      background: rgba(160,210,255,0.55);
-      width: 72px;
-    }
+    .diary-card:nth-child(even)::before  { display: none; }
+    .diary-card:nth-child(3n)::before    { display: none; }
+    .diary-card:nth-child(4n)::before    { display: none; }
+    .diary-card:nth-child(5n)::before    { display: none; }
 
     /* キャプション帯 → カード最上部ヘッダーに変更 */
     .diary-card-caption {
@@ -5812,24 +5783,38 @@
     }
     card.appendChild(caption);
 
-    // ===== 思い出カードのマスキングテープ装飾（4角） =====
-    // diary の日付・天気・fbKey をシードに Canvas 生成柄を適用
+    // ===== 上部中央マスキングテープ1本（Canvas生成柄）=====
+    // 日付・天気・fbKey をシードに柄を生成し、カード上部中央に横1本貼る
     {
-      const cornerDefs = [
-        { cls:'card-tape-tl', rot:'-40deg', t:'-7px',  l:'-10px', r:'auto',  b:'auto'  },
-        { cls:'card-tape-tr', rot: '40deg', t:'-7px',  l:'auto',  r:'-10px', b:'auto'  },
-        { cls:'card-tape-bl', rot: '40deg', t:'auto',  l:'-10px', r:'auto',  b:'-7px'  },
-        { cls:'card-tape-br', rot:'-40deg', t:'auto',  l:'auto',  r:'-10px', b:'-7px'  },
-      ];
-      cornerDefs.forEach(({ cls, rot, t, l, r, b }) => {
-        const span = document.createElement('span');
-        span.setAttribute('data-html2canvas-ignore', 'true');
-        span.style.cssText = `position:absolute;width:44px;height:14px;opacity:0.8;border-radius:2px;z-index:4;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,0.12);top:${t};left:${l};right:${r};bottom:${b};transform:rotate(${rot});transform-origin:center center;background-size:cover;background-position:center;`;
-        // DataURL は JS プロパティで設定（innerHTML に混ぜない）
-        const url = getTapeForPost(diary.date || '', diary.weather || '', (diary.fbKey || '') + cls);
-        span.style.backgroundImage = `url('${url}')`;
-        card.appendChild(span);
-      });
+      const tape = document.createElement('span');
+      tape.setAttribute('data-html2canvas-ignore', 'true');
+
+      // シードから微妙な傾きを決定（-2deg〜+2deg）
+      const seed   = strHash((diary.date || '') + (diary.weather || '') + (diary.fbKey || ''));
+      const rng    = SeededRng(seed);
+      const tiltDeg = ((rng() * 4) - 2).toFixed(2);   // -2.00 〜 +2.00
+      const widthPx = 60 + Math.floor(rng() * 20);      // 60〜80px
+
+      tape.style.cssText = [
+        'position:absolute',
+        'top:-11px',
+        'left:50%',
+        `transform:translateX(-50%) rotate(${tiltDeg}deg)`,
+        `width:${widthPx}px`,
+        'height:20px',
+        'border-radius:2px',
+        'z-index:4',
+        'pointer-events:none',
+        'background-size:cover',
+        'background-position:center',
+        'box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 1px 4px rgba(0,0,0,0.14)',
+        'opacity:0.88',
+      ].join(';');
+
+      // Canvas 生成柄を JS プロパティで設定（innerHTML に混ぜない）
+      const url = getTapeForPost(diary.date || '', diary.weather || '', diary.fbKey || '');
+      tape.style.backgroundImage = `url('${url}')`;
+      card.appendChild(tape);
     }
 
     // ===== ② 本文・写真エリア =====

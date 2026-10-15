@@ -6578,6 +6578,7 @@
   }
 
   // ================================================================
+  let boardInitialized = false;
   let summaryMode      = false;
   let selectedMemos    = new Set();
   let groupedPostIds   = new Set(); // どのバインダーにも属しているpostId一覧
@@ -6771,7 +6772,12 @@
       await push(BOARD_REF, { content, color, createdAt: Date.now() });
       closeBoardPost();
     } catch(e) {
-      alert('投稿に失敗しました: ' + e.message);
+      console.error('[掲示板投稿エラー]', e.code, e.message);
+      const isPermission = e.code === 'PERMISSION_DENIED' || String(e.message).includes('PERMISSION_DENIED');
+      const msg = isPermission
+        ? '投稿できません。\nFirebaseコンソール → Realtime Database → ルール で\n"guestBoard": { ".read": true, ".write": true } を確認してください。'
+        : '投稿に失敗しました: ' + e.message;
+      alert(msg);
     } finally {
       btn.disabled = false;
     }

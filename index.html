@@ -6008,6 +6008,7 @@
     // ── ＋ボタン ──
     const addBtn = document.createElement('button');
     addBtn.className = 'reaction-add-btn';
+    addBtn.type = 'button';
     addBtn.title = 'リアクションを追加';
     addBtn.textContent = '＋';
     addBtn.onclick = (e) => {
@@ -6024,12 +6025,17 @@
         setTimeout(() => t.remove(), 2000);
         return;
       }
-      // ピッカーの開閉トグル
+      // ピッカーが既に開いていれば閉じる
       if (pickerEl) { pickerEl.remove(); pickerEl = null; return; }
+
+      // ピッカー生成
       pickerEl = document.createElement('div');
       pickerEl.className = 'reaction-picker';
+      // ピッカー自身のクリックが addBtn の onclick に伝播しないよう止める
+      pickerEl.addEventListener('click', ev => ev.stopPropagation());
       REACTION_EMOJIS.forEach(emoji => {
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = 'reaction-picker-btn';
         btn.textContent = emoji;
         btn.title = emoji;
@@ -6037,22 +6043,22 @@
           ev.stopPropagation();
           ev.preventDefault();
           fireReaction(dbPath, emoji, btn, authorUid);
-          pickerEl?.remove(); pickerEl = null;
+          if (pickerEl) { pickerEl.remove(); pickerEl = null; }
         };
         pickerEl.appendChild(btn);
       });
       bar.appendChild(pickerEl);
-      // 外クリックで閉じる（stopPropagation後に登録するためcaptureフェーズで捕捉）
+
+      // 外クリックで閉じる
+      // — setTimeout で登録を遅延して「今のクリックイベント」に反応させない
       const closeHandler = (ev) => {
-        if (pickerEl && !pickerEl.contains(ev.target) && ev.target !== addBtn) {
-          pickerEl.remove(); pickerEl = null;
-          document.removeEventListener('click', closeHandler, true);
-        }
+        if (!pickerEl) { document.removeEventListener('click', closeHandler); return; }
+        // ピッカー内・＋ボタン自身のクリックは無視
+        if (pickerEl.contains(ev.target) || ev.target === addBtn) return;
+        pickerEl.remove(); pickerEl = null;
+        document.removeEventListener('click', closeHandler);
       };
-      // 次のイベントループで登録（今のクリックイベントに反応しない）
-      requestAnimationFrame(() => {
-        document.addEventListener('click', closeHandler, true);
-      });
+      setTimeout(() => document.addEventListener('click', closeHandler), 10);
     };
     bar.appendChild(addBtn);
 

@@ -6014,9 +6014,7 @@
     addBtn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      // 自分の投稿には押せない
       if (isMine()) { showOwnPostToast(); return; }
-      // 未ログインも弾く
       if (!currentUser) {
         const t = document.createElement('div');
         t.textContent = 'ログインするとリアクションできます！';
@@ -6025,40 +6023,41 @@
         setTimeout(() => t.remove(), 2000);
         return;
       }
-      // ピッカーが既に開いていれば閉じる
+      // 既に開いていれば閉じる
       if (pickerEl) { pickerEl.remove(); pickerEl = null; return; }
 
       // ピッカー生成
       pickerEl = document.createElement('div');
       pickerEl.className = 'reaction-picker';
-      // ピッカー自身のクリックが addBtn の onclick に伝播しないよう止める
-      pickerEl.addEventListener('click', ev => ev.stopPropagation());
+      pickerEl.addEventListener('mousedown', ev => ev.stopPropagation());
+      pickerEl.addEventListener('click',     ev => ev.stopPropagation());
       REACTION_EMOJIS.forEach(emoji => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'reaction-picker-btn';
         btn.textContent = emoji;
         btn.title = emoji;
+        btn.addEventListener('mousedown', ev => ev.stopPropagation());
         btn.onclick = (ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          fireReaction(dbPath, emoji, btn, authorUid);
           if (pickerEl) { pickerEl.remove(); pickerEl = null; }
+          fireReaction(dbPath, emoji, btn, authorUid);
         };
         pickerEl.appendChild(btn);
       });
       bar.appendChild(pickerEl);
 
-      // 外クリックで閉じる
-      // — setTimeout で登録を遅延して「今のクリックイベント」に反応させない
-      const closeHandler = (ev) => {
-        if (!pickerEl) { document.removeEventListener('click', closeHandler); return; }
-        // ピッカー内・＋ボタン自身のクリックは無視
-        if (pickerEl.contains(ev.target) || ev.target === addBtn) return;
-        pickerEl.remove(); pickerEl = null;
-        document.removeEventListener('click', closeHandler);
+      // 外クリック（mousedown）でコンテナ外なら閉じる
+      // ── mousedown を使う理由: click より先に発火し、Firebaseコールバックの影響を受けない
+      const outsideHandler = (ev) => {
+        // bar（コンテナ全体）の内側ならスキップ
+        if (bar.contains(ev.target)) return;
+        if (pickerEl) { pickerEl.remove(); pickerEl = null; }
+        document.removeEventListener('mousedown', outsideHandler);
       };
-      setTimeout(() => document.addEventListener('click', closeHandler), 10);
+      // 同一イベントループが完全に終わった後に登録
+      setTimeout(() => document.addEventListener('mousedown', outsideHandler), 0);
     };
     bar.appendChild(addBtn);
 

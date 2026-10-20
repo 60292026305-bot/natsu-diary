@@ -6101,7 +6101,7 @@
     chipsWrap.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:5px;flex:1;';
     container.appendChild(chipsWrap);
 
-    onValue(ref(db, `${dbPath}/reactions`), (snap) => {
+    onValue(ref(db, reactionPath(dbPath)), (snap) => {
       const data  = snap.val() || {};
       chipsWrap.innerHTML = '';
       const myUid = currentUser?.uid || null;
@@ -6134,22 +6134,31 @@
   /**
    * リアクションのトグル（押す / 取り消し）＋パーティクル演出
    */
+  // dbPath → reactions の実際の DB パスを返す
+  // diaries/$id は diaryReactions/$id（トップレベル独立ノード）に移動
+  // guestBoard/posts/$id はそのまま guestBoard/posts/$id/reactions
+  function reactionPath(dbPath) {
+    if (dbPath.startsWith('diaries/')) {
+      return dbPath.replace('diaries/', 'diaryReactions/');
+    }
+    return `${dbPath}/reactions`;
+  }
+
   async function fireReaction(dbPath, emoji, triggerEl, authorUid) {
     if (!currentUser) return;
-    // 自分の投稿チェック（二重ガード）
     if (authorUid && currentUser.uid === authorUid) return;
 
     const uid      = currentUser.uid;
-    const emojiRef = ref(db, `${dbPath}/reactions/${emoji}/${uid}`);
+    const emojiRef = ref(db, `${reactionPath(dbPath)}/${emoji}/${uid}`);
 
     try {
       const snap = await new Promise((res, rej) =>
         onValue(emojiRef, res, rej, { onlyOnce: true })
       );
       if (snap.val()) {
-        await remove(emojiRef); // 取り消し
+        await remove(emojiRef);
       } else {
-        await set(emojiRef, true); // 押す → パーティクル
+        await set(emojiRef, true);
         spawnReactionParticles(emoji, triggerEl);
       }
     } catch(e) {

@@ -451,7 +451,7 @@
       transition: all 0.18s; color: #7a9ac8;
     }
     .reaction-add-btn:hover { background: rgba(200,220,255,0.9); transform: scale(1.12); }
-    /* 絵文字ピッカー */
+    /* 絵文字ピッカー：transitionで表示管理（@keyframesなし） */
     .reaction-picker {
       position: absolute; bottom: calc(100% + 6px); left: 8px;
       display: flex; gap: 4px;
@@ -461,12 +461,26 @@
       border-radius: 30px; padding: 6px 10px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       z-index: 200;
-      animation: pickerPop 0.18s cubic-bezier(0.34,1.56,0.64,1) forwards;
+      /* 非表示の基本状態 */
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.8) translateY(6px);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
     }
-    .reaction-picker.hidden { display: none; }
-    @keyframes pickerPop {
-      from { transform: scale(0.7) translateY(8px); opacity: 0; }
-      to   { transform: scale(1) translateY(0);     opacity: 1; }
+    /* .show クラスで確実に表示 */
+    .reaction-picker.show {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0s;
+    }
+    /* .hidden は後方互換（display:none は使わない）*/
+    .reaction-picker.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
     .reaction-picker-btn {
       font-size: 22px; cursor: pointer; padding: 2px 4px;
@@ -5988,9 +6002,9 @@
   document.addEventListener('click', (e) => {
     document.querySelectorAll('.reaction-container').forEach(container => {
       const picker = container.querySelector('.reaction-picker');
-      if (picker && !picker.classList.contains('hidden')) {
+      if (picker && picker.classList.contains('show')) {
         if (!container.contains(e.target)) {
-          picker.classList.add('hidden');
+          picker.classList.remove('show');
         }
       }
     });
@@ -6018,9 +6032,9 @@
       setTimeout(() => t.remove(), 2000);
     };
 
-    // ── ピッカー（最初は hidden）──
+    // ── ピッカー（初期は非表示: show なし）──
     const picker = document.createElement('div');
-    picker.className = 'reaction-picker hidden';
+    picker.className = 'reaction-picker';
     // ピッカー内クリックは外側判定に伝播させない
     picker.addEventListener('click', (e) => e.stopPropagation());
 
@@ -6033,7 +6047,7 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
-        picker.classList.add('hidden');
+        picker.classList.remove('show');
         fireReaction(dbPath, emoji, btn, authorUid);
       });
       picker.appendChild(btn);
@@ -6054,7 +6068,7 @@
       if (!currentUser)  { showToast('ログインするとリアクションできます！');     return; }
 
       // toggle: 閉じていれば開く、開いていれば閉じる
-      picker.classList.toggle('hidden');
+      picker.classList.toggle('show');
     });
     container.appendChild(addBtn);
 

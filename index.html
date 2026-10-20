@@ -412,11 +412,13 @@
     .diary-edit-btn:hover { background: linear-gradient(135deg, #f57f17, #e65100); transform: scale(1.05); }
 
     /* ===== リアクションスタンプ ===== */
+    .reaction-container {
+      position: relative;
+    }
     .reaction-bar {
       display: flex; align-items: center; flex-wrap: wrap;
       gap: 5px; padding: 6px 10px 4px;
       border-top: 1px dashed rgba(100,150,220,0.2);
-      position: relative;
     }
     /* 各スタンプの集計チップ */
     .reaction-chip {
@@ -461,6 +463,7 @@
       z-index: 200;
       animation: pickerPop 0.18s cubic-bezier(0.34,1.56,0.64,1);
     }
+    .reaction-picker.hidden { display: none; }
     @keyframes pickerPop {
       from { transform: scale(0.7) translateY(8px); opacity: 0; }
       to   { transform: scale(1) translateY(0);     opacity: 1; }
@@ -5980,6 +5983,19 @@
 
   const REACTION_EMOJIS = ['🌻','🥹','🤣','🍧','👏'];
 
+  // ── グローバル外側クリック判定（1本だけ登録）──
+  // 全 .reaction-container を走査し、クリックが外側なら picker を閉じる
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.reaction-container').forEach(container => {
+      const picker = container.querySelector('.reaction-picker');
+      if (picker && !picker.classList.contains('hidden')) {
+        if (!container.contains(e.target)) {
+          picker.classList.add('hidden');
+        }
+      }
+    });
+  });
+
   /**
    * リアクションバーを生成して返す（日記カード・掲示板メモ共通）
    * @param {string} dbPath     例: 'diaries/-NXXX' or 'guestBoard/posts/-NYYY'
@@ -5987,91 +6003,71 @@
    * @param {string} authorUid  投稿者のUID（自分の投稿へのリアクション禁止用）
    */
   function createReactionBar(dbPath, key, authorUid) {
-    const bar = document.createElement('div');
-    bar.className = 'reaction-bar';
-    bar.setAttribute('data-html2canvas-ignore', 'true');
+    // ── コンテナ（外側クリック判定の基準）──
+    const container = document.createElement('div');
+    container.className = 'reaction-container reaction-bar';
+    container.setAttribute('data-html2canvas-ignore', 'true');
 
-    // 自分の投稿かどうかの判定（レンダリング時の currentUser を参照）
     const isMine = () => !!(currentUser && authorUid && currentUser.uid === authorUid);
 
-    // 自分の投稿にリアクションしようとしたときのトースト
-    const showOwnPostToast = () => {
+    const showToast = (msg) => {
       const t = document.createElement('div');
-      t.textContent = '自分の投稿にはリアクションできません 😅';
-      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(60,60,60,0.9);color:#fff;padding:7px 18px;border-radius:20px;font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(50,50,50,0.9);color:#fff;padding:7px 18px;border-radius:20px;font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 2000);
     };
 
-    let pickerEl = null;
+    // ── ピッカー（最初は hidden）──
+    const picker = document.createElement('div');
+    picker.className = 'reaction-picker hidden';
+    // ピッカー内クリックは外側判定に伝播させない
+    picker.addEventListener('click', (e) => e.stopPropagation());
+
+    REACTION_EMOJIS.forEach(emoji => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'reaction-picker-btn';
+      btn.textContent = emoji;
+      btn.title = emoji;
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        picker.classList.add('hidden');
+        fireReaction(dbPath, emoji, btn, authorUid);
+      });
+      picker.appendChild(btn);
+    });
+    container.appendChild(picker);
 
     // ── ＋ボタン ──
     const addBtn = document.createElement('button');
-    addBtn.className = 'reaction-add-btn';
     addBtn.type = 'button';
+    addBtn.className = 'reaction-add-btn';
     addBtn.title = 'リアクションを追加';
     addBtn.textContent = '＋';
-    addBtn.onclick = (e) => {
-      e.stopPropagation();
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // グローバルクリックへの伝播を止める
       e.preventDefault();
-      if (isMine()) { showOwnPostToast(); return; }
-      if (!currentUser) {
-        const t = document.createElement('div');
-        t.textContent = 'ログインするとリアクションできます！';
-        t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(50,50,50,0.88);color:#fff;padding:7px 18px;border-radius:20px;font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 2000);
-        return;
-      }
-      // 既に開いていれば閉じる
-      if (pickerEl) { pickerEl.remove(); pickerEl = null; return; }
 
-      // ピッカー生成
-      pickerEl = document.createElement('div');
-      pickerEl.className = 'reaction-picker';
-      pickerEl.addEventListener('mousedown', ev => ev.stopPropagation());
-      pickerEl.addEventListener('click',     ev => ev.stopPropagation());
-      REACTION_EMOJIS.forEach(emoji => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'reaction-picker-btn';
-        btn.textContent = emoji;
-        btn.title = emoji;
-        btn.addEventListener('mousedown', ev => ev.stopPropagation());
-        btn.onclick = (ev) => {
-          ev.stopPropagation();
-          ev.preventDefault();
-          if (pickerEl) { pickerEl.remove(); pickerEl = null; }
-          fireReaction(dbPath, emoji, btn, authorUid);
-        };
-        pickerEl.appendChild(btn);
-      });
-      bar.appendChild(pickerEl);
+      if (isMine())      { showToast('自分の投稿にはリアクションできません 😅'); return; }
+      if (!currentUser)  { showToast('ログインするとリアクションできます！');     return; }
 
-      // 外クリック（mousedown）でコンテナ外なら閉じる
-      // ── mousedown を使う理由: click より先に発火し、Firebaseコールバックの影響を受けない
-      const outsideHandler = (ev) => {
-        // bar（コンテナ全体）の内側ならスキップ
-        if (bar.contains(ev.target)) return;
-        if (pickerEl) { pickerEl.remove(); pickerEl = null; }
-        document.removeEventListener('mousedown', outsideHandler);
-      };
-      // 同一イベントループが完全に終わった後に登録
-      setTimeout(() => document.addEventListener('mousedown', outsideHandler), 0);
-    };
-    bar.appendChild(addBtn);
+      // toggle: 閉じていれば開く、開いていれば閉じる
+      picker.classList.toggle('hidden');
+    });
+    container.appendChild(addBtn);
 
     // ── カウント表示（リアルタイム監視）──
     const chipsWrap = document.createElement('div');
     chipsWrap.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:5px;flex:1;';
-    bar.appendChild(chipsWrap);
+    container.appendChild(chipsWrap);
 
     onValue(ref(db, `${dbPath}/reactions`), (snap) => {
       const data = snap.val() || {};
       chipsWrap.innerHTML = '';
       const myUid = currentUser?.uid || null;
 
-      // 集計
       const counts = {};
       const mine   = new Set();
       REACTION_EMOJIS.forEach(e => { counts[e] = 0; });
@@ -6081,24 +6077,24 @@
         if (myUid && users[myUid]) mine.add(emoji);
       });
 
-      // チップ描画（0件でも mine のものは表示）
       REACTION_EMOJIS.forEach(emoji => {
         const count = counts[emoji] || 0;
         if (count === 0 && !mine.has(emoji)) return;
         const chip = document.createElement('button');
+        chip.type = 'button';
         chip.className = 'reaction-chip' + (mine.has(emoji) ? ' mine' : '');
         chip.innerHTML = `${emoji}<span class="reaction-chip-count">${count}</span>`;
         chip.title = `${emoji} ${count}件`;
-        chip.onclick = (e) => {
+        chip.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (isMine()) { showOwnPostToast(); return; }
+          if (isMine()) { showToast('自分の投稿にはリアクションできません 😅'); return; }
           fireReaction(dbPath, emoji, chip, authorUid);
-        };
+        });
         chipsWrap.appendChild(chip);
       });
     });
 
-    return bar;
+    return container;
   }
 
   /**

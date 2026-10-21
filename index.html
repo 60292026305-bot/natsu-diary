@@ -2968,10 +2968,10 @@
     }
     .bgm-hover-menu {
       position: absolute;
-      bottom: calc(100% + 6px);
+      bottom: calc(100% + 2px);
       left: 50%;
       transform: translateX(-50%);
-      display: none;
+      display: flex;          /* 常にflexで存在させ、visibility+opacityで制御 */
       flex-direction: column;
       gap: 4px;
       background: rgba(255,255,255,0.97);
@@ -2983,8 +2983,28 @@
       z-index: 300;
       white-space: nowrap;
       min-width: 130px;
+      /* 非表示状態 */
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.18s ease, visibility 0s linear 0.18s;
     }
-    .bgm-btn-wrap:hover .bgm-hover-menu { display: flex; }
+    /* ホバー時に表示 */
+    .bgm-btn-wrap:hover .bgm-hover-menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition: opacity 0.18s ease, visibility 0s linear 0s;
+    }
+    /* ブリッジ：メニュー下部に透明な判定エリアを追加してカーソル移動中も維持 */
+    .bgm-hover-menu::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 10px;
+    }
     .bgm-hover-menu a {
       display: flex; align-items: center; gap: 6px;
       padding: 5px 8px; border-radius: 8px;

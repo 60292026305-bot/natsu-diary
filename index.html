@@ -3042,6 +3042,21 @@
       ログイン
     </button>
     <div class="login-error" id="login-error"></div>
+
+    <!-- テスト用匿名ログイン（開発・動作確認用） -->
+    <div style="margin-top:12px;border-top:1px dashed rgba(100,150,220,0.25);padding-top:12px;">
+      <p style="font-family:'Yomogi',cursive;font-size:10px;color:#aaa;text-align:center;margin-bottom:8px;">🔧 テスト用（開発・動作確認）</p>
+      <div style="display:flex;gap:8px;">
+        <button onclick="doAnonymousLogin('ゲストA')"
+          style="flex:1;padding:7px;border:1.5px dashed rgba(100,150,220,0.4);border-radius:10px;background:rgba(220,235,255,0.5);font-family:'Yomogi',cursive;font-size:11px;color:#5577aa;cursor:pointer;">
+          👤 ゲストA でログイン
+        </button>
+        <button onclick="doAnonymousLogin('ゲストB')"
+          style="flex:1;padding:7px;border:1.5px dashed rgba(100,150,220,0.4);border-radius:10px;background:rgba(220,235,255,0.5);font-family:'Yomogi',cursive;font-size:11px;color:#5577aa;cursor:pointer;">
+          👤 ゲストB でログイン
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3656,6 +3671,7 @@
     getAuth, onAuthStateChanged,
     GoogleAuthProvider, signInWithPopup,
     createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signInAnonymously,
     signOut, updateProfile
   } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
@@ -3868,6 +3884,28 @@
     }
   };
 
+  // ===== 匿名ログイン（テスト用）=====
+  window.doAnonymousLogin = async function(label) {
+    try {
+      const cred = await signInAnonymously(auth);
+      // 表示名をプロフィールに設定
+      await updateProfile(cred.user, { displayName: label });
+      // /users/$uid にも保存
+      await set(ref(db, `users/${cred.user.uid}`), {
+        displayName: label,
+        avatarUrl: '',
+      });
+      closeLogin();
+      const t = document.createElement('div');
+      t.textContent = `👤 ${label} としてログインしました（テスト用）`;
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(50,100,180,0.9);color:#fff;padding:8px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    } catch(e) {
+      document.getElementById('login-error').textContent = '匿名ログインに失敗しました: ' + e.message;
+    }
+  };
+
   // ===== メール認証（ログイン or 新規登録） =====
   window.doEmailAuth = async function() {
     const isSignup = document.getElementById('tab-signup').classList.contains('active');
@@ -3996,9 +4034,34 @@
     });
   }
 
+  // ===== NGワードフィルター =====
+  const NG_WORDS = [
+    // 暴力・脅迫
+    '死ね','殺す','殺せ','ぶっ殺','氏ね','しね','ころす','殺害',
+    // 誹謗中傷
+    'バカ','ばか','アホ','あほ','きもい','キモい','うざい','ウザい',
+    'クズ','くず','ゴミ','ごみ','死ねばいい','消えろ',
+    // 差別・侮辱
+    'チョン','チンコ','マンコ','ちんこ','まんこ',
+    // 公序良俗
+    'セックス','エロ','ポルノ','援交','売春',
+  ];
+
+  function checkNgWords(text) {
+    return NG_WORDS.some(word => text.includes(word));
+  }
+
+  function showNgToast() {
+    const t = document.createElement('div');
+    t.textContent = '⚠️ 不適切な表現が含まれているため送信できません';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(200,30,30,0.92);color:#fff;padding:9px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
   // ===== 保存（新規 or 更新） =====
   window.saveDiary = async function () {
-    if (!requireAuth()) return; // 未ログインならログインモーダルを開く
+    if (!requireAuth()) return;
 
     // 名前欄が空なら userProfile.displayName を自動補完
     const nameInput = document.getElementById('diary-name');
@@ -4014,6 +4077,7 @@
 
     if (!name) { alert('名前を入力してね！'); return; }
     if (!text) { alert('日記の内容を入力してね！'); return; }
+    if (checkNgWords(text) || checkNgWords(name)) { showNgToast(); return; }
 
     const saveBtn = document.querySelector('.save-btn');
     saveBtn.disabled = true;
@@ -6033,8 +6097,13 @@
       const authorUid = container?.dataset.authorUid || '';
       const emoji     = emojiBtn.dataset.emoji       || '';
 
+      // ピッカーを閉じる前に座標を取得（閉じた後は getBoundingClientRect が 0,0 になる）
+      const rect = emojiBtn.getBoundingClientRect();
+      const originX = rect.left + rect.width  / 2;
+      const originY = rect.top  + rect.height / 2;
+
       if (picker) picker.classList.remove('show');
-      if (dbPath && emoji) fireReaction(dbPath, emoji, emojiBtn, authorUid);
+      if (dbPath && emoji) fireReaction(dbPath, emoji, { x: originX, y: originY }, authorUid);
       return;
     }
 
@@ -6051,7 +6120,13 @@
         showReactionToast('自分の投稿にはリアクションできません 😅');
         return;
       }
-      if (dbPath && emoji) fireReaction(dbPath, emoji, chip, authorUid);
+
+      // チップの座標を同期で取得
+      const rect = chip.getBoundingClientRect();
+      const originX = rect.left + rect.width  / 2;
+      const originY = rect.top  + rect.height / 2;
+
+      if (dbPath && emoji) fireReaction(dbPath, emoji, { x: originX, y: originY }, authorUid);
       return;
     }
 
@@ -6149,16 +6224,30 @@
     if (authorUid && currentUser.uid === authorUid) return;
 
     const uid      = currentUser.uid;
-    const emojiRef = ref(db, `${reactionPath(dbPath)}/${emoji}/${uid}`);
+    const basePath = reactionPath(dbPath);
 
     try {
-      const snap = await new Promise((res, rej) =>
-        onValue(emojiRef, res, rej, { onlyOnce: true })
+      // 全絵文字の現在の状態を取得（1人1リアクション制限のため）
+      const allSnap = await new Promise((res, rej) =>
+        onValue(ref(db, basePath), res, rej, { onlyOnce: true })
       );
-      if (snap.val()) {
-        await remove(emojiRef);
+      const allData = allSnap.val() || {};
+
+      // 自分が現在押している絵文字を探す
+      let currentEmoji = null;
+      for (const [e, users] of Object.entries(allData)) {
+        if (users && users[uid]) { currentEmoji = e; break; }
+      }
+
+      if (currentEmoji === emoji) {
+        // 同じ絵文字を再タップ → 取り消し
+        await remove(ref(db, `${basePath}/${emoji}/${uid}`));
       } else {
-        await set(emojiRef, true);
+        // 別の絵文字を押した場合、既存を削除してから新規追加
+        if (currentEmoji) {
+          await remove(ref(db, `${basePath}/${currentEmoji}/${uid}`));
+        }
+        await set(ref(db, `${basePath}/${emoji}/${uid}`), true);
         spawnReactionParticles(emoji, triggerEl);
       }
     } catch(e) {
@@ -6168,19 +6257,29 @@
 
   /**
    * 絵文字パーティクルアニメーション
+   * @param {string} emoji
+   * @param {HTMLElement|{x:number,y:number}} elOrPos  DOM要素 または {x,y} 座標オブジェクト
    */
-  function spawnReactionParticles(emoji, el) {
-    const rect = el?.getBoundingClientRect?.() || { left: window.innerWidth/2, top: window.innerHeight/2, width: 0, height: 0 };
-    const originX = rect.left + rect.width  / 2;
-    const originY = rect.top  + rect.height / 2;
-    const count = 4 + Math.floor(Math.random() * 3); // 4〜6個
+  function spawnReactionParticles(emoji, elOrPos) {
+    let originX, originY;
+    if (elOrPos && typeof elOrPos.x === 'number') {
+      // 座標オブジェクト（イベント委譲からの呼び出し）
+      originX = elOrPos.x;
+      originY = elOrPos.y;
+    } else {
+      // DOM要素（後方互換）
+      const rect = elOrPos?.getBoundingClientRect?.() || {};
+      originX = (rect.left || 0) + (rect.width  || 0) / 2 || window.innerWidth  / 2;
+      originY = (rect.top  || 0) + (rect.height || 0) / 2 || window.innerHeight / 2;
+    }
 
+    const count = 5 + Math.floor(Math.random() * 4); // 5〜8個
     for (let i = 0; i < count; i++) {
       const p = document.createElement('div');
       p.className = 'reaction-particle';
       p.textContent = emoji;
-      const spreadX = (Math.random() - 0.5) * 60;
-      const delay   = Math.random() * 120;
+      const spreadX = (Math.random() - 0.5) * 80;
+      const delay   = Math.random() * 150;
       p.style.left  = (originX + spreadX) + 'px';
       p.style.top   = originY + 'px';
       p.style.animationDelay = delay + 'ms';
@@ -7037,11 +7136,6 @@
       }
     });
 
-    // リアクションバー（掲示板メモ用）
-    const memoReactionBar = createReactionBar(`guestBoard/posts/${postId}`, postId, post.uid || '');
-    memoReactionBar.style.cssText += 'background:rgba(255,255,255,0.15);border-top:1px dashed rgba(255,255,255,0.2);border-radius:0 0 4px 4px;';
-    el.appendChild(memoReactionBar);
-
     return el;
   }
 
@@ -7063,6 +7157,7 @@
   window.submitBoardPost = async function() {
     const content = document.getElementById('board-post-text').value.trim();
     if (!content) return;
+    if (checkNgWords(content)) { showNgToast(); return; }
     const color = document.querySelector('input[name="board-color"]:checked')?.value || 'yellow';
     const btn = document.getElementById('board-submit-btn');
     btn.disabled = true;

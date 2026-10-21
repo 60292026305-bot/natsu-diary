@@ -2960,6 +2960,39 @@
       background: rgba(160,120,220,0.2);
       transform: scale(1.2);
     }
+    /* BGMボタンのホバーメニュー用ラッパー */
+    .bgm-btn-wrap {
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+    }
+    .bgm-hover-menu {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(150,120,220,0.2);
+      border-radius: 12px;
+      padding: 6px 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      z-index: 300;
+      white-space: nowrap;
+      min-width: 130px;
+    }
+    .bgm-btn-wrap:hover .bgm-hover-menu { display: flex; }
+    .bgm-hover-menu a {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 8px; border-radius: 8px;
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: #333; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .bgm-hover-menu a:hover { background: rgba(150,120,220,0.12); }
     .bgm-play-btn.playing {
       animation: bgmPulse 1s ease-in-out infinite;
     }
@@ -5913,13 +5946,33 @@
     }
     // BGM再生ボタン（bgmIdがある場合のみ）
     if (diary.bgmId) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bgm-btn-wrap';
+      wrap.setAttribute('data-html2canvas-ignore', 'true');
+
       const playBtn = document.createElement('button');
       playBtn.className = 'bgm-play-btn';
       playBtn.title = diary.bgmTitle || 'BGMを再生';
       playBtn.textContent = '▶️';
-      playBtn.setAttribute('data-html2canvas-ignore', 'true');
       playBtn.onclick = () => toggleBGM(diary.bgmId, playBtn);
-      caption.appendChild(playBtn);
+      wrap.appendChild(playBtn);
+
+      // ホバーメニュー（YouTube / Spotify 検索リンク）
+      const menu = document.createElement('div');
+      menu.className = 'bgm-hover-menu';
+      const q = encodeURIComponent(diary.bgmTitle || diary.bgmId || '');
+      menu.innerHTML = `
+        <a href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.6 3.6 12 3.6 12 3.6s-7.6 0-9.4.5A3 3 0 0 0 .5 6.2C0 8 0 12 0 12s0 4 .5 5.8a3 3 0 0 0 2.1 2.1c1.8.5 9.4.5 9.4.5s7.6 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 16 24 12 24 12s0-4-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+          YouTubeで聴く
+        </a>
+        <a href="https://open.spotify.com/search/${q}" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.5 17.3c-.2.4-.7.5-1 .2-2.8-1.7-6.3-2.1-10.4-1.1-.4.1-.8-.1-.9-.5-.1-.4.1-.8.5-.9 4.5-1 8.4-.6 11.5 1.3.4.2.5.6.3 1zm1.5-3.3c-.3.4-.8.6-1.2.3-3.2-2-8.1-2.5-11.9-1.4-.5.1-1-.1-1.1-.6-.1-.5.1-1 .6-1.1 4.3-1.3 9.7-.7 13.3 1.6.4.3.6.9.3 1.2zm.1-3.4C15.5 8.2 9 8 5.3 9.1c-.6.2-1.2-.2-1.3-.8-.2-.6.2-1.2.8-1.3 4.3-1.3 11.4-1 15.9 1.6.5.3.7 1 .4 1.5-.3.5-1 .7-1.5.4z"/></svg>
+          Spotifyで聴く
+        </a>`;
+      wrap.appendChild(menu);
+
+      caption.appendChild(wrap);
     }
     card.appendChild(caption);
 

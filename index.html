@@ -3845,9 +3845,9 @@
     if (user) {
       guestEl.style.display = 'none';
       userEl.style.display  = 'flex';
-      // マイページ固定ボタンを表示
+      // マイページ固定ボタン：ゲストユーザー（匿名）は非表示
       const mypageBtn = document.getElementById('mypage-fixed-btn');
-      if (mypageBtn) mypageBtn.style.display = 'flex';
+      if (mypageBtn) mypageBtn.style.display = user.isAnonymous ? 'none' : 'flex';
       // friendsList を LocalStorage から復元
       const saved = localStorage.getItem('friends_' + user.uid);
       friendsList = saved ? JSON.parse(saved) : [];
@@ -4318,8 +4318,22 @@
     return el;
   }
 
+  // ゲストユーザー（匿名認証 = テスト用アカウント）判定
+  function isGuestUser() {
+    return !!(currentUser && currentUser.isAnonymous);
+  }
+
   window.openMypage = function() {
     if (!currentUser) return;
+    // ゲストユーザー（匿名認証）はプロフィール画面を開けない
+    if (isGuestUser()) {
+      const t = document.createElement('div');
+      t.textContent = 'ゲストアカウントではプロフィールを閲覧・編集できません';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(50,50,50,0.9);color:#fff;padding:8px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+      return;
+    }
     updateMypageHeader();
     switchMypageTab('posts');
     document.getElementById('mypage-overlay').classList.add('open');

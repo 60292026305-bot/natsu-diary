@@ -7,7 +7,9 @@
   <title>🌻 夏休みの思い出アルバム</title>
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌻</text></svg>">
   <meta name="theme-color" content="#74d7f7">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="夏休み日記">
@@ -1375,7 +1377,7 @@
     /* ゴミ箱閲覧モーダル */
     .board-trash-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(10,20,60,0.6); z-index: 900;
+      background: rgba(10,20,60,0.6); z-index: 910; /* パスワードダイアログより上 */
       align-items: center; justify-content: center;
       backdrop-filter: blur(5px);
     }
@@ -7613,8 +7615,8 @@
   // ===== 5. 管理者削除 =====
   // =================================================================
   // ★ 自分のUIDに変更してください
-  const ADMIN_UID      = 'YOUR_ADMIN_UID_HERE';
-  const ADMIN_PASSWORD = 'admin2024natsu'; // 管理者パスワード
+  const ADMIN_UID      = 'qFIHmgNincaTm4XGceHuysS24QJ2';
+  const ADMIN_PASSWORD = 'kanrisya514';
 
   function isAdmin() {
     return !!(currentUser && currentUser.uid === ADMIN_UID);
@@ -7861,18 +7863,14 @@
 
   window.closeBoardTrashModal = function() {
     document.getElementById('board-trash-overlay').classList.remove('open');
+    // パスワードダイアログが裏に残っている場合も閉じる
+    document.getElementById('board-pw-overlay').classList.remove('open');
   };
 
-  // ゴミ箱を空にする（パスワード保護）
-  window.emptyTrashWithPw = function() {
-    trashPwCallback = async () => {
-      closeBoardPw();
-      await permanentlyEmptyTrash();
-    };
-    document.getElementById('board-pw-input').value = '';
-    document.getElementById('board-pw-error').textContent = '';
-    document.getElementById('board-pw-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('board-pw-input').focus(), 100);
+  // ゴミ箱を空にする（ゴミ箱を開く時点で認証済みなので確認ダイアログのみ）
+  window.emptyTrashWithPw = async function() {
+    if (!confirm('ゴミ箱内のすべてのメモを完全に削除しますか？\nこの操作は元に戻せません。')) return;
+    await permanentlyEmptyTrash();
   };
 
   async function permanentlyEmptyTrash() {

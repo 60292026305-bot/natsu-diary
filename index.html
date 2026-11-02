@@ -4509,6 +4509,9 @@
       return;
     }
     updateMypageHeader();
+    // タブ見出しを必ず「自分の投稿」にリセット
+    const postsTab = document.getElementById('mptab-posts');
+    if (postsTab) postsTab.textContent = '📖 自分の投稿';
     switchMypageTab('posts');
     document.getElementById('mypage-overlay').classList.add('open');
   };

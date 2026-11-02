@@ -5,6 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌻 夏休みの思い出アルバム</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#74d7f7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="夏休み日記">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
@@ -352,6 +358,8 @@
       font-family: 'Yomogi', cursive;
       font-size: 13px; line-height: 1.75; color: #2a3a5a;
       white-space: pre-wrap; margin-bottom: 8px;
+      overflow-wrap: break-word; /* 長い英数字の折り返し */
+      word-break: break-all;
     }
     .diary-photos {
       display: flex; flex-wrap: wrap; gap: 12px;
@@ -3031,6 +3039,130 @@
       pointer-events: none;
       opacity: 0;
     }
+
+    /* ===== 検索バー ===== */
+    .diary-search-bar {
+      display: flex; gap: 8px; align-items: center;
+      width: 100%; max-width: 560px;
+      margin-bottom: 12px;
+    }
+    .diary-search-input {
+      flex: 1; padding: 8px 14px;
+      border: 2px solid rgba(100,150,220,0.3);
+      border-radius: 20px; font-family: 'Yomogi', cursive;
+      font-size: 13px; background: rgba(255,255,255,0.85);
+      outline: none; transition: border-color 0.18s;
+    }
+    .diary-search-input:focus { border-color: rgba(85,136,221,0.6); }
+    .diary-search-clear {
+      padding: 6px 12px; border-radius: 16px; border: none;
+      background: rgba(220,235,255,0.7); color: #5577aa;
+      font-family: 'Yomogi', cursive; font-size: 12px; cursor: pointer;
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .diary-search-clear:hover { background: rgba(200,220,255,0.9); }
+    .hashtag-list {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      width: 100%; max-width: 560px; margin-bottom: 14px;
+    }
+    .hashtag-chip {
+      padding: 3px 10px; border-radius: 20px;
+      background: rgba(200,230,255,0.7);
+      border: 1.5px solid rgba(85,136,221,0.3);
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: #3355aa; cursor: pointer; transition: all 0.15s;
+    }
+    .hashtag-chip:hover { background: rgba(160,210,255,0.9); }
+    .hashtag-chip.active {
+      background: rgba(85,136,221,0.7); color: #fff;
+      border-color: #5588dd;
+    }
+    .search-result-count {
+      font-family: 'Yomogi', cursive; font-size: 11px;
+      color: rgba(255,255,255,0.8); margin-bottom: 8px;
+      width: 100%; max-width: 560px; text-align: right;
+    }
+
+    /* ===== 通報モーダル ===== */
+    .report-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,20,60,0.55); z-index: 900;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .report-overlay.open { display: flex; }
+    .report-modal {
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(16px);
+      border-radius: 20px; padding: 24px 22px 20px;
+      width: min(420px, 92vw);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+      position: relative;
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .report-modal h3 {
+      font-family: 'Yomogi', cursive; font-size: 1rem;
+      color: #2c4a7c; margin-bottom: 14px;
+    }
+    .report-modal select, .report-modal input, .report-modal textarea {
+      width: 100%; padding: 8px 12px; margin-bottom: 10px;
+      border: 1.5px solid rgba(100,150,220,0.3); border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      background: rgba(240,245,255,0.6); box-sizing: border-box;
+    }
+    .report-modal textarea { resize: vertical; min-height: 80px; }
+    .report-close {
+      position: absolute; top: 12px; right: 16px;
+      font-size: 20px; cursor: pointer; color: #7a9ac8;
+      transition: transform 0.15s;
+    }
+    .report-close:hover { transform: scale(1.2) rotate(90deg); }
+    .report-submit-btn {
+      width: 100%; padding: 10px;
+      background: linear-gradient(135deg, #f06060, #c02020);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: 'Yomogi', cursive; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .report-submit-btn:hover { opacity: 0.88; }
+    /* 通報ボタン（固定） */
+    .report-fixed-btn {
+      position: fixed; top: 114px; right: 16px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(255,255,255,0.88);
+      border: 2px solid rgba(255,100,100,0.3);
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      transition: all 0.2s; z-index: 200;
+    }
+    .report-fixed-btn:hover { background: rgba(255,255,255,0.98); transform: scale(1.08); }
+
+    /* ===== 管理者削除ボタン ===== */
+    .admin-delete-btn {
+      padding: 3px 9px; border-radius: 14px; border: none;
+      background: rgba(200,0,0,0.15); color: #c00;
+      font-family: 'Yomogi', cursive; font-size: 10px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .admin-delete-btn:hover { background: rgba(200,0,0,0.3); }
+
+    /* ===== 通知トースト（通知専用） ===== */
+    .notif-toast {
+      position: fixed; top: 70px; right: 16px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(100,150,220,0.2);
+      border-radius: 14px; padding: 10px 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      font-family: 'Yomogi', cursive; font-size: 12px;
+      color: #2c4a7c; z-index: 8000; max-width: 260px;
+      animation: slideInRight 0.3s ease;
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(120%); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -3039,6 +3171,8 @@
 <button class="settings-btn" onclick="openSettings()" title="設定">⚙️</button>
 <!-- マイページボタン（設定ボタンの下） -->
 <button class="mypage-fixed-btn" id="mypage-fixed-btn" onclick="openMypage()" title="マイページ" style="display:none;">👤</button>
+<!-- 通報・お問い合わせボタン -->
+<button class="report-fixed-btn" onclick="openReport()" title="通報・お問い合わせ">✉️</button>
 
 <!-- ===== ログイン状態バー ===== -->
 <div class="auth-bar" id="auth-bar">
@@ -3262,6 +3396,15 @@
 <!-- ===== アルバム ===== -->
 <div class="album-section" id="view-album" style="display:none">
   <h2>📖 みんなの思い出</h2>
+
+  <!-- 検索バー -->
+  <div class="diary-search-bar">
+    <input class="diary-search-input" type="text" id="diary-search-input"
+           placeholder="🔍 キーワードで検索…" oninput="onSearchInput(this.value)">
+    <button class="diary-search-clear" onclick="clearSearch()">クリア</button>
+  </div>
+  <div class="hashtag-list" id="hashtag-list"></div>
+  <div class="search-result-count" id="search-result-count"></div>
   <div class="book" id="book"></div>
   <div class="page-nav">
     <button class="nav-btn" id="prev-btn" onclick="changePage(-1)" disabled>◀ 前のページ</button>
@@ -3559,6 +3702,12 @@
         <button class="mypage-logout-btn" style="margin-top:16px;" onclick="doLogout();closeMypage()">
           ログアウト
         </button>
+
+        <!-- バックアップ -->
+        <button onclick="downloadBackup()"
+          style="width:100%;margin-top:10px;padding:9px;border-radius:10px;border:1.5px solid rgba(100,150,220,0.3);background:rgba(220,235,255,0.5);font-family:'Yomogi',cursive;font-size:12px;color:#3355aa;cursor:pointer;transition:background 0.15s;">
+          📥 日記データをバックアップ（JSON）
+        </button>
       </div>
 
     </div><!-- /mypage-tab-content -->
@@ -3716,6 +3865,26 @@
   </div>
 </div>
 
+<!-- 通報・お問い合わせモーダル -->
+<div class="report-overlay" id="report-overlay" onclick="closeReport()">
+  <div class="report-modal" onclick="event.stopPropagation()">
+    <span class="report-close" onclick="closeReport()">✕</span>
+    <h3>✉️ お問い合わせ・通報</h3>
+    <select id="report-type" onchange="onReportTypeChange()">
+      <option value="">種別を選択してください</option>
+      <option value="bug">🐛 不具合の報告</option>
+      <option value="report">🚨 不適切な投稿の通報</option>
+      <option value="inquiry">💬 アプリへのお問い合わせ</option>
+    </select>
+    <div id="report-target-wrap" style="display:none;">
+      <input type="text" id="report-target-user" placeholder="対象のユーザー名（任意）">
+    </div>
+    <textarea id="report-content" placeholder="内容・理由を入力してください（必須）"></textarea>
+    <button class="report-submit-btn" onclick="submitReport()">送信する</button>
+    <div id="report-msg" style="font-family:'Yomogi',cursive;font-size:12px;text-align:center;margin-top:6px;min-height:14px;"></div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getDatabase, ref, push, remove, set, update, onValue, query, orderByChild }
@@ -3795,6 +3964,8 @@
     currentPage = 0;
     scheduleRenderPage();
     scheduleRenderCalendar();
+    renderHashtagList();
+    setupReactionNotifications();
     // 接続成功インジケーター更新
     setConnectionStatus(true);
   }, (error) => {
@@ -3943,10 +4114,11 @@
       const cred = await signInAnonymously(auth);
       // 表示名をプロフィールに設定
       await updateProfile(cred.user, { displayName: label });
-      // /users/$uid にも保存
+      // /users/$uid にも保存（ゲストフラグ付き）
       await set(ref(db, `users/${cred.user.uid}`), {
         displayName: label,
         avatarUrl: '',
+        isAnonymous: true,
       });
       closeLogin();
       const t = document.createElement('div');
@@ -4359,6 +4531,21 @@
       openMypage();
       return;
     }
+
+    // 対象がゲストユーザーかチェック（/users/$uid の isAnonymous フラグ）
+    try {
+      const guestCheck = await new Promise(res =>
+        onValue(ref(db, `users/${uid}/isAnonymous`), res, { onlyOnce: true })
+      );
+      if (guestCheck.val() === true) {
+        const t = document.createElement('div');
+        t.textContent = 'ゲストユーザーのプロフィールは表示できません';
+        t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(50,50,50,0.9);color:#fff;padding:8px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:12px;z-index:9999;pointer-events:none;';
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+        return;
+      }
+    } catch(_) { /* チェック失敗時はそのまま続行 */ }
 
     overlay.classList.add('open');
     overlay.classList.add('viewing-other');
@@ -5924,7 +6111,9 @@
 
     const totalPages = Math.ceil(allDiaries.length / ITEMS_PER_PAGE);
     if (currentPage >= totalPages) currentPage = totalPages - 1;
-    const pageDiaries = allDiaries.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+    const pageDiaries = (filteredDiaries || allDiaries).slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+    const _totalForDisplay = (filteredDiaries || allDiaries).length;
+    const totalPagesDisp = Math.ceil(_totalForDisplay / ITEMS_PER_PAGE);
 
     const scrap = document.createElement('div');
     scrap.className = 'scrap-page glass';
@@ -5932,8 +6121,8 @@
     book.appendChild(scrap);
 
     document.getElementById('prev-btn').disabled = (currentPage === 0);
-    document.getElementById('next-btn').disabled = (currentPage >= totalPages - 1);
-    document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${totalPages} ページ`;
+    document.getElementById('next-btn').disabled = (currentPage >= totalPagesDisp - 1);
+    document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${totalPagesDisp} ページ`;
   }
 
   function buildCard(diary) {
@@ -6118,6 +6307,16 @@
     }
 
     if (actionsRight.children.length > 0) actions.appendChild(actionsRight);
+
+    // 管理者削除ボタン（管理者ログイン時のみ）
+    if (isAdmin()) {
+      const adminBtn = document.createElement('button');
+      adminBtn.className = 'admin-delete-btn';
+      adminBtn.textContent = '🔑 管理者削除';
+      adminBtn.setAttribute('data-html2canvas-ignore', 'true');
+      adminBtn.onclick = () => adminDeleteDiary(diary.fbKey);
+      actions.appendChild(adminBtn);
+    }
 
     card.appendChild(actions);
 
@@ -7231,7 +7430,213 @@
             .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
   }
 
-  // ===== 書き込みモーダル =====
+  // =================================================================
+  // ===== 1. 検索・ハッシュタグ絞り込み =====
+  // =================================================================
+  let searchKeyword    = '';
+  let activeHashtag    = '';
+  let filteredDiaries  = null; // null = フィルタなし
+
+  function extractHashtags(text) {
+    const matches = (text || '').match(/#[\u30A0-\u30FFa-zA-Z0-9\u3040-\u309F\u4E00-\u9FFF_]+/g);
+    return matches || [];
+  }
+
+  function renderHashtagList() {
+    const listEl = document.getElementById('hashtag-list');
+    if (!listEl) return;
+    const tagSet = new Set();
+    allDiaries.forEach(d => extractHashtags(d.text).forEach(t => tagSet.add(t)));
+    listEl.innerHTML = '';
+    tagSet.forEach(tag => {
+      const chip = document.createElement('button');
+      chip.className = 'hashtag-chip' + (activeHashtag === tag ? ' active' : '');
+      chip.textContent = tag;
+      chip.onclick = () => {
+        activeHashtag = (activeHashtag === tag) ? '' : tag;
+        applySearch();
+        renderHashtagList();
+      };
+      listEl.appendChild(chip);
+    });
+  }
+
+  function applySearch() {
+    const kw = searchKeyword.toLowerCase();
+    if (!kw && !activeHashtag) {
+      filteredDiaries = null;
+      document.getElementById('search-result-count').textContent = '';
+    } else {
+      filteredDiaries = allDiaries.filter(d => {
+        const text = (d.text || '') + ' ' + (d.name || '');
+        const matchKw  = !kw       || text.toLowerCase().includes(kw);
+        const matchTag = !activeHashtag || extractHashtags(d.text).includes(activeHashtag);
+        return matchKw && matchTag;
+      });
+      document.getElementById('search-result-count').textContent =
+        `🔍 ${filteredDiaries.length} 件ヒット`;
+    }
+    currentPage = 0;
+    renderPage();
+  }
+
+  window.onSearchInput = function(val) {
+    searchKeyword = val.trim();
+    applySearch();
+  };
+
+  window.clearSearch = function() {
+    searchKeyword = ''; activeHashtag = '';
+    filteredDiaries = null;
+    document.getElementById('diary-search-input').value = '';
+    document.getElementById('search-result-count').textContent = '';
+    renderHashtagList();
+    currentPage = 0;
+    renderPage();
+  };
+
+  // renderPage が filteredDiaries を参照するよう既存 renderPage をラップ
+  // ※ renderPage 自体は変更せず、allDiaries の代わりに filteredDiaries を使うよう
+  //   pageDiaries 生成前にリストを差し替える
+  const _origRenderPage = renderPage;
+  // renderPage は既存のまま利用（filteredDiaries は renderPage 内で参照）
+
+  // =================================================================
+  // ===== 2. リアクション通知 =====
+  // =================================================================
+  let _notifListeners = {}; // fbKey → unsubscribe
+
+  function setupReactionNotifications() {
+    if (!currentUser || isGuestUser()) return;
+    // 自分の投稿を監視
+    allDiaries.forEach(d => {
+      if (d.uid !== currentUser.uid) return;
+      if (_notifListeners[d.fbKey]) return; // 二重登録防止
+      const rpath = `diaryReactions/${d.fbKey}`;
+      _notifListeners[d.fbKey] = onValue(ref(db, rpath), (snap) => {
+        // 初回コールはスキップ（既存データで通知しない）
+        if (!_notifListeners[d.fbKey + '_ready']) {
+          _notifListeners[d.fbKey + '_ready'] = true; return;
+        }
+        const data = snap.val() || {};
+        REACTION_EMOJIS.forEach(emoji => {
+          const users = data[emoji] || {};
+          Object.keys(users).forEach(uid => {
+            if (uid === currentUser.uid) return;
+            const notifKey = `notif_${d.fbKey}_${emoji}_${uid}`;
+            if (sessionStorage.getItem(notifKey)) return;
+            sessionStorage.setItem(notifKey, '1');
+            // 通知者名を取得してトースト
+            fetchUserIcon(uid); // キャッシュ温め
+            new Promise(res => onValue(ref(db, `users/${uid}/displayName`), res, { onlyOnce: true }))
+              .then(s => {
+                const name = s.val() || 'だれか';
+                showNotifToast(`${name} さんが ${emoji} を押しました！`);
+              });
+          });
+        });
+      });
+    });
+  }
+
+  function showNotifToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'notif-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => {
+      t.style.transition = 'opacity 0.4s';
+      t.style.opacity = '0';
+      setTimeout(() => t.remove(), 400);
+    }, 3500);
+  }
+
+  // =================================================================
+  // ===== 3. バックアップ（JSONダウンロード）=====
+  // =================================================================
+  window.downloadBackup = function() {
+    if (!currentUser) { alert('ログインが必要です'); return; }
+    const mine = allDiaries.filter(d => d.uid === currentUser.uid).map(d => {
+      // 写真（Base64）はURLのみに変換して軽量化
+      const photos = JSON.parse(d.photos || '[]').map((p, i) => `photo_${i + 1}`);
+      return { ...d, photos: JSON.stringify(photos) };
+    });
+    const blob = new Blob([JSON.stringify(mine, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `natuyasumi_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // =================================================================
+  // ===== 4. 通報・お問い合わせ =====
+  // =================================================================
+  window.openReport  = () => document.getElementById('report-overlay').classList.add('open');
+  window.closeReport = () => {
+    document.getElementById('report-overlay').classList.remove('open');
+    document.getElementById('report-type').value    = '';
+    document.getElementById('report-content').value = '';
+    document.getElementById('report-msg').textContent = '';
+    onReportTypeChange();
+  };
+
+  window.onReportTypeChange = function() {
+    const t = document.getElementById('report-type').value;
+    document.getElementById('report-target-wrap').style.display = (t === 'report') ? 'block' : 'none';
+  };
+
+  window.submitReport = async function() {
+    const type    = document.getElementById('report-type').value;
+    const content = document.getElementById('report-content').value.trim();
+    const target  = document.getElementById('report-target-user')?.value.trim() || '';
+    const msgEl   = document.getElementById('report-msg');
+    if (!type)    { msgEl.textContent = '種別を選択してください'; msgEl.style.color='#c00'; return; }
+    if (!content) { msgEl.textContent = '内容を入力してください'; msgEl.style.color='#c00'; return; }
+    try {
+      await push(ref(db, 'reports'), {
+        type, content, target,
+        uid:       currentUser?.uid || 'anonymous',
+        createdAt: Date.now(),
+      });
+      msgEl.textContent = '✅ 送信しました！ご協力ありがとうございます。';
+      msgEl.style.color = '#2a8a2a';
+      setTimeout(closeReport, 2000);
+    } catch(e) {
+      msgEl.textContent = '送信に失敗しました: ' + e.message;
+      msgEl.style.color = '#c00';
+    }
+  };
+
+  // =================================================================
+  // ===== 5. 管理者削除 =====
+  // =================================================================
+  // ★ 自分のUIDに変更してください
+  const ADMIN_UID      = 'YOUR_ADMIN_UID_HERE';
+  const ADMIN_PASSWORD = 'admin2024natsu'; // 管理者パスワード
+
+  function isAdmin() {
+    return !!(currentUser && currentUser.uid === ADMIN_UID);
+  }
+
+  window.adminDeleteDiary = function(fbKey) {
+    if (!isAdmin()) return;
+    const pw = prompt('管理者パスワードを入力してください：');
+    if (pw !== ADMIN_PASSWORD) { alert('パスワードが違います'); return; }
+    if (!confirm('この投稿を完全に削除しますか？（元に戻せません）')) return;
+    remove(ref(db, `diaries/${fbKey}`))
+      .then(() => {
+        const t = document.createElement('div');
+        t.textContent = '🗑 管理者削除しました';
+        t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(180,0,0,0.9);color:#fff;padding:8px 22px;border-radius:20px;font-family:Yomogi,cursive;font-size:13px;z-index:9999;pointer-events:none;';
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2200);
+      })
+      .catch(e => alert('削除失敗: ' + e.message));
+  };
+
+  // Escape キー で通報モーダルも閉じる
   window.openBoardPost = function() {
     document.getElementById('board-post-overlay').classList.add('open');
     setTimeout(()=>document.getElementById('board-post-text').focus(), 100);
@@ -7636,8 +8041,19 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); closeBoardPw(); closeBoardTrashModal(); closeBoardBinder(); closeDecoCanvas(); closeDecoDiaryPicker(); }
+    if (e.key === 'Escape') { closeLightbox(); closeCalPopup(); closeSettings(); closeLogin(); closeMypage(); closeScrapbookDetail(); closeBoardPost(); closeBoardSummaryModal(); closeBoardPw(); closeBoardTrashModal(); closeBoardBinder(); closeDecoCanvas(); closeDecoDiaryPicker(); closeReport(); }
   });
+</script>
+
+<!-- Service Worker 登録（PWA） -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(e => console.log('SW registration failed:', e));
+    });
+  }
 </script>
 </body>
 </html>
+value
